@@ -30,7 +30,7 @@ from pathlab.config import MapDesign
 from pathlab.map_editor import MapRequest, build_scene
 from pathlab.registry import registry
 from pathlab.scenarios import FAMILIES, generate
-from pathlab.sdk import Observation
+from pathlab.sdk import Action, Observation
 from pathlab.simulation import Renderer, Vehicle
 from pathlab.storage import environment, write_json
 
@@ -119,6 +119,7 @@ def evaluate(job):
             result = policy.step(obs)
             elapsed = (time.perf_counter() - clock) * 1000
             action, events = execution_action(result, "action", adapter)
+            before = vehicle.state.model_dump()
             applied = vehicle.advance(action, scene.dt_s)
             score = evaluator.update(vehicle.state, (index + 1) * scene.dt_s)
             records.append(
@@ -132,6 +133,7 @@ def evaluate(job):
                     "inference_ms": elapsed,
                     "interventions": events + applied.interventions,
                     "pose": vehicle.state.model_dump(),
+                    "pose_before": before,
                 }
             )
             if evaluator.done_reason:
@@ -149,6 +151,36 @@ def evaluate(job):
                 policy.close()
         except Exception as error:
             failures.append({"kind": "close_exception", "message": repr(error)})
+    # A terminal policy decision is a brake request, not a reset of momentum.
+    # Keep the coast-down trajectory so collision and comfort metrics match the
+    # full worker-based platform, including a collision after crossing finish.
+    terminal_task_frame = records[-1] if records else None
+    evaluator.begin_coasting()
+    while vehicle.state.speed_mps > 1e-8:
+        before = vehicle.state.model_dump()
+        applied = vehicle.advance(Action(steering_angle_rad=0, speed_mps=0), scene.dt_s)
+        timestamp = (len(records) + 1) * scene.dt_s
+        score = evaluator.update(vehicle.state, timestamp)
+        records.append(
+            {
+                "frame_id": len(records),
+                "timestamp_s": timestamp,
+                "dt_s": scene.dt_s,
+                "output": None,
+                "inference_ms": None,
+                "applied": applied.model_dump(),
+                "evaluation": score,
+                "interventions": [
+                    "episode_ended",
+                    "safety_braking",
+                    *applied.interventions,
+                ],
+                "pose_before": before,
+                "pose": vehicle.state.model_dump(),
+            }
+        )
+        if evaluator.done_reason == "collision":
+            reason = "collision"
     summary = summarize(records, evaluator, reason, failures)
     report = {
         "algorithm": algorithm,
@@ -161,6 +193,8 @@ def evaluate(job):
         "metrics": summary,
         "failures": failures,
         "wall_s": time.perf_counter() - start,
+        "inference_frames": sum(row.get("inference_ms") is not None for row in records),
+        "terminal_task_frame": terminal_task_frame,
         "last_frame": records[-1] if records else None,
     }
     if output:
@@ -186,6 +220,9 @@ def write_report(folder, plan, reports):
         "completion",
         "illegal_switches",
         "inference_mean_ms",
+        "score_total",
+        "collision_count",
+        "simulation_time_s",
     ]
     with (folder / "report.csv").open("w", encoding="utf-8-sig", newline="") as handle:
         writer = csv.DictWriter(handle, fields)
@@ -198,6 +235,9 @@ def write_report(folder, plan, reports):
                     **{k: m[k] for k in fields[3:6]},
                     "illegal_switches": len(m["illegal_switches"] or []),
                     "inference_mean_ms": m["inference_ms"]["mean"],
+                    "score_total": (m.get("score") or {}).get("total"),
+                    "collision_count": m.get("collision_count"),
+                    "simulation_time_s": m.get("simulation_time_s"),
                 }
             )
     lines = [
@@ -205,10 +245,10 @@ def write_report(folder, plan, reports):
         "",
         f"集合：{plan['split']} / {plan['suite']}；种子：{plan['seeds']}；每回合上限：{plan['steps']} 帧。",
         "",
-        "算法只接收公开 SDK 观测；评分使用原有私有评分器，阈值未放宽。耗时为进程内 step（含图像解码），不含工作进程传输、渲染与初始化。",
+        "算法只接收公开 SDK 观测；评分遵循报告内版本，成功阈值未放宽。结束后真实制动轨迹参与安全与平顺性统计。耗时为进程内 step（含图像解码），不含工作进程传输、渲染与初始化。",
         "",
-        "| 算法 | 成功 / 总数 | 成功率 | Wilson 95% 区间 | 非法换线 | 推理均值 ms | 结束原因 |",
-        "|---|---:|---:|---|---:|---:|---|",
+        "| 算法 | 成功 / 总数 | 成功率 | Wilson 95% 区间 | 均分 | 碰撞 | 非法换线 | 推理均值 ms | 结束原因 |",
+        "|---|---:|---:|---|---:|---:|---:|---:|---|",
     ]
     for algorithm in dict.fromkeys(row["algorithm"] for row in reports):
         metrics = [row["metrics"] for row in reports if row["algorithm"] == algorithm]
@@ -222,13 +262,21 @@ def write_report(folder, plan, reports):
             ** 0.5
             / denominator
         )
-        frames = sum(m["frames"] for m in metrics)
+        rows = [row for row in reports if row["algorithm"] == algorithm]
+        frames = sum(
+            row.get("inference_frames", row["metrics"]["frames"]) for row in rows
+        )
         timing = sum(
-            (m["inference_ms"]["mean"] or 0) * m["frames"] for m in metrics
+            (row["metrics"]["inference_ms"]["mean"] or 0)
+            * row.get("inference_frames", row["metrics"]["frames"])
+            for row in rows
         ) / max(frames, 1)
         switches = sum(len(m["illegal_switches"] or []) for m in metrics)
+        scores = [m["score"]["total"] for m in metrics if m.get("score")]
+        score = f"{np.mean(scores):.2f}" if scores else "—"
+        collisions = sum(m.get("collision_count", 0) for m in metrics)
         lines.append(
-            f"| {algorithm} | {successes}/{count} | {proportion:.1%} | {center - half:.1%}–{center + half:.1%} | {switches} | {timing:.2f} | {dict(Counter(m['reason'] for m in metrics))} |"
+            f"| {algorithm} | {successes}/{count} | {proportion:.1%} | {center - half:.1%}–{center + half:.1%} | {score} | {collisions} | {switches} | {timing:.2f} | {dict(Counter(m['reason'] for m in metrics))} |"
         )
     lines += [
         "",
@@ -295,20 +343,32 @@ def main():
             )
         if reason := registry()[algorithm].unavailable_reason():
             parser.error(reason)
+    representative_scene = evaluation_scene(
+        args.families[0], args.seeds[0], args.split, args.suite
+    )
     plan = {
         **vars(args),
         "timing": "in_process_inference",
         "environment": environment(),
         "evaluator_version": EVALUATOR_VERSION,
         "thresholds": THRESHOLDS,
+        "motion_model": representative_scene.vehicle.motion_model,
+        "render_version": representative_scene.render_version,
         "code_sha256": {
             str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
             for path in sorted((ROOT / "algorithms").rglob("*.py"))
         },
+        "platform_sha256": {
+            str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
+            for path in sorted((ROOT / "pathlab").glob("*.py"))
+        },
     }
+    from algorithms.learning.algorithm import checkpoint_for_limits
+
     checkpoint = Path(
         args.parameters.get(
-            "checkpoint", ROOT / "algorithms/learning/weights/driver.pt"
+            "checkpoint",
+            checkpoint_for_limits(representative_scene.vehicle.model_dump()),
         )
     )
     if "cnn_gru" in args.algorithms and checkpoint.exists():

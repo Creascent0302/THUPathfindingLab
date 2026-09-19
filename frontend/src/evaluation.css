@@ -1,0 +1,208 @@
+.eval-page {
+  display: grid;
+  gap: 20px;
+}
+.eval-create,
+.eval-monitor,
+.eval-rubric {
+  padding: 22px;
+}
+.eval-plan-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr 1.1fr;
+  gap: 28px;
+}
+.eval-field {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 14px;
+  font-size: 13px;
+}
+.eval-field input,
+.eval-field select,
+.eval-batch-toolbar select,
+.eval-advanced textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--line, #d8e0df);
+  border-radius: 7px;
+  background: white;
+  color: inherit;
+}
+.eval-field-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.eval-choices {
+  padding: 0;
+  border: 0;
+  margin: 0 0 18px;
+  max-height: 330px;
+  overflow: auto;
+}
+.eval-choices legend {
+  font-size: 13px;
+  font-weight: 650;
+  margin-bottom: 10px;
+}
+.eval-choices label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 7px 0;
+  padding: 5px 0;
+  font-size: 13px;
+}
+.eval-choices input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+}
+.eval-choices small {
+  display: block;
+  color: #7d8988;
+  font-size: 11px;
+  margin-top: 2px;
+}
+.eval-advanced summary,
+.eval-rubric summary {
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 650;
+}
+.eval-advanced textarea {
+  resize: vertical;
+  font-family: monospace;
+  font-size: 12px;
+  box-sizing: border-box;
+}
+.eval-start {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+}
+.eval-start strong {
+  font-size: 26px;
+  font-weight: 650;
+}
+.eval-start small {
+  font-size: 11px;
+  color: #788685;
+  font-weight: 400;
+}
+.eval-batch-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.eval-batch-toolbar > select {
+  flex: 1;
+  min-width: 260px;
+  max-width: 600px;
+}
+.eval-progress {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin: 23px 0 12px;
+  font-size: 13px;
+}
+.eval-progress progress {
+  accent-color: #168679;
+  height: 10px;
+  flex: 1;
+}
+.eval-progress > span {
+  color: #657571;
+}
+.eval-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  font-size: 11px;
+  color: #6e7e79;
+}
+.eval-comparison {
+  min-width: 1050px;
+}
+.eval-rank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  color: #137467;
+  background: #e1f1ec;
+}
+.eval-score {
+  color: #15796e;
+  font-size: 20px;
+}
+.eval-table-note {
+  padding: 0 20px 16px;
+}
+.eval-score-detail summary {
+  white-space: nowrap;
+  cursor: pointer;
+  font-size: 13px;
+}
+.eval-score-detail summary strong {
+  color: #15796e;
+  font-size: 19px;
+}
+.eval-score-breakdown {
+  min-width: 245px;
+  padding: 12px 0;
+  font-size: 12px;
+  white-space: normal;
+}
+.eval-score-breakdown p {
+  max-width: 260px;
+  font-size: 11px;
+}
+.eval-score-breakdown > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 6px 0;
+}
+.eval-rubric p {
+  color: #667670;
+  font-size: 13px;
+  line-height: 1.85;
+}
+.eval-muted {
+  color: #87928e;
+  font-size: 11px;
+}
+.eval-comparability {
+  padding: 13px 20px;
+  margin: 0;
+  font-size: 12px;
+  background: #fff5e6;
+  color: #806237;
+}
+@media (max-width: 1150px) {
+  .eval-plan-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .eval-plan-grid > div:last-child {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 700px) {
+  .eval-plan-grid {
+    display: block;
+  }
+  .eval-progress {
+    flex-wrap: wrap;
+  }
+  .eval-progress progress {
+    min-width: 100%;
+  }
+}

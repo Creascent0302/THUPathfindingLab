@@ -1,0 +1,17 @@
+﻿algorithm,family,seed,success,reason,completion,illegal_switches,inference_mean_ms
+temporal_pursuit,straight,203,True,success,0.9831370836473544,0,26.945484833745862
+temporal_pursuit,bend,203,True,success,0.9829082694526686,0,26.674503123421974
+temporal_pursuit,s_curve,203,True,success,0.98422931213013,0,27.263111840044445
+temporal_pursuit,sharp,203,True,success,0.984463358948788,0,27.515876694973503
+temporal_pursuit,hairpin,203,True,success,0.9860583024608356,0,28.64024855513522
+temporal_pursuit,parallel,203,True,success,0.9833481155645081,0,27.91696099668556
+temporal_pursuit,close_lines,203,True,success,0.9824156857594855,0,28.117075347779696
+temporal_pursuit,repeated,203,True,success,0.9967782539132936,0,29.623217572101773
+temporal_mpc,straight,203,True,success,0.9835281749643944,0,30.78671514608518
+temporal_mpc,bend,203,True,success,0.9834985306762877,0,30.642744549550116
+temporal_mpc,s_curve,203,True,success,0.9840040819223438,0,34.159781329197905
+temporal_mpc,sharp,203,True,success,0.9831305910553352,0,32.467434923846
+temporal_mpc,hairpin,203,True,success,0.9853390048841436,0,30.097719854261033
+temporal_mpc,parallel,203,True,success,0.9834159420442227,0,33.61243098440421
+temporal_mpc,close_lines,203,True,success,0.9834084231188485,0,31.50748175557521
+temporal_mpc,repeated,203,True,success,0.9966909899006994,0,34.10314310364215

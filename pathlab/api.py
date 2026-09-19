@@ -26,6 +26,7 @@ from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 from .config import RunConfig, Scene
+from .benchmark import BenchmarkManager, BenchmarkRequest, export_benchmark_csv
 from .engine import RunManager, TERMINAL
 from .map_editor import MapRequest, build_scene, geometry_summary
 from .registry import ROOT, registry
@@ -79,6 +80,7 @@ def process_exists(pid: int) -> bool:
 def create_app(artifact_root: Path | None = None) -> FastAPI:
     root = artifact_root or ROOT / "artifacts"
     manager = RunManager(root)
+    benchmarks = BenchmarkManager(manager)
     submission_lock = threading.Lock()
     scene_lock = threading.Lock()
 
@@ -101,11 +103,14 @@ def create_app(artifact_root: Path | None = None) -> FastAPI:
                     ],
                 )
                 write_json(manifest_path, manifest)
+        benchmarks.start()
         yield
+        await asyncio.to_thread(benchmarks.close)
         await asyncio.to_thread(manager.close)
 
     app = FastAPI(title="寻迹实验室 API", version="0.1.0", lifespan=lifespan)
     app.state.manager = manager
+    app.state.benchmarks = benchmarks
 
     @app.exception_handler(ValueError)
     async def value_error_handler(request: Request, error: ValueError):
@@ -292,6 +297,46 @@ def create_app(artifact_root: Path | None = None) -> FastAPI:
             return manager.create(config).snapshot()
         except FileNotFoundError:
             raise HTTPException(404, "素材不存在")
+
+    @app.get("/api/benchmarks")
+    def list_benchmarks():
+        return benchmarks.list()
+
+    @app.post("/api/benchmarks", status_code=201)
+    def create_benchmark(request: BenchmarkRequest):
+        return benchmarks.create(request)
+
+    @app.get("/api/benchmarks/{batch_id}")
+    def get_benchmark(batch_id: str):
+        return benchmarks.get(batch_id)
+
+    @app.post("/api/benchmarks/{batch_id}/cancel")
+    def cancel_benchmark(batch_id: str):
+        return benchmarks.cancel(batch_id)
+
+    @app.delete("/api/benchmarks/{batch_id}")
+    def delete_benchmark(batch_id: str):
+        return benchmarks.delete(batch_id)
+
+    @app.get("/api/benchmarks/{batch_id}/export")
+    def export_benchmark(batch_id: str, format: str = "json"):
+        batch = benchmarks.get(batch_id)
+        if format == "json":
+            body, media = (
+                json.dumps(batch, ensure_ascii=False, allow_nan=False, indent=2),
+                "application/json",
+            )
+        elif format == "csv":
+            body, media = export_benchmark_csv(batch), "text/csv; charset=utf-8"
+        else:
+            raise HTTPException(400, "导出格式须为 json 或 csv")
+        return Response(
+            body,
+            media_type=media,
+            headers={
+                "Content-Disposition": f'attachment; filename="benchmark-{batch_id}.{format}"'
+            },
+        )
 
     @app.get("/api/runs/{run_id}")
     def get_run(run_id: str):

@@ -53,7 +53,9 @@ def test_api_simulation_export_and_reconstruction(client):
         client, {"algorithm": "constant", "max_steps": 5, "realtime": False}
     )
     result = client.get(f"/api/results/{run_id}").json()
-    assert len(result["frames"]) == 5
+    assert result["manifest"]["metrics"]["task_frames"] == 5
+    assert len(result["frames"]) >= 5
+    assert result["frames"][-1]["applied"]["actual"]["speed_mps"] == 0
     assert result["manifest"]["environment"]["python"]
     frame = client.get(f"/api/results/{run_id}/frames/0").json()
     assert frame["image"] == preview["image"]

@@ -6,7 +6,8 @@ import math
 
 import numpy as np
 
-from .config import Appearance, Pose, Scene
+from .config import Appearance, CameraConfig, ObjectScatter, Pose, Scene
+from .scene_objects import scatter_objects
 from .simulation import Camera, world_to_vehicle
 
 FAMILIES = {
@@ -87,7 +88,7 @@ def generate(family: str, seed: int = 7, split: str = "development") -> Scene:
             [[x, -0.20 - 0.035 * math.sin(x)] for x in np.linspace(0.8, 8, 170)]
         )
     scene = Scene(
-        render_version="2",
+        render_version="3",
         name=FAMILIES[family],
         family=family,
         seed=seed,
@@ -99,10 +100,14 @@ def generate(family: str, seed: int = 7, split: str = "development") -> Scene:
             y_m=float(rng.uniform(-0.32, 0.25)),
             yaw_rad=float(rng.uniform(-0.14, 0.14)),
         ),
+        camera=CameraConfig(pitch_down_rad=0.38),
         appearance=Appearance(
             line_width_m=float(rng.uniform(0.045, 0.08)),
             illumination=float(rng.uniform(0.85, 1.08)),
         ),
+    )
+    scene.objects = scatter_objects(
+        scene, ObjectScatter(count=18 if family == "repeated" else 10)
     )
     errors = validate_scene(scene)
     if errors:
@@ -112,6 +117,8 @@ def generate(family: str, seed: int = 7, split: str = "development") -> Scene:
 
 def validate_scene(scene: Scene) -> list[str]:
     errors = []
+    if scene.vehicle.braking_mps2 < 0.05:
+        errors.append("新实验制动减速度至少为 0.05 m/s²；旧参数仍可用于历史回放")
     path = np.asarray(scene.target_path)
     if not np.isfinite(path).all() or np.max(np.abs(path)) > 40:
         return ["路径必须有限且位于 ±40 m 范围"]

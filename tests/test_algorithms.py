@@ -18,6 +18,51 @@ from pathlab.sdk import Observation, TaskHint
 from pathlab.simulation import Renderer, world_to_vehicle
 
 
+@pytest.mark.parametrize("model", ["kinematic_v1", "inertial_v2"])
+def test_command_motion_estimate_matches_vehicle_with_lateral_momentum(model):
+    from algorithms.modular.control import MotionEstimate
+    from pathlab.config import Pose, VehicleConfig
+    from pathlab.sdk import Action
+    from pathlab.simulation import Vehicle
+
+    limits = VehicleConfig(motion_model=model)
+    vehicle = Vehicle(limits, Pose(x_m=3, y_m=-2, yaw_rad=0.7))
+    estimate = MotionEstimate(limits.model_dump())
+    for steering, speed in [(0.45, 1.0)] * 12 + [(-0.35, 0.65)] * 9 + [(0, 0)] * 8:
+        action = Action(steering_angle_rad=steering, speed_mps=speed)
+        before = vehicle.state.model_copy()
+        for _ in range(3):
+            vehicle.advance(action, 0.05)
+        displacement, yaw = estimate.advance(action, 0.15, 0.05)
+        expected = world_to_vehicle(
+            np.array([[vehicle.state.x_m, vehicle.state.y_m]]), before
+        )[0]
+        np.testing.assert_allclose(displacement, expected, atol=1e-11)
+        expected_yaw = (vehicle.state.yaw_rad - before.yaw_rad + np.pi) % (
+            2 * np.pi
+        ) - np.pi
+        assert yaw == pytest.approx(expected_yaw, abs=1e-11)
+        assert estimate.speed == pytest.approx(vehicle.state.speed_mps, abs=1e-11)
+        angle = vehicle.state.yaw_rad
+        lateral = (
+            -np.sin(angle) * vehicle.state.velocity_x_mps
+            + np.cos(angle) * vehicle.state.velocity_y_mps
+        )
+        assert estimate.state[4] == pytest.approx(lateral, abs=1e-11)
+    assert estimate.speed == 0
+
+
+def test_learning_checkpoint_selection_keeps_historical_model():
+    from algorithms.learning.algorithm import checkpoint_for_limits
+
+    assert checkpoint_for_limits({}).name == "driver.pt"
+    assert checkpoint_for_limits({"motion_model": "kinematic_v1"}).name == "driver.pt"
+    assert (
+        checkpoint_for_limits({"motion_model": "inertial_v2"}).name
+        == "driver-inertial.pt"
+    )
+
+
 def observation(scene, frame=0, *, blank=False):
     renderer = Renderer(scene)
     rgb = renderer.render(scene.initial_pose, frame)
@@ -41,6 +86,17 @@ def initialized(policy_type=TemporalPursuit, family="parallel", **parameters):
     policy.initialize(parameters, {"vehicle_limits": scene.vehicle.model_dump()})
     policy.reset(obs, obs.task_hint)
     return policy, scene, obs
+
+
+def assert_policy_steps_and_continuous_stop(run, count):
+    driving = [
+        row for row in run.records if "safety_braking" not in row["interventions"]
+    ]
+    braking = [row for row in run.records if "safety_braking" in row["interventions"]]
+    assert len(driving) == count
+    assert braking and braking[0]["pose_before"] == driving[-1]["pose"]
+    assert braking[-1]["pose"]["speed_mps"] == 0
+    assert all(row["applied"]["requested"]["speed_mps"] == 0 for row in braking)
 
 
 @pytest.mark.parametrize("policy_type", [TemporalPursuit, TemporalMPC])
@@ -166,7 +222,7 @@ def test_deployment_modules_do_not_import_private_world_or_training_expert():
 def test_reference_algorithms_run_in_real_worker(execute, name):
     run = execute(RunConfig(algorithm=name, max_steps=8, realtime=False))
     assert not run.failures
-    assert len(run.records) == 8
+    assert_policy_steps_and_continuous_stop(run, 8)
     assert run.records[0]["output"]["action"]["speed_mps"] > 0
     assert run.worker.process.poll() is not None
 
@@ -200,7 +256,7 @@ def test_learned_checkpoint_reset_and_actual_worker(execute):
     assert policy.step(obs).model_dump() == first.model_dump()
     run = execute(RunConfig(algorithm="cnn_gru", max_steps=8, realtime=False))
     assert not run.failures
-    assert len(run.records) == 8
+    assert_policy_steps_and_continuous_stop(run, 8)
 
 
 @pytest.mark.skipif(

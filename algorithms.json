@@ -46,45 +46,45 @@
   {
     "id": "temporal_pursuit",
     "name": "时序拓扑 + 调速 Pure Pursuit",
-    "version": "0.1",
+    "version": "0.2",
     "capabilities": [
       "action"
     ],
     "entrypoint": "algorithms.modular.algorithm:TemporalPursuit",
-    "description": "鸟瞰骨架、目标身份关联、短时预测与曲率调速。"
+    "description": "鸟瞰骨架、时序身份关联与曲率调速；按公开惯性模型预测历史路径。"
   },
   {
     "id": "temporal_mpc",
     "name": "时序拓扑 + 预测控制 MPC",
-    "version": "0.1",
+    "version": "0.2",
     "capabilities": [
       "action"
     ],
     "entrypoint": "algorithms.modular.algorithm:TemporalMPC",
-    "description": "相同视觉信息，使用有限时域的转向约束轨迹优化。"
+    "description": "时序视觉与有限时域预测控制；按惯性、转角和横向加速度约束优化轨迹。"
   },
   {
     "id": "scanline_pid",
     "name": "扫描线 PD 基线",
-    "version": "1.0",
+    "version": "1.1",
     "capabilities": [
       "action"
     ],
     "entrypoint": "algorithms.scanline:ScanlinePID",
-    "description": "图像扫描线关联与平滑 PD 控制；用于比较时序拓扑算法的收益。"
+    "description": "图像扫描线关联与带响应补偿的 PD 控制；用于对比完整时序算法。"
   },
   {
     "id": "cnn_gru",
     "name": "端到端 CNN + GRU",
-    "version": "1.0",
+    "version": "2.0",
     "capabilities": [
       "action"
     ],
     "entrypoint": "algorithms.learning.algorithm:RecurrentPolicy",
-    "description": "真实 CPU 模仿学习权重，时序图像直接输出动作；默认绿色标记初始化，无专家回退。",
+    "description": "真实 CPU 训练的图像时序动作模型，按物理版本选取权重；绿色标记初始化，无专家回退。",
     "runtime_requirements": [
       "torch"
     ],
-    "checkpoint_file": "algorithms/learning/weights/driver.pt"
+    "checkpoint_file": "algorithms/learning/weights/driver-inertial.pt"
   }
 ]

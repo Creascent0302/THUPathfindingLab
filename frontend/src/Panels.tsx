@@ -427,6 +427,18 @@ export function Charts({ history }: { history: History[] }) {
       color: "#9070b9",
       values: history.map((r) => r.applied?.actual.steering_angle_rad ?? null),
     },
+    {
+      name: "纵向加速度",
+      unit: "m/s²",
+      color: "#3f78aa",
+      values: history.map((r) => r.pose?.acceleration_mps2 ?? null),
+    },
+    {
+      name: "车身角速度",
+      unit: "rad/s",
+      color: "#aa7048",
+      values: history.map((r) => r.pose?.yaw_rate_rad_s ?? null),
+    },
   ];
   return (
     <section className="panel">

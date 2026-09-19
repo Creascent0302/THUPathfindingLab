@@ -15,6 +15,7 @@ import numpy as np
 
 from .config import RunConfig
 from .engine import Run
+from .evaluation import EVALUATOR_VERSION, SCORE_VERSION
 from .registry import ROOT, registry
 from .scenarios import FAMILIES, generate
 from .storage import environment, write_json
@@ -34,8 +35,16 @@ def benchmark(args):
         "max_steps": args.steps,
         "split": args.split,
         "timing": "worker_protocol_round_trip",
+        "evaluator_version": EVALUATOR_VERSION,
+        "score_version": SCORE_VERSION,
         "disclaimer": "实际独立进程闭环评测；保留失败，性能结论仅适用于列出的场景集合。",
     }
+    scenes = {
+        (family, seed): generate(family, seed, split=args.split)
+        for family in args.families
+        for seed in args.seeds
+    }
+    plan["cases"] = [scene.model_dump() for scene in scenes.values()]
     out = Path(args.output)
     out.mkdir(parents=True, exist_ok=True)
     write_json(out / "plan.json", plan)
@@ -45,7 +54,7 @@ def benchmark(args):
         capability = specs[algorithm].capabilities[0]
         for family in args.families:
             for seed in args.seeds:
-                scene = generate(family, seed, split=args.split)
+                scene = scenes[family, seed].model_copy(deep=True)
                 run = Run(
                     RunConfig(
                         algorithm=algorithm,
@@ -77,6 +86,8 @@ def benchmark(args):
                     "run_id": run.id,
                     "state": run.state,
                     "metrics": metrics,
+                    "physics_version": scene.vehicle.motion_model,
+                    "render_version": scene.render_version,
                 }
                 records.append(row)
                 print(
@@ -102,6 +113,10 @@ def benchmark(args):
                 "completion",
                 "reason",
                 "run_id",
+                "score",
+                "collision_count",
+                "physics_version",
+                "render_version",
             ],
         )
         writer.writeheader()
@@ -116,6 +131,10 @@ def benchmark(args):
                         key: row["metrics"][key]
                         for key in ["success", "completion", "reason"]
                     },
+                    "score": (row["metrics"].get("score") or {}).get("total"),
+                    "collision_count": row["metrics"].get("collision_count"),
+                    "physics_version": row["physics_version"],
+                    "render_version": row["render_version"],
                 }
             )
     lines = [

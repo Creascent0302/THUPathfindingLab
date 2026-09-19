@@ -1,0 +1,3 @@
+﻿algorithm,family,seed,state,success,completion,reason,run_id,score,collision_count,physics_version,render_version
+stop,straight,901,completed,False,0.0,episode_timeout,f990dcb8ddb94ebba50094b125163509,0.0,0,inertial_v2,3
+constant,straight,901,completed,False,0.0,episode_timeout,14333d27b2ff48339a3b2fcc300d15ca,0.0,0,inertial_v2,3

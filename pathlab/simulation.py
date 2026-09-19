@@ -1,4 +1,4 @@
-"""Ground-plane pinhole rendering and fixed-step Ackermann kinematics."""
+"""Pinhole rendering and fixed-step vehicle dynamics."""
 
 from __future__ import annotations
 
@@ -9,6 +9,8 @@ import numpy as np
 
 from .config import CameraConfig, Pose, Scene, VehicleConfig
 from .sdk import Action, Calibration, Model
+from .dynamics import integrate_motion
+from .scene_objects import ObjectRenderer, object_footprint
 
 
 def wrap_angle(angle: float) -> float:
@@ -18,6 +20,10 @@ def wrap_angle(angle: float) -> float:
 class VehicleState(Pose):
     speed_mps: float = 0
     steering_angle_rad: float = 0
+    velocity_x_mps: float = 0
+    velocity_y_mps: float = 0
+    yaw_rate_rad_s: float = 0
+    acceleration_mps2: float = 0
 
 
 class AppliedAction(Model):
@@ -45,34 +51,45 @@ class Vehicle:
             events.append("steering_saturated")
         if speed != action.speed_mps:
             events.append("speed_saturated")
-        next_steer = s.steering_angle_rad + float(
-            np.clip(
-                steer - s.steering_angle_rad,
-                -c.steering_rate_rad_s * dt,
-                c.steering_rate_rad_s * dt,
+        velocity = np.array([s.velocity_x_mps, s.velocity_y_mps])
+        # Also support callers initializing a stationary/legacy state by speed.
+        if abs(np.linalg.norm(velocity) - s.speed_mps) > 1e-9:
+            velocity = s.speed_mps * np.array(
+                [math.cos(s.yaw_rad), math.sin(s.yaw_rad)]
             )
+        previous = np.array(
+            [
+                s.x_m,
+                s.y_m,
+                s.yaw_rad,
+                *velocity,
+                s.steering_angle_rad,
+                s.yaw_rate_rad_s,
+                s.acceleration_mps2,
+            ]
         )
-        acceleration = c.acceleration_mps2 if speed > s.speed_mps else c.braking_mps2
-        next_speed = s.speed_mps + float(
-            np.clip(speed - s.speed_mps, -acceleration * dt, acceleration * dt)
-        )
-        if abs(next_steer - steer) > 1e-9:
+        values = integrate_motion(previous, steer, speed, c.model_dump(), dt)
+        (
+            s.x_m,
+            s.y_m,
+            s.yaw_rad,
+            s.velocity_x_mps,
+            s.velocity_y_mps,
+            s.steering_angle_rad,
+            s.yaw_rate_rad_s,
+            s.acceleration_mps2,
+        ) = map(float, values)
+        s.speed_mps = math.hypot(s.velocity_x_mps, s.velocity_y_mps)
+        if abs(s.steering_angle_rad - steer) > 1e-9:
             events.append("steering_rate_limited")
-        if abs(next_speed - speed) > 1e-9:
+        if abs(s.speed_mps - speed) > 1e-9:
             events.append("acceleration_limited")
-        v_mid = (s.speed_mps + next_speed) / 2
-        steer_mid = (s.steering_angle_rad + next_steer) / 2
-        d_yaw = v_mid * math.tan(steer_mid) / c.wheelbase_m * dt
-        distance = v_mid * dt * float(np.sinc(d_yaw / (2 * math.pi)))
-        s.x_m += distance * math.cos(s.yaw_rad + d_yaw / 2)
-        s.y_m += distance * math.sin(s.yaw_rad + d_yaw / 2)
-        s.yaw_rad = wrap_angle(s.yaw_rad + d_yaw)
-        s.speed_mps = next_speed
-        s.steering_angle_rad = next_steer
         return AppliedAction(
             requested=action,
             bounded=Action(steering_angle_rad=steer, speed_mps=speed),
-            actual=Action(steering_angle_rad=next_steer, speed_mps=next_speed),
+            actual=Action(
+                steering_angle_rad=s.steering_angle_rad, speed_mps=s.speed_mps
+            ),
             interventions=events,
         )
 
@@ -117,6 +134,14 @@ class Camera:
         uv = homogeneous[:, :2] / np.where(abs(depth) > 1e-9, depth, np.nan)[:, None]
         return uv, depth > 0
 
+    def project_3d(self, points: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+        """Project metric vehicle-frame XYZ; ground calibration stays unchanged."""
+        local = np.asarray(points, dtype=float).reshape(-1, 3)
+        homogeneous = (local - self.position) @ self.rotation.T @ self.k.T
+        depth = homogeneous[:, 2]
+        uv = homogeneous[:, :2] / np.where(abs(depth) > 1e-9, depth, np.nan)[:, None]
+        return uv, depth > 0
+
     def unproject(self, pixels: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         pixels = np.asarray(pixels, dtype=float).reshape(-1, 2)
         ground = np.column_stack((pixels, np.ones(len(pixels)))) @ self.inv_h.T
@@ -149,7 +174,15 @@ class Renderer:
         self.scene = scene
         self.camera = Camera(scene.camera)
         all_points = np.concatenate(
-            [np.asarray(scene.target_path), *[np.asarray(p) for p in scene.distractors]]
+            [
+                np.asarray(scene.target_path),
+                *[np.asarray(p) for p in scene.distractors],
+                *[
+                    object_footprint(obj)
+                    for obj in scene.objects
+                    if obj.enabled and scene.render_version == "3"
+                ],
+            ]
         )
         self.origin = all_points.min(axis=0) - 5
         extent = all_points.max(axis=0) + 5 - self.origin
@@ -160,7 +193,11 @@ class Renderer:
             np.uint8,
         )
         a = scene.appearance
-        if scene.render_version == "2" and a.surface != "plain" and a.texture_strength:
+        if (
+            scene.render_version in ("2", "3")
+            and a.surface != "plain"
+            and a.texture_strength
+        ):
             # Texture belongs to world coordinates: it stays fixed as the car moves.
             rng = np.random.default_rng(np.random.SeedSequence([scene.seed, 937]))
             height, width = self.raster.shape[:2]
@@ -232,14 +269,37 @@ class Renderer:
         self.ground, self.valid = self.camera.unproject(
             np.column_stack((xx.ravel(), yy.ravel()))
         )
+        self.objects = (
+            ObjectRenderer(scene, self.camera) if scene.render_version == "3" else None
+        )
+        homogeneous = (
+            np.column_stack((self.ground, np.ones(len(self.ground)))) @ self.camera.h.T
+        )
+        self.ground_depth = np.where(self.valid, homogeneous[:, 2], np.inf).reshape(
+            scene.camera.height, scene.camera.width
+        )
+        if self.objects:
+            self.objects.cast_shadows(self.raster, self.origin, self.scale)
+        self.modern_ground = (
+            np.nan_to_num(self.ground, nan=0, posinf=0, neginf=0).astype(np.float32)
+            if self.objects is not None
+            else None
+        )
 
     def _raster_points(self, path) -> np.ndarray:
         return np.rint((np.asarray(path) - self.origin) * self.scale).astype(np.int32)
 
     def render(self, pose: Pose, frame_id: int) -> np.ndarray:
         c, a = self.scene.camera, self.scene.appearance
-        ground = np.nan_to_num(self.ground, nan=0, posinf=0, neginf=0)
-        world = vehicle_to_world(ground, pose)
+        if self.modern_ground is not None:
+            cosine, sine = math.cos(pose.yaw_rad), math.sin(pose.yaw_rad)
+            gx, gy = self.modern_ground.T
+            world = np.column_stack(
+                (gx * cosine - gy * sine + pose.x_m, gx * sine + gy * cosine + pose.y_m)
+            )
+        else:
+            ground = np.nan_to_num(self.ground, nan=0, posinf=0, neginf=0)
+            world = vehicle_to_world(ground, pose)
         raster_xy = (world - self.origin) * self.scale
         mx = raster_xy[:, 0].reshape(c.height, c.width).astype(np.float32)
         my = raster_xy[:, 1].reshape(c.height, c.width).astype(np.float32)
@@ -252,19 +312,35 @@ class Renderer:
             borderValue=a.ground_rgb,
         )
         image[~self.valid.reshape(c.height, c.width)] = (183, 202, 213)
+        if self.objects is not None:
+            # A quiet sky gradient remains behind distant objects above the floor.
+            invalid = ~self.valid.reshape(c.height, c.width)
+            sky = np.linspace((167, 192, 207), (219, 225, 225), c.height).astype(
+                np.uint8
+            )
+            image[invalid] = np.broadcast_to(sky[:, None], image.shape)[invalid]
         shade = 1 - a.shadow * (
             0.5 + 0.5 * np.sin(world[:, 0] * 1.4 + world[:, 1] * 0.7)
         )
+        if self.objects is not None:
+            shade[~self.valid] = 1
         image = (
             image.astype(np.float32)
             * shade.reshape(c.height, c.width, 1)
             * a.illumination
         )
+        if self.objects:
+            self.objects.render(image, pose, self.ground_depth)
         if a.noise_std:
             rng = np.random.default_rng(
                 np.random.SeedSequence([self.scene.seed, frame_id])
             )
-            image += rng.normal(0, a.noise_std, image.shape).astype(np.float32)
+            if self.objects is not None:
+                image += (
+                    rng.standard_normal(image.shape, dtype=np.float32) * a.noise_std
+                )
+            else:
+                image += rng.normal(0, a.noise_std, image.shape).astype(np.float32)
         image = np.clip(image, 0, 255).astype(np.uint8)
         if a.blur_sigma:
             image = cv2.GaussianBlur(image, (0, 0), a.blur_sigma)

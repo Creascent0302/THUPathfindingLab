@@ -1,5 +1,9 @@
 # CNN + GRU 模型卡
 
+新惯性场景默认使用 `driver-inertial.pt`，见 [惯性模型卡](INERTIAL_MODEL_CARD.md)。加载器根据公开 `vehicle_limits.motion_model` 自动选择；`kinematic_v1` 历史场景继续使用下面的 `driver.pt`。两份权重均保留，旧模型的历史成绩不能作为新物理 / 场景的成绩。
+
+以下记录属于历史运动模型与渲染版本 2。
+
 发布权重：`driver.pt`；真实 CPU 训练，无外部预训练参数，无几何专家回退。
 
 - 架构：`cnn_gru_v1`，401,259 参数，160×96 RGB + 提示通道，4 层卷积、96 维 GRU、直接动作与可见性头。当前训练使用默认绿色标记，提示通道仅预留其他类型扩展。

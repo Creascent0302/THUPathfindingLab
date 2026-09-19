@@ -1,5 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
 import { fmt, reasonLabel, stateLabel, terminal, type Manifest } from "./types";
+import { ScoreDetails } from "./BenchmarkPanel";
 
 export function ResultsPage({
   results,
@@ -21,10 +22,17 @@ export function ResultsPage({
   const selectedResults = results.filter((r) =>
     selected.includes(r.episode_id),
   );
+  const comparable =
+    selectedResults.length > 1 &&
+    selectedResults.every(
+      (r) =>
+        r.comparison_key &&
+        r.comparison_key === selectedResults[0].comparison_key,
+    );
   return (
     <>
       <div className="toolbar">
-        <p>选择记录进行对比。场景、种子、提示和执行模式应保持一致。</p>
+        <p>查看单次结果。多方法、多地图和多种子对比请使用「批量评测」。</p>
         <div className="buttons">
           <button
             onClick={() =>
@@ -62,6 +70,7 @@ export function ResultsPage({
               <th>场景 · 种子</th>
               <th>状态 / 结果</th>
               <th>有效进度</th>
+              <th>评分</th>
               <th>操作</th>
             </tr>
           </thead>
@@ -87,6 +96,9 @@ export function ResultsPage({
                   <small>
                     #{r.episode_id.slice(0, 8)} · {r.config.execution}
                   </small>
+                  {r.benchmark_id && (
+                    <small>批次 #{r.benchmark_id.slice(0, 8)}</small>
+                  )}
                 </td>
                 <td>
                   {r.scene?.name || "录制素材"}
@@ -105,6 +117,9 @@ export function ResultsPage({
                   {r.metrics?.completion == null
                     ? "不提供"
                     : `${(r.metrics.completion * 100).toFixed(1)}%`}
+                </td>
+                <td>
+                  <ScoreDetails score={r.metrics?.score} />
                 </td>
                 <td>
                   <button
@@ -148,6 +163,16 @@ export function ResultsPage({
             <h2>选中实验对比</h2>
             <span>单次结果，不代替多种子成功率</span>
           </div>
+          {selectedResults.length > 1 && !comparable && (
+            <p className="eval-comparability">
+              这些记录的场景、种子、车辆、物理/渲染版本、执行条件不同，或来自没有比较标识的旧版本。仅并排查看，不形成公平排名。
+            </p>
+          )}
+          {comparable && (
+            <p className="field-note eval-table-note">
+              比较标识一致：使用相同场景、车辆模型、渲染、提示与执行设置。
+            </p>
+          )}
           <table>
             <thead>
               <tr>
@@ -162,6 +187,10 @@ export function ResultsPage({
             </thead>
             <tbody>
               {[
+                [
+                  "综合评分 / 100",
+                  (r: Manifest) => fmt(r.metrics?.score?.total, 1),
+                ],
                 [
                   "整体成功",
                   (r: Manifest) =>
@@ -201,6 +230,28 @@ export function ResultsPage({
                   (r: Manifest) =>
                     String(r.metrics?.safety_intervention_frames ?? "不提供"),
                 ],
+                [
+                  "碰撞次数",
+                  (r: Manifest) =>
+                    String(r.metrics?.collision_count ?? "不提供"),
+                ],
+                [
+                  "完成时间 / s",
+                  (r: Manifest) => fmt(r.metrics?.completion_time_s, 1),
+                ],
+                [
+                  "加加速度 P95 / m/s³",
+                  (r: Manifest) => fmt(r.metrics?.jerk_mps3?.p95, 2),
+                ],
+                [
+                  "向量加速度 P95 / m/s²",
+                  (r: Manifest) =>
+                    fmt(r.metrics?.vector_acceleration_mps2?.p95, 2),
+                ],
+                [
+                  "转向速率 P95 / rad/s",
+                  (r: Manifest) => fmt(r.metrics?.steering_rate_rad_s?.p95, 2),
+                ],
               ].map(([label, fn]) => (
                 <tr key={label as string}>
                   <td>{label as string}</td>
@@ -215,14 +266,6 @@ export function ResultsPage({
           </table>
         </section>
       )}
-      <div className="notice">
-        教师批量评测：
-        <code>
-          python run.py benchmark --algorithms stop constant --seeds 101 102
-          --steps 400
-        </code>
-        。完整配置和阈值在查看结果之前固定并保存。
-      </div>
     </>
   );
 }

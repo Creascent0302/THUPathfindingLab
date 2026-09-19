@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import base64
+import math
 from collections import deque
 from pathlib import Path
 import threading
@@ -26,6 +27,10 @@ from .worker import WorkerClient, WorkerError
 TERMINAL = {"completed", "failed", "cancelled"}
 
 
+class RunCapacityError(ValueError):
+    """Temporary shared worker capacity exhaustion; a queue may retry."""
+
+
 class Run:
     def __init__(
         self,
@@ -37,6 +42,7 @@ class Run:
     ):
         self.id = uuid.uuid4().hex
         self.config, self.root, self.headless = config, root, headless
+        self.shutdown_requested = False
         self.spec = spec
         if config.algorithm != "manual":
             self.spec = spec or registry(artifact_root=root).get(config.algorithm)
@@ -245,6 +251,7 @@ class Run:
                 self._brake("cancelled")
                 self.state = "cancelled"
             else:
+                self._brake("episode_ended")
                 self.state = "completed"
         except Exception as error:
             if self.cancelled.is_set():
@@ -265,6 +272,8 @@ class Run:
                 self.reason, self.state = f"algorithm_{kind}", "failed"
             self._brake("algorithm_failure")
         finally:
+            if self.reason == "braking_failure":
+                self.state = "failed"
             if self.worker:
                 self.logs.extend(self.worker.logs)
                 self.worker.close()
@@ -377,8 +386,26 @@ class Run:
     def _brake(self, event: str):
         if not self.vehicle:
             return
+        if self.evaluator:
+            self.evaluator.begin_coasting()
+        c = self.vehicle.config
+        # Model limits imply a finite stop. Keep a hard guard as well, so an
+        # invalid/custom dynamics implementation cannot fill the disk forever.
+        # Speed may still rise while positive acceleration ramps through zero.
+        stopping_time = c.max_speed_mps / max(c.braking_mps2, 0.05)
+        ramp_time = (c.acceleration_mps2 + c.braking_mps2) / c.jerk_limit_mps3
+        limit = min(30000, math.ceil((stopping_time + ramp_time + 2) / self.dt))
         # Fixed-step physical braking is recorded, never teleport speed to zero.
-        while self.vehicle.state.speed_mps > 1e-8:
+        for _ in range(limit):
+            if self.vehicle.state.speed_mps <= 1e-8:
+                break
+            start = time.monotonic()
+            animate = (
+                self.config.realtime
+                and not self.headless
+                and not self.shutdown_requested
+            )
+            observation = self._observe() if animate and self.renderer else None
             before = self.vehicle.state.model_dump()
             applied = self.vehicle.advance(
                 Action(steering_angle_rad=0, speed_mps=0), self.dt
@@ -387,7 +414,9 @@ class Run:
                 {
                     "frame_id": self.frame_id,
                     "timestamp_s": (self.frame_id + 1) * self.dt,
-                    "observation_timestamp_s": None,
+                    "observation_timestamp_s": observation.timestamp_s
+                    if observation
+                    else None,
                     "dt_s": self.dt,
                     "output": None,
                     "inference_ms": None,
@@ -399,10 +428,30 @@ class Run:
                     ],
                     "pose_before": before,
                     "pose": self.vehicle.state.model_dump(),
-                    "evaluation": None,
+                    "evaluation": self.evaluator.update(
+                        self.vehicle.state, (self.frame_id + 1) * self.dt
+                    )
+                    if self.evaluator
+                    else None,
                 },
-                None,
+                observation,
             )
+            if animate:
+                time.sleep(max(0, self.dt - (time.monotonic() - start)))
+        if self.vehicle.state.speed_mps > 1e-8:
+            self.reason = "braking_failure"
+            self.failures.append(
+                {
+                    "kind": "physics",
+                    "message": "制动未在物理上限内收敛；保留实际速度，未强行清零",
+                    "frame_id": self.frame_id,
+                }
+            )
+            return
+        if self.evaluator and self.evaluator.done_reason == "collision":
+            self.reason = "collision"
+        if self.renderer and self.records:
+            self.preview = self._observe().image
 
     def snapshot(self, *, touch=True) -> dict:
         if touch:
@@ -453,10 +502,12 @@ class RunManager:
         self.runs: dict[str, Run] = {}
         self.lock = threading.Lock()
 
-    def create(self, config: RunConfig) -> Run:
+    def create(
+        self, config: RunConfig, *, headless=False, spec=None, metadata=None
+    ) -> Run:
         with self.lock:
             if sum(run.thread.is_alive() for run in self.runs.values()) >= 3:
-                raise ValueError("最多同时运行 3 个实验，请先停止已有实验")
+                raise RunCapacityError("最多同时运行 3 个实验，请先停止已有实验")
             if len(list((self.root / "runs").glob("*/manifest.json"))) >= 200:
                 raise ValueError("已保存 200 次实验，请在运行记录中删除不需要的记录")
             if (
@@ -472,7 +523,10 @@ class RunManager:
             ]
             for key in finished[:-5]:
                 del self.runs[key]
-            run = Run(config, self.root)
+            run = Run(config, self.root, headless=headless, spec=spec)
+            if metadata:
+                run.store.manifest.update(metadata)
+                run.store.save()
             self.runs[run.id] = run
             run.start()
             return run
@@ -480,6 +534,7 @@ class RunManager:
     def close(self):
         for run in list(self.runs.values()):
             if run.thread.is_alive():
+                run.shutdown_requested = True
                 run.control("stop")
         for run in list(self.runs.values()):
             run.thread.join(timeout=4)

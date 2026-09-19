@@ -1,11 +1,14 @@
-import { useEffect, useRef, useState, type PointerEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 import { api, fmt, post, type Point, type Preview, type Scene } from "./types";
+import { SceneObjectEditor, objectNames } from "./SceneObjectEditor";
+import { VehicleSettings } from "./VehicleSettings";
+import type { SceneObject } from "./types";
 
 type Design = NonNullable<Scene["design"]>;
 type Draft = Pick<
   Scene,
   "name" | "seed" | "vehicle" | "camera" | "appearance"
-> & { design: Design };
+> & { design: Design; objects: SceneObject[] };
 type SavedMap = { id: string; scene: Scene };
 const defaultDesign: Design = {
   waypoints: [
@@ -70,6 +73,7 @@ export function MapEditor({
     camera: base.camera,
     appearance: base.appearance,
     design: base.design || defaultDesign,
+    objects: base.design ? base.objects || [] : [],
   }));
   const [preview, setPreview] = useState<Preview | null>(null);
   const [validation, setValidation] = useState("");
@@ -78,8 +82,10 @@ export function MapEditor({
   const [message, setMessage] = useState("");
   const [view, setView] = useState([-3, -9, 16, 13]);
   const drag = useRef<number | null>(null);
+  const objectDrag = useRef<number | null>(null);
   const builtDraft = useRef<Draft | null>(null);
   const { design, vehicle, camera, appearance } = draft;
+  const vehicleScene = useMemo(() => ({ ...base, ...draft }), [base, draft]);
   const minimum = vehicle.wheelbase_m / Math.tan(vehicle.max_steering_rad);
   const refresh = () => api<SavedMap[]>("/maps").then(setSaved);
   useEffect(() => {
@@ -158,6 +164,7 @@ export function MapEditor({
       camera: scene.camera,
       appearance: scene.appearance,
       design: scene.design,
+      objects: scene.objects || [],
     });
     fit(scene.design.waypoints);
   };
@@ -217,12 +224,23 @@ export function MapEditor({
           }}
           onPointerMove={(e) => {
             if (drag.current !== null) changePoint(drag.current, coordinate(e));
+            if (objectDrag.current !== null) {
+              const [x_m, y_m] = coordinate(e);
+              setDraft((old) => ({
+                ...old,
+                objects: old.objects.map((obj, index) =>
+                  index === objectDrag.current ? { ...obj, x_m, y_m } : obj,
+                ),
+              }));
+            }
           }}
           onPointerUp={() => {
             drag.current = null;
+            objectDrag.current = null;
           }}
           onPointerCancel={() => {
             drag.current = null;
+            objectDrag.current = null;
           }}
         >
           <defs>
@@ -267,7 +285,7 @@ export function MapEditor({
               transform={`translate(${preview.scene.initial_pose.x_m} ${-preview.scene.initial_pose.y_m}) rotate(${(-preview.scene.initial_pose.yaw_rad * 180) / Math.PI})`}
             >
               <rect
-                x="-.1"
+                x={(vehicle.wheelbase_m - vehicle.length_m) / 2}
                 y={-vehicle.width_m / 2}
                 width={vehicle.length_m}
                 height={vehicle.width_m}
@@ -304,6 +322,50 @@ export function MapEditor({
               </text>
             </g>
           ))}
+          {draft.objects.map(
+            (obj, index) =>
+              obj.enabled && (
+                <g
+                  key={`object-${index}`}
+                  transform={`translate(${obj.x_m} ${-obj.y_m}) rotate(${(-obj.yaw_rad * 180) / Math.PI})`}
+                  className="object-map-handle"
+                  aria-label={`场景物件 ${index + 1} ${objectNames[obj.kind]}`}
+                  onPointerDown={(event) => {
+                    event.stopPropagation();
+                    objectDrag.current = index;
+                    event.currentTarget.ownerSVGElement?.setPointerCapture(
+                      event.pointerId,
+                    );
+                  }}
+                >
+                  {obj.kind === "cylinder" ? (
+                    <ellipse
+                      rx={obj.length_m / 2}
+                      ry={obj.width_m / 2}
+                      fill={`rgb(${obj.color_rgb.join(",")})`}
+                    />
+                  ) : (
+                    <rect
+                      x={-obj.length_m / 2}
+                      y={-obj.width_m / 2}
+                      width={obj.length_m}
+                      height={obj.width_m}
+                      rx=".025"
+                      fill={`rgb(${obj.color_rgb.join(",")})`}
+                    />
+                  )}
+                  <text
+                    x="0"
+                    y=".07"
+                    textAnchor="middle"
+                    fontSize=".18"
+                    pointerEvents="none"
+                  >
+                    {index + 1}
+                  </text>
+                </g>
+              ),
+          )}
         </svg>
         <div
           className={"editor-validation " + (validation ? "invalid" : "")}
@@ -312,7 +374,7 @@ export function MapEditor({
           {pending
             ? "正在检查几何约束…"
             : validation ||
-              "路径检查通过：转弯半径、路段间距与起点视野满足要求。"}
+              "路径几何检查通过：半径、间距与相机范围符合要求。物件遮挡与碰撞在运行时评估。"}
         </div>
         <div className="editor-stats">
           <span>
@@ -370,7 +432,7 @@ export function MapEditor({
           <small>{message}</small>
         </div>
         {preview?.image && (
-          <details className="editor-camera">
+          <details className="editor-camera" open>
             <summary>起点摄像头预览</summary>
             <img
               alt="自定义地图摄像头预览"
@@ -548,7 +610,89 @@ export function MapEditor({
               }
             />
           </label>
+          <label>
+            场景亮度
+            <input
+              aria-label="场景亮度"
+              type="range"
+              min=".4"
+              max="1.3"
+              step=".05"
+              value={Number(appearance.illumination ?? 1)}
+              onChange={(event) =>
+                setDraft({
+                  ...draft,
+                  appearance: {
+                    ...appearance,
+                    illumination: Number(event.target.value),
+                  },
+                })
+              }
+            />
+          </label>
+          <label>
+            阴影方位 / °
+            <input
+              aria-label="阴影方位"
+              type="range"
+              min="-180"
+              max="180"
+              step="5"
+              value={Math.round(
+                ((appearance.sun_azimuth_rad ?? -0.8) * 180) / Math.PI,
+              )}
+              onChange={(event) =>
+                setDraft({
+                  ...draft,
+                  appearance: {
+                    ...appearance,
+                    sun_azimuth_rad:
+                      (Number(event.target.value) * Math.PI) / 180,
+                  },
+                })
+              }
+            />
+          </label>
+          <label className="object-toggle">
+            <input
+              type="checkbox"
+              checked={appearance.object_shadows ?? true}
+              onChange={(event) =>
+                setDraft({
+                  ...draft,
+                  appearance: {
+                    ...appearance,
+                    object_shadows: event.target.checked,
+                  },
+                })
+              }
+            />
+            物件投影阴影
+          </label>
         </details>
+        <SceneObjectEditor
+          objects={draft.objects}
+          origin={design.waypoints[0]}
+          busy={pending || busy}
+          onChange={(objects) => setDraft({ ...draft, objects })}
+          onScatter={(scatter) =>
+            void attempt(async () => {
+              const result = await post<Preview>("/maps/build", {
+                ...draft,
+                objects: [],
+                scatter,
+              });
+              setDraft({ ...draft, objects: result.scene?.objects || [] });
+            })
+          }
+        />
+        <VehicleSettings
+          scene={vehicleScene}
+          disabled={busy}
+          apply={(scene) =>
+            setDraft((current) => ({ ...current, vehicle: scene.vehicle }))
+          }
+        />
         <details>
           <summary>控制点坐标 · {design.waypoints.length} 个</summary>
           <div className="waypoint-list">

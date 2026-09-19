@@ -2,6 +2,7 @@ import { useEffect, useState, useReducer } from "react";
 import { CameraPanel, Charts, MapPanel } from "./Panels";
 import { useLiveStream, useManualDrive } from "./useRunControls";
 import { ResultsPage } from "./Pages";
+import { BenchmarkPanel } from "./BenchmarkPanel";
 import { MapEditor } from "./MapEditor";
 import { SubmissionPanel } from "./SubmissionPanel";
 import { SetupPanel, initialSetup, type Setup } from "./SetupPanel";
@@ -27,9 +28,9 @@ export default function App() {
     algorithms: Algorithm[];
     families: Record<string, string>;
   }>({ algorithms: [], families: {} });
-  const [tab, setTab] = useState<"lab" | "results" | "editor" | "submissions">(
-    "lab",
-  );
+  const [tab, setTab] = useState<
+    "lab" | "results" | "benchmarks" | "editor" | "submissions"
+  >("lab");
   const [settings, updateSettings] = useReducer(
     (state: Setup, patch: Partial<Setup>) => ({ ...state, ...patch }),
     initialSetup,
@@ -256,19 +257,21 @@ export default function App() {
           </div>
         </div>
         <p className="course">
-          智能交通创新实践 <span>平台验收版</span>
+          智能交通创新实践 <span>课程实验平台</span>
         </p>
         <nav>
           {(
             [
               ["lab", "01", "实验工作台"],
               ["results", "02", "运行记录与对比"],
-              ["editor", "03", "自定义地图"],
-              ["submissions", "04", "算法提交"],
+              ["benchmarks", "03", "批量评测"],
+              ["editor", "04", "自定义地图"],
+              ["submissions", "05", "算法提交"],
             ] as const
           ).map(([key, n, title]) => (
             <button
               key={key}
+              aria-label={title}
               disabled={active && (key === "editor" || key === "submissions")}
               title={
                 active && (key === "editor" || key === "submissions")
@@ -319,21 +322,25 @@ export default function App() {
                   ? "视觉寻迹实验工作台"
                   : tab === "results"
                     ? "每一次运行，都有记录"
-                    : tab === "editor"
-                      ? "绘制你的实验路线"
-                      : "提交代码，开始实验"}
+                    : tab === "benchmarks"
+                      ? "同一组测试，比较不同方法"
+                      : tab === "editor"
+                        ? "绘制你的实验路线"
+                        : "提交代码，开始实验"}
               </h1>
               <p>
                 {tab === "lab"
                   ? "观察图像，控制车辆，验证完整的运动反馈链路。"
                   : tab === "results"
                     ? "保存原始输出、执行动作与失败原因，使用相同条件比较实验。"
-                    : tab === "editor"
-                      ? "调整路线、车辆与材质，生成满足转弯约束的实验地图。"
-                      : "上传算法压缩包，平台自动完成解压与登记。"}
+                    : tab === "benchmarks"
+                      ? "冻结实验条件、批量执行，用成功率与可解释评分评估算法。"
+                      : tab === "editor"
+                        ? "调整路线、车辆与材质，生成满足转弯约束的实验地图。"
+                        : "上传算法压缩包，平台自动完成解压与登记。"}
               </p>
             </div>
-            <span className="version-badge">阶段 A / B · 平台优先</span>
+            <span className="version-badge">视觉寻迹 · 仿真与测评</span>
           </div>
         </header>
         {error && (
@@ -677,6 +684,14 @@ export default function App() {
               </pre>
             </details>
           </>
+        )}
+
+        {tab === "benchmarks" && (
+          <BenchmarkPanel
+            algorithms={catalog.algorithms}
+            families={catalog.families}
+            onReplay={openReplay}
+          />
         )}
 
         {tab === "results" && (

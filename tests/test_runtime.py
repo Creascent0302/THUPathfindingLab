@@ -2,10 +2,12 @@ import time
 
 import pytest
 
-from pathlab.config import RunConfig
+from pathlab.config import RunConfig, SceneObject
 from pathlab.engine import Run, RunManager
 from pathlab.registry import PluginSpec, registry
+from pathlab.scenarios import generate
 from pathlab.sdk import Action
+from pathlab.simulation import AppliedAction
 from .conftest import wait_until
 
 
@@ -16,6 +18,57 @@ FAULT = PluginSpec(
     capabilities=["action"],
     entrypoint="tests.faults:Fault",
 )
+
+
+def test_finishing_then_coasting_into_obstacle_is_not_success(execute):
+    scene = generate("straight", 7)
+    scene.target_path = [(i * 0.04, 0) for i in range(51)]
+    scene.initial_pose.x_m = -1.5
+    scene.initial_pose.y_m = scene.initial_pose.yaw_rad = 0
+    scene.camera.width, scene.camera.height = 160, 90
+    scene.vehicle.braking_mps2 = 0.3
+    scene.objects = [SceneObject(kind="box", x_m=2.8, y_m=0, length_m=0.1)]
+    run = execute(
+        RunConfig(
+            algorithm="constant",
+            scene=scene,
+            parameters={"speed_mps": 0.8},
+            max_steps=300,
+            realtime=False,
+        )
+    )
+    assert run.evaluator.success_at_s is not None
+    assert run.reason == "collision"
+    assert run.store.manifest["metrics"]["success"] is False
+    assert run.store.manifest["metrics"]["score"]["total"] < 50
+    assert run.vehicle.state.speed_mps == 0
+    braking = [r for r in run.records if "safety_braking" in r["interventions"]]
+    assert braking and any(r["evaluation"]["collision_ids"] for r in braking)
+
+
+def test_nonconverging_dynamics_cannot_write_unbounded_braking_frames(
+    tmp_path, monkeypatch
+):
+    run = Run(RunConfig(algorithm="manual", realtime=False), tmp_path, headless=True)
+    run.vehicle.state.speed_mps = 0.1
+    monkeypatch.setattr(
+        run.vehicle,
+        "advance",
+        lambda action, dt: AppliedAction(
+            requested=action,
+            bounded=action,
+            actual=Action(speed_mps=0.1, steering_angle_rad=0),
+            interventions=[],
+        ),
+    )
+    try:
+        run._brake("test_invalid_integrator")
+        assert 0 < len(run.records) < 200
+        assert run.reason == "braking_failure"
+        assert run.failures[-1]["kind"] == "physics"
+        assert run.vehicle.state.speed_mps == 0.1  # Do not fabricate a stopped pose.
+    finally:
+        run.store.rows.close()
 
 
 @pytest.mark.parametrize(
@@ -47,7 +100,14 @@ def test_faults_are_isolated_and_next_run_succeeds(execute, fault, kind):
     assert run.worker.process.poll() is not None
     following = execute()
     assert following.state == "completed", following.failures
-    assert len(following.records) == 6
+    assert (
+        len(
+            [r for r in following.records if "safety_braking" not in r["interventions"]]
+        )
+        == 6
+    )
+    assert following.vehicle.state.speed_mps == 0
+    assert following.records[-1]["pose"]["x_m"] > following.records[5]["pose"]["x_m"]
 
 
 @pytest.mark.parametrize("fault", ["garbage", "version", "oversize"])

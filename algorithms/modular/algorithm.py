@@ -79,6 +79,9 @@ class TemporalPursuit:
                 "missing_s": self.tracker.missing_s,
                 "observed_points": len(path) if path is not None else 0,
                 "motion_source": "previous_command_model",
+                "motion_model": self.limits.get("motion_model", "kinematic_v1"),
+                "estimated_speed_mps": self.motion.speed,
+                "estimated_lateral_speed_mps": float(self.motion.state[4]),
             },
             diagnostics=[track.reason],
         )

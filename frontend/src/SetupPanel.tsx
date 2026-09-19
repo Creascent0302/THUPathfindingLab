@@ -1,3 +1,4 @@
+import { VehicleSettings } from "./VehicleSettings";
 import {
   api,
   post,
@@ -363,6 +364,24 @@ export function SetupPanel({
         )}
       </details>
       {mode === "simulation" && (
+        <VehicleSettings
+          scene={settings.preview.scene}
+          disabled={active || busy}
+          apply={(scene) => {
+            void attempt(async () => {
+              const data = await post<Preview>("/preview", scene);
+              clearView();
+              updateSettings({
+                family: "custom",
+                customScene: data.scene,
+                preview: data,
+                sceneText: JSON.stringify(data.scene, null, 2),
+              });
+            });
+          }}
+        />
+      )}
+      {mode === "simulation" && (
         <details>
           <summary>车辆、相机与场景 JSON</summary>
           <textarea
@@ -379,7 +398,7 @@ export function SetupPanel({
               attempt(async () => {
                 const parsed = JSON.parse(sceneText) as Scene;
                 const data = await post<Preview>("/preview", parsed);
-                updateSettings({ customScene: parsed });
+                updateSettings({ family: "custom", customScene: data.scene });
                 updateSettings({ preview: data });
                 clearView();
                 updateSettings({ hint: parsed.task_hint });

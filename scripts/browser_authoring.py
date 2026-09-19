@@ -101,7 +101,7 @@ def main():
                                 if r["config"]["algorithm"] == algorithm
                             )
                             assert result["state"] == "completed", result
-                            assert result["metrics"]["frames"] == 8
+                            assert result["metrics"]["task_frames"] == 8
                             assert not result["failures"]
                             checks.append(
                                 f"{algorithm}: selected and executed from browser"
@@ -131,7 +131,7 @@ def main():
                         checks.append("complex scene and rotating model / top view")
 
                         page.get_by_role(
-                            "button", name="03自定义地图", exact=False
+                            "button", name="自定义地图", exact=False
                         ).click()
                         apply = page.get_by_role(
                             "button", name="应用到实验", exact=True
@@ -197,7 +197,7 @@ def main():
                             "custom"
                         )
                         page.get_by_role(
-                            "button", name="03自定义地图", exact=False
+                            "button", name="自定义地图", exact=False
                         ).click()
                         expect(page.get_by_label("地图名称", exact=True)).to_have_value(
                             "浏览器验收地图"
@@ -217,7 +217,7 @@ def main():
                         checks.append("saved map reload / import / apply")
 
                         page.get_by_role(
-                            "button", name="04算法提交", exact=False
+                            "button", name="算法提交", exact=False
                         ).click()
                         template = http.get("/api/submissions/template").content
                         page.get_by_label("算法压缩包", exact=True).set_input_files(
@@ -254,7 +254,7 @@ def main():
                         assert not result["failures"], result["failures"]
                         assert result["config"]["algorithm"] == algorithm
                         assert result["scene"]["design"]["waypoints"][1] == [7, 0]
-                        assert result["metrics"]["frames"] == 3
+                        assert result["metrics"]["task_frames"] == 3
                         checks.append(
                             "ZIP upload selection and actual execution on custom map"
                         )
@@ -278,7 +278,7 @@ def main():
                             is not None
                         )
                         page.get_by_role(
-                            "button", name="02运行记录与对比", exact=False
+                            "button", name="运行记录与对比", exact=False
                         ).click()
                         expect(page.locator("tbody tr")).to_have_count(2)
                         page.locator("tbody tr").last.get_by_role(
@@ -286,7 +286,7 @@ def main():
                         ).click()
                         page.get_by_label("回放帧", exact=True).wait_for()
                         page.get_by_role(
-                            "button", name="02运行记录与对比", exact=False
+                            "button", name="运行记录与对比", exact=False
                         ).click()
                         page.get_by_role(
                             "button", name="选择已结束记录", exact=True
@@ -299,7 +299,7 @@ def main():
                         ).to_be_visible()
                         assert http.get("/api/results").json() == []
                         page.get_by_role(
-                            "button", name="01实验工作台", exact=False
+                            "button", name="实验工作台", exact=False
                         ).click()
                         assert not page.get_by_label("回放帧", exact=True).count()
                         checks.append(
@@ -307,7 +307,7 @@ def main():
                         )
 
                         page.get_by_role(
-                            "button", name="04算法提交", exact=False
+                            "button", name="算法提交", exact=False
                         ).click()
                         bad = io.BytesIO()
                         with zipfile.ZipFile(bad, "w") as zipped:

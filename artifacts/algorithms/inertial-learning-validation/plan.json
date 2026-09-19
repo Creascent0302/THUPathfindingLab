@@ -1,0 +1,89 @@
+{
+  "algorithms": [
+    "cnn_gru"
+  ],
+  "families": [
+    "straight",
+    "bend",
+    "s_curve",
+    "sharp",
+    "hairpin",
+    "parallel",
+    "close_lines",
+    "repeated"
+  ],
+  "seeds": [
+    203,
+    204
+  ],
+  "steps": 4000,
+  "resolution": 0,
+  "jobs": 8,
+  "parameters": {},
+  "suite": "core",
+  "split": "validation",
+  "output": "artifacts/algorithms/inertial-learning-validation",
+  "timing": "in_process_inference",
+  "environment": {
+    "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+    "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.31",
+    "packages": {
+      "numpy": "2.2.6",
+      "opencv-python-headless": "4.11.0.86",
+      "fastapi": "0.115.12",
+      "pydantic": "2.11.5",
+      "uvicorn": "0.34.3"
+    }
+  },
+  "evaluator_version": "2.0",
+  "thresholds": {
+    "acquire_distance_m": 0.2,
+    "acquire_heading_rad": 0.45,
+    "entry_arc_m": 0.5,
+    "track_distance_m": 0.24,
+    "track_heading_rad": 0.65,
+    "offtrack_timeout_s": 2.0,
+    "switch_distance_m": 0.14,
+    "switch_margin_m": 0.035,
+    "switch_duration_s": 0.5,
+    "finish_remaining_m": 0.18
+  },
+  "motion_model": "inertial_v2",
+  "render_version": "3",
+  "code_sha256": {
+    "algorithms/__init__.py": "08f5f58aa57f280f42729c8a3222cf7d792b37eb2304963f58bbc39b106241fa",
+    "algorithms/examples.py": "e93c6f81bd78b21e2e1ab709366e4e0b4ed4c895b888a4b2834a4c2100bf3e82",
+    "algorithms/learning/__init__.py": "22013f582d9a48ad8396ee16caac83a6016dcdd327e686ccb6a21cd4be3b588c",
+    "algorithms/learning/algorithm.py": "d3d766bd79db6e2a7ba6483cc09afb307014f9349692e17104d33a81ce1bdfc0",
+    "algorithms/learning/data.py": "be66d64ca885204a3c7c37d9273d0d28038de1b7f614b9e7642d84248a24cc4c",
+    "algorithms/learning/model.py": "8b305f75d606dc5ced3badb8c623d9b9d327777e22f4f2ab4f5d93b098a29343",
+    "algorithms/learning/train.py": "fdcf3292f7879d47f25191dfc437dc0e9120f1c3326db7e3dc091bf9b88caf00",
+    "algorithms/modular/__init__.py": "eeccb5f09492121f56d5081dfeaef423b3a5f739860535d2de2b601ad9741a31",
+    "algorithms/modular/algorithm.py": "b9db40cd6eb4522f0409769638167989168df04770bbad577922574140827aad",
+    "algorithms/modular/control.py": "61cdf48cd76c25acb1c2ad9a5bcbdc4d6fc35949146b6cc2405bf492d19632b8",
+    "algorithms/modular/vision.py": "07208bc65e8694e61a06b5380fc3dcba8c606f59ad8017397a4e64add5a030e9",
+    "algorithms/scanline.py": "9ad290cdda4d0eafe12f9308c26f164bfe0586eccb397e05ed292568deb211ea"
+  },
+  "platform_sha256": {
+    "pathlab/__init__.py": "4c2a0990ea293b33c8bb306a60e7ed457a07e72ed5763c236704efb2d3102702",
+    "pathlab/adapters.py": "6c22b335de3a532f30f348fae9c16af4e1de4026bffaaeacf04c7235360e7532",
+    "pathlab/api.py": "ebdd08a90d93cca87f50eee04a96d5d15f8e8fcfa8dac9cb27bcc4d59fcf26ce",
+    "pathlab/benchmark.py": "108c5e2d78b0be5260e798f1261fe7459a032cc76574a3a1a5fcb075f612ebf3",
+    "pathlab/cli.py": "1af52ce9eadf19c211d4ad9ef84589096c807fe9d6cbc86db9ef770a636855e2",
+    "pathlab/config.py": "4d4586d940488f0233e7629bc9a5533f2e5707baaefc3127d8a14957b8bbe8e0",
+    "pathlab/dynamics.py": "09d2774b5fdaf15aa375ad12971741963eba22739d6831c89ca247ad98ef8118",
+    "pathlab/engine.py": "1cf1f6c985db53f46bcf27aa70d2d54256aca3ded76bf38e8cbab617d9200524",
+    "pathlab/evaluation.py": "f50b2d0072ee5b8fb4d2a1003685386b3b1e5c85e921bbf04ed64378da66a9f1",
+    "pathlab/map_editor.py": "1a8c3244d4446b7f45407caa63235ad880bfb53bf5325b107444ef78158019b0",
+    "pathlab/registry.py": "75ca2595ad0488f1f8c2d0153fb39fea3a7d586dfa00ef72d1b568c91939d26c",
+    "pathlab/scenarios.py": "54674d34d88cbb7735ff6e185b8c0250e38a47a67a03acaa8ab2acbcbb9575f9",
+    "pathlab/scene_objects.py": "e331142f9558672a42fdbbc4f66ff53ee58c66542bd56b6fc3fffaa68c5b2962",
+    "pathlab/sdk.py": "ca8956d1a5f5528f8827dd287b8f6227660e30313c07636039fb4f6324223258",
+    "pathlab/simulation.py": "1d9b1780596a68b8041791e222c435af6b1d38ea548f923ea8bd45f635437a5b",
+    "pathlab/sources.py": "acb009b455197cc67fac6868a835f2b5d7d99822dabb2cf69af5add4e6a1d3ee",
+    "pathlab/storage.py": "efd757f5b218917461477d288954c5242368745242f8871f1f60e7c9cfe2a4be",
+    "pathlab/submissions.py": "3fcd47ca83147a0527ae8ad57ed141ff07e244c8cd4d8f09dae4518a5bdc235e",
+    "pathlab/worker.py": "a48f3f73d6ae4c9162be80a75fa6c17b3ac88615eb56f06c98160b549947484b"
+  },
+  "checkpoint_sha256": "09e31baca684b4046e416765a314085aea2bb1c74086d4aa55814ebd4609ffdb"
+}

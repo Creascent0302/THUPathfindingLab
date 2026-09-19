@@ -11,7 +11,7 @@ import platform
 from pathlib import Path
 import sys
 
-from .evaluation import EVALUATOR_VERSION, THRESHOLDS
+from .evaluation import EVALUATOR_VERSION, SCORE_VERSION, THRESHOLDS, comparison_key
 from .sdk import VERSION
 
 
@@ -52,10 +52,17 @@ class RunStore:
     ):
         self.directory = root / "runs" / episode_id
         self.directory.mkdir(parents=True)
+        physics_version = (
+            (scene or {}).get("vehicle", {}).get("motion_model", "kinematic_v1")
+        )
         self.manifest = {
             "episode_id": episode_id,
             "protocol_version": VERSION,
             "evaluator_version": EVALUATOR_VERSION,
+            "score_version": SCORE_VERSION,
+            "physics_version": physics_version,
+            "render_version": (scene or {}).get("render_version"),
+            "comparison_key": comparison_key(config, scene, physics_version),
             "owner_pid": os.getpid(),
             "thresholds": THRESHOLDS,
             "config": config,
@@ -121,6 +128,11 @@ def export_csv(records: list[dict]) -> str:
         "lateral_error_m",
         "heading_error_rad",
         "completion",
+        "velocity_x_mps",
+        "velocity_y_mps",
+        "yaw_rate_rad_s",
+        "acceleration_mps2",
+        "collision_ids",
         "interventions",
     ]
     writer = csv.DictWriter(stream, fields)
@@ -141,6 +153,20 @@ def export_csv(records: list[dict]) -> str:
                     k: score.get(k)
                     for k in ["lateral_error_m", "heading_error_rad", "completion"]
                 },
+                **{
+                    key: (r.get("pose") or {}).get(key)
+                    for key in (
+                        "velocity_x_mps",
+                        "velocity_y_mps",
+                        "yaw_rate_rad_s",
+                        "acceleration_mps2",
+                    )
+                },
+                "collision_ids": json.dumps(
+                    score.get("collision_ids"), ensure_ascii=False
+                )
+                if score.get("collision_ids") is not None
+                else None,
                 "interventions": "|".join(r.get("interventions", [])),
             }
         )

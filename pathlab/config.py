@@ -11,6 +11,7 @@ from .sdk import Model, Point, TaskHint
 
 
 class VehicleConfig(Model):
+    motion_model: Literal["kinematic_v1", "inertial_v2"] = "inertial_v2"
     wheelbase_m: float = Field(default=0.32, gt=0.05, le=2)
     track_width_m: float = Field(default=0.24, gt=0.05, le=2)
     length_m: float = Field(default=0.46, gt=0.05, le=3)
@@ -20,7 +21,19 @@ class VehicleConfig(Model):
     acceleration_mps2: float = Field(default=0.8, gt=0, le=10)
     braking_mps2: float = Field(default=1.8, gt=0, le=20)
     steering_rate_rad_s: float = Field(default=1.2, gt=0, le=10)
+    speed_response_s: float = Field(default=0.18, ge=0.08, le=1.5)
+    yaw_response_s: float = Field(default=0.12, ge=0.05, le=1)
+    lateral_response_s: float = Field(default=0.10, ge=0.05, le=1)
+    jerk_limit_mps3: float = Field(default=6, ge=0.5, le=40)
+    max_lateral_acceleration_mps2: float = Field(default=3, ge=0.3, le=15)
     reverse_allowed: Literal[False] = False
+
+    @model_validator(mode="after")
+    def finite_braking(self):
+        # Legacy scenes remain readable for replay; new runs validate both models.
+        if self.motion_model == "inertial_v2" and self.braking_mps2 < 0.05:
+            raise ValueError("惯性模型制动减速度至少为 0.05 m/s²")
+        return self
 
 
 class CameraConfig(Model):
@@ -50,6 +63,9 @@ class Appearance(Model):
     occlusion: bool = False
     surface: Literal["concrete", "mat", "plain"] = "concrete"
     texture_strength: float = Field(default=0.65, ge=0, le=1)
+    object_shadows: bool = True
+    sun_azimuth_rad: float = Field(default=-0.8, ge=-3.142, le=3.142)
+    sun_elevation_rad: float = Field(default=0.9, ge=0.25, le=1.5)
 
     @model_validator(mode="after")
     def colors(self):
@@ -73,9 +89,42 @@ class MapDesign(Model):
     radius_m: float = Field(default=1, ge=0.1, le=10)
 
 
+class SceneObject(Model):
+    """An upright solid in world coordinates; its base rests on the ground."""
+
+    kind: Literal["cone", "box", "barrier", "cylinder"] = "cone"
+    x_m: float = Field(default=0, ge=-40, le=40)
+    y_m: float = Field(default=0, ge=-40, le=40)
+    yaw_rad: float = Field(default=0, ge=-3.142, le=3.142)
+    length_m: float = Field(default=0.35, ge=0.08, le=3)
+    width_m: float = Field(default=0.35, ge=0.08, le=3)
+    height_m: float = Field(default=0.5, ge=0.08, le=3)
+    color_rgb: tuple[int, int, int] = (232, 108, 38)
+    collidable: bool = True
+    enabled: bool = True
+
+    @model_validator(mode="after")
+    def color(self):
+        if any(not 0 <= channel <= 255 for channel in self.color_rgb):
+            raise ValueError("物件颜色通道必须在 0..255 范围")
+        return self
+
+
+class ObjectScatter(Model):
+    count: int = Field(default=12, ge=0, le=60)
+    kinds: list[Literal["cone", "box", "barrier", "cylinder"]] = Field(
+        default_factory=lambda: ["cone", "box", "barrier", "cylinder"],
+        min_length=1,
+        max_length=4,
+    )
+    clearance_m: float = Field(default=0.65, ge=0.25, le=5)
+    spread_m: float = Field(default=2.5, ge=0.5, le=8)
+    scale: float = Field(default=1, ge=0.4, le=2)
+
+
 class Scene(Model):
     format_version: Literal["1.0"] = "1.0"
-    render_version: Literal["1", "2"] = "1"
+    render_version: Literal["1", "2", "3"] = "1"
     name: str
     family: str
     seed: int = Field(ge=0, le=2**32 - 1)
@@ -93,6 +142,19 @@ class Scene(Model):
     task_hint: TaskHint = Field(default_factory=TaskHint)
     notes: list[str] = Field(default_factory=list)
     design: MapDesign | None = None
+    objects: list[SceneObject] = Field(default_factory=list, max_length=80)
+
+    @model_validator(mode="before")
+    @classmethod
+    def legacy_motion(cls, value):
+        if isinstance(value, dict) and value.get("render_version", "1") in ("1", "2"):
+            vehicle = value.get("vehicle", {})
+            if isinstance(vehicle, dict) and "motion_model" not in vehicle:
+                value = {
+                    **value,
+                    "vehicle": {**vehicle, "motion_model": "kinematic_v1"},
+                }
+        return value
 
     @model_validator(mode="after")
     def bounded_geometry(self):

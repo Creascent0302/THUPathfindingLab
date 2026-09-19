@@ -6,6 +6,10 @@ export type Pose = {
   yaw_rad: number;
   speed_mps?: number;
   steering_angle_rad?: number;
+  velocity_x_mps?: number;
+  velocity_y_mps?: number;
+  yaw_rate_rad_s?: number;
+  acceleration_mps2?: number;
 };
 export type Capability = "action" | "path" | "perception";
 export type Mode = "simulation" | "image" | "sequence";
@@ -31,20 +35,50 @@ export type Calibration = {
   intrinsic: number[][];
   ground_to_image: number[][];
 };
+export type SceneObject = {
+  kind: "cone" | "box" | "barrier" | "cylinder";
+  x_m: number;
+  y_m: number;
+  yaw_rad: number;
+  length_m: number;
+  width_m: number;
+  height_m: number;
+  color_rgb: [number, number, number];
+  collidable: boolean;
+  enabled: boolean;
+};
+export type ObjectScatter = {
+  count: number;
+  kinds: SceneObject["kind"][];
+  clearance_m: number;
+  spread_m: number;
+  scale: number;
+};
 export type Scene = {
+  render_version?: "1" | "2" | "3";
   name: string;
   family: string;
   seed: number;
   target_path: Point[];
   distractors: Point[][];
+  objects?: SceneObject[];
   initial_pose: Pose;
   vehicle: {
+    motion_model: "kinematic_v1" | "inertial_v2";
     max_speed_mps: number;
     max_steering_rad: number;
     wheelbase_m: number;
     length_m: number;
     width_m: number;
     track_width_m: number;
+    acceleration_mps2: number;
+    braking_mps2: number;
+    steering_rate_rad_s: number;
+    speed_response_s: number;
+    yaw_response_s: number;
+    lateral_response_s: number;
+    jerk_limit_mps3: number;
+    max_lateral_acceleration_mps2: number;
   };
   camera: {
     width: number;
@@ -60,6 +94,9 @@ export type Scene = {
     surface: "concrete" | "mat" | "plain";
     texture_strength: number;
     shadow: number;
+    object_shadows?: boolean;
+    sun_azimuth_rad?: number;
+    sun_elevation_rad?: number;
     [key: string]: unknown;
   };
   design?: { waypoints: Point[]; radius_m: number } | null;
@@ -121,7 +158,25 @@ export type Metrics = {
   safety_intervention_frames: number;
   failure_counts: Record<string, number>;
   frames: number;
+  task_frames?: number;
   truth_metrics_available: boolean;
+  score?: Score | null;
+  collision_count?: number | null;
+  collision_duration_s?: number | null;
+  completion_time_s?: number | null;
+  simulation_time_s?: number | null;
+  steering_rate_rad_s?: Distribution;
+  acceleration_mps2?: Distribution;
+  vector_acceleration_mps2?: Distribution;
+  jerk_mps3?: Distribution;
+  realtime_miss_rate?: number | null;
+};
+export type Score = {
+  version: string;
+  total: number;
+  quality: number;
+  rule: string;
+  components: Record<string, { value: number | null; weight: number }>;
 };
 export type Config = {
   mode: Mode;
@@ -168,6 +223,65 @@ export type Manifest = {
   algorithm: Algorithm;
   metrics: Metrics | null;
   failures: { kind: string; message: string }[];
+  comparison_key?: string | null;
+  physics_version?: string;
+  render_version?: string;
+  score_version?: string;
+  benchmark_id?: string;
+};
+export type BenchmarkMethodSummary = {
+  method_id: string;
+  name: string;
+  algorithm: string;
+  execution: Capability;
+  planned: number;
+  finished: number;
+  successes: number;
+  success_rate: number | null;
+  score: number | null;
+  observed_score: number | null;
+  completion: number | null;
+  tracking_error_m: number | null;
+  tracking_p95_m: number | null;
+  inference_p95_ms: number | null;
+  completion_time_s: number | null;
+  collisions: number;
+  illegal_switches: number;
+  execution_failures: number;
+  measured_runs: number;
+};
+export type Benchmark = {
+  id: string;
+  name: string;
+  state: string;
+  reason: string | null;
+  created_at: string;
+  updated_at: string;
+  test_set_sha256: string;
+  score_version: string;
+  active_frame?: number;
+  summary: {
+    finished: number;
+    total: number;
+    comparable: boolean;
+    comparison_note: string;
+    methods: BenchmarkMethodSummary[];
+  };
+  methods: {
+    id: string;
+    name: string;
+    algorithm: string;
+    execution: Capability;
+  }[];
+  cases: { id: string; name: string; seed: number; scene: Scene }[];
+  items: {
+    case_id: string;
+    method_id: string;
+    state: string;
+    run_id: string | null;
+    metrics: Metrics | null;
+    error: string | null;
+  }[];
 };
 export type Preview = {
   image: string | null;
@@ -221,4 +335,5 @@ export const reasonLabel: Record<string, string> = {
   source_complete: "素材处理完成",
   policy_finished: "算法主动结束",
   invalid_motion: "运动不连续",
+  collision: "车辆与障碍物碰撞",
 };

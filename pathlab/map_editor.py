@@ -7,7 +7,17 @@ import math
 import numpy as np
 from pydantic import Field
 
-from .config import Appearance, CameraConfig, MapDesign, Pose, Scene, VehicleConfig
+from .config import (
+    Appearance,
+    CameraConfig,
+    MapDesign,
+    ObjectScatter,
+    Pose,
+    Scene,
+    SceneObject,
+    VehicleConfig,
+)
+from .scene_objects import scatter_objects
 from .scenarios import validate_scene
 from .sdk import Model
 
@@ -17,8 +27,12 @@ class MapRequest(Model):
     seed: int = Field(default=7, ge=0, le=2**32 - 1)
     design: MapDesign
     vehicle: VehicleConfig = Field(default_factory=VehicleConfig)
-    camera: CameraConfig = Field(default_factory=CameraConfig)
+    camera: CameraConfig = Field(
+        default_factory=lambda: CameraConfig(pitch_down_rad=0.38)
+    )
     appearance: Appearance = Field(default_factory=Appearance)
+    objects: list[SceneObject] = Field(default_factory=list, max_length=80)
+    scatter: ObjectScatter | None = None
 
 
 def rounded_path(design: MapDesign, vehicle: VehicleConfig) -> list[list[float]]:
@@ -82,7 +96,7 @@ def build_scene(request: MapRequest) -> Scene:
     tangent /= np.linalg.norm(tangent)
     start = np.array(path[0]) - tangent * 1.5
     scene = Scene(
-        render_version="2",
+        render_version="3",
         name=request.name,
         family="custom",
         seed=request.seed,
@@ -94,7 +108,17 @@ def build_scene(request: MapRequest) -> Scene:
         camera=request.camera,
         appearance=request.appearance,
         design=request.design,
+        objects=request.objects,
     )
+    if request.scatter:
+        generated = scatter_objects(scene, request.scatter)
+        if len(scene.objects) + len(generated) > 80:
+            raise ValueError("显式物件与自动布置物件总数不能超过 80")
+        scene.objects.extend(generated)
+    if any(obj.enabled for obj in scene.objects):
+        scene.notes.append(
+            "物件按真实尺寸遮挡画面。手动放在线路或起点标记上的物件可构成遮挡/碰撞压力场景；路径几何通过不代表有无障碍通路。"
+        )
     errors = validate_scene(scene)
     # Exclude nearby points along the same arc; check distinct stretches against
     # the body width so crossing or overlapping routes cannot pass this editor.
@@ -130,4 +154,5 @@ def geometry_summary(scene: Scene) -> dict:
         "minimum_vehicle_radius_m": scene.vehicle.wheelbase_m
         / math.tan(scene.vehicle.max_steering_rad),
         "minimum_path_radius_m": 1 / maximum if maximum > 1e-8 else None,
+        "object_count": sum(obj.enabled for obj in scene.objects),
     }

@@ -9,6 +9,16 @@ import numpy as np
 from pathlab.sdk import Action, AlgorithmOutput
 
 DEFAULT_CHECKPOINT = Path(__file__).parent / "weights" / "driver.pt"
+INERTIAL_CHECKPOINT = DEFAULT_CHECKPOINT.with_name("driver-inertial.pt")
+
+
+def checkpoint_for_limits(limits):
+    """Keep historical kinematic checkpoints reproducible after a model change."""
+    return (
+        INERTIAL_CHECKPOINT
+        if limits.get("motion_model") == "inertial_v2"
+        else DEFAULT_CHECKPOINT
+    )
 
 
 class RecurrentPolicy:
@@ -22,7 +32,12 @@ class RecurrentPolicy:
             ) from error
         self.torch = torch
         torch.set_num_threads(1)
-        checkpoint = Path(config.get("checkpoint", DEFAULT_CHECKPOINT))
+        self.limits = public_context.get("vehicle_limits") or {
+            "wheelbase_m": 0.32,
+            "max_steering_rad": 0.52,
+            "max_speed_mps": 1.5,
+        }
+        checkpoint = Path(config.get("checkpoint", checkpoint_for_limits(self.limits)))
         if not checkpoint.is_file():
             raise RuntimeError(
                 "学习模型不可用：缺少权重。请运行 python run.py learning fit --data artifacts/learning/data"
@@ -37,11 +52,10 @@ class RecurrentPolicy:
         self.model = RecurrentDriver()
         self.model.load_state_dict(data["model"])
         self.model.eval()
-        self.limits = public_context.get("vehicle_limits") or {
-            "wheelbase_m": 0.32,
-            "max_steering_rad": 0.52,
-            "max_speed_mps": 1.5,
-        }
+        self.trained_environments = data.get(
+            "trained_environments",
+            [{"motion_model": "kinematic_v1", "render_version": "2"}],
+        )
         self.model_id = data["model_id"]
         self.supported_hints = data.get("supported_hints", ["marker"])
         self.marker_rgb = tuple(data.get("marker_rgb", [34, 160, 94]))
@@ -115,6 +129,8 @@ class RecurrentPolicy:
             debug={
                 "model_id": self.model_id,
                 "checkpoint_sha256": self.checkpoint_sha256,
+                "trained_environments": self.trained_environments,
+                "motion_model": self.limits.get("motion_model", "kinematic_v1"),
                 "network_updated": updated,
                 "visibility_probability": self.visibility,
             },

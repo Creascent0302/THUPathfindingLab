@@ -146,7 +146,7 @@ def main():
                 page.get_by_role("button", name="▶ 启动实验", exact=True).click()
                 page.get_by_text("本次结果：素材处理完成。", exact=False).wait_for()
                 page.screenshot(path=str(output / "single-frame.png"), full_page=True)
-                page.get_by_role("button", name="02运行记录与对比", exact=False).click()
+                page.get_by_role("button", name="运行记录与对比", exact=False).click()
                 page.get_by_role("button", name="刷新记录", exact=True).wait_for()
                 page.wait_for_function(
                     "document.querySelectorAll('tbody tr').length >= 3"
@@ -160,12 +160,12 @@ def main():
                     "document.documentElement.scrollWidth <= window.innerWidth + 1"
                 )
                 page.set_viewport_size({"width": 1440, "height": 1080})
-                page.get_by_role("button", name="01实验工作台", exact=False).click()
+                page.get_by_role("button", name="实验工作台", exact=False).click()
                 page.get_by_label("输入来源", exact=True).select_option("simulation")
                 page.get_by_label("场景", exact=True).select_option("hairpin")
                 page.wait_for_timeout(700)
                 assert page.get_by_text("首帧预览", exact=False).count() == 2
-                page.get_by_role("button", name="02运行记录与对比", exact=False).click()
+                page.get_by_role("button", name="运行记录与对比", exact=False).click()
                 page.wait_for_function(
                     "document.querySelectorAll('tbody tr').length >= 3"
                 )

@@ -20,6 +20,7 @@ class Sequences(Dataset):
     def __init__(self, folders, split, length=12, acquisition_weight=1):
         self.episodes, self.windows, self.length, self.split = [], [], length, split
         self.acquisition_weight = acquisition_weight
+        self.environments = set()
         identities = {}
         for folder in folders:
             manifest = json.loads((Path(folder) / "manifest.json").read_text())
@@ -39,6 +40,20 @@ class Sequences(Dataset):
                     )
                 if item["split"] != split or item["frames"] < length:
                     continue
+                scene = item.get("scene", {})
+                self.environments.add(
+                    (
+                        item.get(
+                            "motion_model",
+                            scene.get("vehicle", {}).get(
+                                "motion_model", "kinematic_v1"
+                            ),
+                        ),
+                        str(
+                            item.get("render_version", scene.get("render_version", "2"))
+                        ),
+                    )
+                )
                 with np.load(Path(folder) / item["file"], allow_pickle=False) as data:
                     episode = {
                         key: data[key]
@@ -135,6 +150,13 @@ def fit(args):
         training_episodes=len(training.episodes),
         validation_episodes=len(validation.episodes),
         device="cpu",
+        trained_environments=[
+            {"motion_model": motion, "render_version": render}
+            for motion, render in sorted(training.environments)
+        ],
+        resume_sha256=hashlib.sha256(Path(args.resume).read_bytes()).hexdigest()
+        if args.resume
+        else None,
         data_manifests_sha256={
             str(folder): hashlib.sha256(
                 (Path(folder) / "manifest.json").read_bytes()
@@ -208,6 +230,8 @@ def fit(args):
                     "format_version": 1,
                     "architecture": "cnn_gru_v1",
                     "model_id": f"cpu-bc-seed{args.seed}-epoch{epoch + 1}",
+                    "trained_environments": plan["trained_environments"],
+                    "resume_sha256": plan["resume_sha256"],
                     "control_interval_s": 0.1,
                     "supported_hints": ["marker"],
                     "marker_rgb": [34, 160, 94],

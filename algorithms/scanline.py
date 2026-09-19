@@ -8,12 +8,18 @@ from pathlab.sdk import Action, AlgorithmOutput
 
 class ScanlinePID:
     def initialize(self, config, public_context):
-        self.speed = float(config.get("speed_mps", 0.5))
+        limits = public_context.get("vehicle_limits") or {}
+        self.inertial = limits.get("motion_model") == "inertial_v2"
+        self.speed = float(config.get("speed_mps", 0.45 if self.inertial else 0.5))
         self.kp = float(config.get("kp", 0.65))
         self.kd = float(config.get("kd", 0.035))
-        self.limit = (public_context.get("vehicle_limits") or {}).get(
-            "max_steering_rad", 0.52
+        self.limit = limits.get("max_steering_rad", 0.52)
+        self.response = (
+            limits.get("yaw_response_s", 0.12) + limits.get("lateral_response_s", 0.1)
+            if self.inertial
+            else 0
         )
+        self.max_speed = limits.get("max_speed_mps", 1.5)
 
     def reset(self, initial_observation, task_hint):
         self.column = None
@@ -86,13 +92,18 @@ class ScanlinePID:
             column = candidate
         if len(centers) < 3:
             self.missing += dt
-            predict = self.missing <= 1.5
+            # Keep a finite traversal window for the calibrated camera's near
+            # blind zone. An immediate LOST here strands the car before finish.
+            hold = 1.5
+            predict = self.missing <= hold
             return AlgorithmOutput(
                 status="TRACK" if predict else "LOST",
-                confidence=max(0.0, 0.4 * (1 - self.missing / 1.5)),
+                confidence=max(0.0, 0.4 * (1 - self.missing / hold)),
                 action=Action(
                     steering_angle_rad=self.steering,
-                    speed_mps=min(self.speed, 0.4) if predict else 0,
+                    speed_mps=min(self.speed, 0.35 if self.inertial else 0.4)
+                    if predict
+                    else 0,
                 ),
                 diagnostics=["基线有界保持最后动作" if predict else "扫描线丢失，停车"],
             )
@@ -102,7 +113,9 @@ class ScanlinePID:
         error = (w / 2 - self.column) / (w / 2)
         self.derivative = 0.75 * self.derivative + 0.25 * (error - self.error) / dt
         self.error = error
-        target = self.kp * error + self.kd * self.derivative
+        # A short lead term compensates the public yaw/tire response delay.
+        projected_error = error + min(self.response, 0.3) * self.derivative
+        target = self.kp * projected_error + self.kd * self.derivative
         self.steering = float(
             np.clip(0.4 * target + 0.6 * self.steering, -self.limit, self.limit)
         )
@@ -112,9 +125,13 @@ class ScanlinePID:
             centerline_px=centers,
             action=Action(
                 steering_angle_rad=self.steering,
-                speed_mps=self.speed / (1 + abs(error)),
+                speed_mps=min(self.speed, self.max_speed) / (1 + abs(projected_error)),
             ),
-            debug={"normalized_image_error": error, "rows": len(centers)},
+            debug={
+                "normalized_image_error": error,
+                "rows": len(centers),
+                "response_lead_s": self.response,
+            },
             diagnostics=["图像扫描线 PD 基线；没有拓扑身份保证"],
         )
 

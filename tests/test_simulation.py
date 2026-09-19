@@ -44,7 +44,7 @@ def test_stationary_vehicle_cannot_rotate():
 
 
 def test_motion_limits_and_signs():
-    c = VehicleConfig()
+    c = VehicleConfig(motion_model="kinematic_v1")
     vehicle = Vehicle(c, Pose())
     applied = vehicle.advance(Action(steering_angle_rad=10, speed_mps=20), 0.05)
     assert "steering_saturated" in applied.interventions
@@ -59,7 +59,7 @@ def test_motion_limits_and_signs():
 
 
 def test_constant_curvature_is_bicycle_not_yaw_rate():
-    vehicle = Vehicle(VehicleConfig(), Pose())
+    vehicle = Vehicle(VehicleConfig(motion_model="kinematic_v1"), Pose())
     vehicle.state.speed_mps = 0.8
     vehicle.state.steering_angle_rad = 0.3
     for _ in range(20):

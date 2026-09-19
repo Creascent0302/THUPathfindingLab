@@ -56,10 +56,17 @@ def collect_episode(job):
     scene.appearance.shadow = float(rng.uniform(0, 0.3))
     scene.appearance.noise_std = float(rng.uniform(0, 3))
     scene.appearance.blur_sigma = float(rng.uniform(0, 0.65))
-    scene.camera.pitch_down_rad = float(rng.uniform(0.46, 0.6))
+    scene.camera.pitch_down_rad = float(rng.uniform(0.33, 0.47))
     scene.camera.height_m = float(rng.uniform(0.43, 0.53))
+    if scene.vehicle.motion_model == "inertial_v2":
+        # Teach recovery across moderate actuator variations while retaining
+        # the same public camera-only deployment boundary.
+        scene.vehicle.speed_response_s = float(rng.uniform(0.14, 0.22))
+        scene.vehicle.yaw_response_s = float(rng.uniform(0.09, 0.16))
+        scene.vehicle.lateral_response_s = float(rng.uniform(0.07, 0.14))
+        scene.vehicle.jerk_limit_mps3 = float(rng.uniform(4.5, 7.5))
     if validate_scene(scene):
-        scene.camera.pitch_down_rad, scene.camera.height_m = 0.52, 0.48
+        scene.camera.pitch_down_rad, scene.camera.height_m = 0.38, 0.48
     renderer, vehicle, expert = (
         Renderer(scene),
         Vehicle(scene.vehicle, scene.initial_pose),
@@ -161,6 +168,8 @@ def collect_episode(job):
         "scene": scene.model_dump(),
         "teacher": "privileged_ordered_path_pursuit",
         "behavior_checkpoint": checkpoint,
+        "motion_model": scene.vehicle.motion_model,
+        "render_version": scene.render_version,
     }
     print(file.name, len(images), reason, flush=True)
     return item
@@ -190,7 +199,7 @@ def collect(args):
             "episodes": episodes,
             "privileged_teacher": True,
             "control_interval_s": 0.1,
-            "test_seeds_excluded": [1001, 1002, 1003, 1004, 1005],
+            "test_seeds_excluded": [1001, 1002, 1003, 1004, 1005, 5001, 5002, 5003],
         },
     )
     print("Collected", sum(e["frames"] for e in episodes), "frames")

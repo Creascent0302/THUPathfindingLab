@@ -4,6 +4,7 @@ import math
 import numpy as np
 
 from pathlab.sdk import Action
+from pathlab.dynamics import integrate_motion
 
 
 class MotionEstimate:
@@ -11,30 +12,38 @@ class MotionEstimate:
 
     def __init__(self, limits):
         self.limits = limits
-        self.speed = self.steering = 0.0
+        self.state = np.zeros(8, dtype=float)
+
+    @property
+    def speed(self):
+        return float(np.linalg.norm(self.state[3:5]))
+
+    @property
+    def steering(self):
+        return float(self.state[5])
 
     def advance(self, action, duration, dt):
-        c, x, y, yaw = self.limits, 0.0, 0.0, 0.0
-        for _ in range(min(100, max(1, round(duration / dt)))):
-            ds = float(
-                np.clip(
-                    action.steering_angle_rad - self.steering,
-                    -c["steering_rate_rad_s"] * dt,
-                    c["steering_rate_rad_s"] * dt,
-                )
+        # Integrate the commands we actually issued. No simulator pose, velocity,
+        # or route information is available to this estimate.
+        remaining = max(0.0, float(duration))
+        while remaining > 1e-9:
+            step = min(float(dt), remaining, 0.1)
+            self.state = integrate_motion(
+                self.state,
+                action.steering_angle_rad,
+                action.speed_mps,
+                self.limits,
+                step,
             )
-            target = np.clip(action.speed_mps, 0, c["max_speed_mps"])
-            limit = c["acceleration_mps2"] if target > self.speed else c["braking_mps2"]
-            dv = float(np.clip(target - self.speed, -limit * dt, limit * dt))
-            speed, steer = self.speed + dv / 2, self.steering + ds / 2
-            angle = speed * math.tan(steer) / c["wheelbase_m"] * dt
-            distance = speed * dt * np.sinc(angle / (2 * math.pi))
-            x += distance * math.cos(yaw + angle / 2)
-            y += distance * math.sin(yaw + angle / 2)
-            yaw += angle
-            self.speed += dv
-            self.steering += ds
-        return np.array([x, y]), yaw
+            remaining -= step
+        translation, yaw = self.state[:2].copy(), float(self.state[2])
+        cosine, sine = math.cos(yaw), math.sin(yaw)
+        vx, vy = self.state[3:5]
+        # The next observation uses the new vehicle frame. Preserve lateral
+        # momentum when changing frame; resetting vy would erase tire dynamics.
+        self.state[3:5] = cosine * vx + sine * vy, -sine * vx + cosine * vy
+        self.state[:3] = 0
+        return translation, yaw
 
 
 class Pursuit:
@@ -45,7 +54,13 @@ class Pursuit:
         distance = np.linalg.norm(path, axis=1)
         near = int(np.argmin(distance))
         path, distance = path[near:], distance[near:]
-        lookahead = 0.57 + 0.12 * motion.speed
+        response = (
+            self.limits.get("yaw_response_s", 0.12)
+            + self.limits.get("lateral_response_s", 0.10)
+            if self.limits.get("motion_model") == "inertial_v2"
+            else 0
+        )
+        lookahead = 0.57 + (0.12 + response) * motion.speed
         indices = np.flatnonzero((distance >= lookahead) & (path[:, 0] > 0.05))
         target = path[indices[0] if len(indices) else -1]
         curvature = 2 * target[1] / max(float(target @ target), 0.04)
@@ -53,7 +68,30 @@ class Pursuit:
         speed = min(
             self.cruise, self.limits["max_speed_mps"], 0.8 / max(1, abs(curvature))
         )
+        if response:
+            speed = min(
+                speed,
+                math.sqrt(
+                    0.75
+                    * self.limits.get("max_lateral_acceleration_mps2", 3.0)
+                    / max(abs(curvature), 0.05)
+                ),
+            )
         speed *= float(np.clip(confidence / 0.85, 0.3, 1))
+        # Account for braking latency before entering a tighter visible bend.
+        future = path[(distance > lookahead) & (distance < lookahead + 0.7)]
+        if response and len(future) > 2:
+            future_curvature = np.abs(
+                2 * future[:, 1] / np.maximum(np.sum(future * future, axis=1), 0.04)
+            )
+            bend_speed = 0.8 / max(1, float(np.max(future_curvature)))
+            braking_distance = max(0.05, lookahead - motion.speed * response)
+            speed = min(
+                speed,
+                math.sqrt(
+                    bend_speed**2 + 2 * self.limits["braking_mps2"] * braking_distance
+                ),
+            )
         if target[0] < 0.08:
             speed = min(speed, 0.2)
         return Action(
@@ -69,7 +107,7 @@ class Pursuit:
 
 
 class Predictive(Pursuit):
-    """Deterministic sampled MPC with rate-limited steering and ordered references."""
+    """Sampled MPC with vector inertia, actuator limits and ordered references."""
 
     def command(self, path, confidence, motion):
         initial = super().command(path, confidence, motion)
@@ -101,26 +139,17 @@ class Predictive(Pursuit):
             -self.limits["max_steering_rad"],
             self.limits["max_steering_rad"],
         )
-        x, y, yaw = np.zeros((3, len(choices)))
-        steer = np.full(len(choices), motion.steering)
-        velocity = motion.speed
+        state = np.broadcast_to(motion.state, (len(choices), 8)).copy()
         cost = np.zeros(len(choices))
         for step in range(horizon):
             target = choices if step < 4 else later
-            steer += np.clip(
-                target - steer,
-                -self.limits["steering_rate_rad_s"] * dt,
-                self.limits["steering_rate_rad_s"] * dt,
-            )
-            velocity += np.clip(
-                speed - velocity,
-                -self.limits["braking_mps2"] * dt,
-                self.limits["acceleration_mps2"] * dt,
-            )
-            yaw += velocity * np.tan(steer) / self.limits["wheelbase_m"] * dt
-            x += velocity * np.cos(yaw) * dt
-            y += velocity * np.sin(yaw) * dt
-            cost += (x - references[step, 0]) ** 2 + 5 * (y - references[step, 1]) ** 2
+            # Match the simulation's 20 Hz integration within each 10 Hz
+            # prediction node, including steering rate and acceleration memory.
+            for _ in range(2):
+                state = integrate_motion(state, target, speed, self.limits, dt / 2)
+            cost += (state[:, 0] - references[step, 0]) ** 2 + 5 * (
+                state[:, 1] - references[step, 1]
+            ) ** 2
         cost += 0.18 * (choices - motion.steering) ** 2 + 0.2 * (later - choices) ** 2
         return Action(
             steering_angle_rad=float(choices[np.argmin(cost)]), speed_mps=speed
