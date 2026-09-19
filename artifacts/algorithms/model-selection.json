@@ -1,0 +1,96 @@
+{
+  "plan": {
+    "candidates": [
+      "bc",
+      "dagger-model",
+      "acquisition-model",
+      "averaged",
+      "weighted"
+    ],
+    "validation_seeds": [
+      203,
+      204
+    ],
+    "families": [
+      "straight",
+      "bend",
+      "s_curve",
+      "sharp",
+      "hairpin",
+      "parallel",
+      "close_lines",
+      "repeated"
+    ],
+    "resolution": [
+      640,
+      360
+    ],
+    "steps": 4000,
+    "selection_order": [
+      "maximum full closed-loop success count",
+      "minimum illegal switch count",
+      "minimum mean tracking lateral error across successfully completed episodes"
+    ],
+    "test_seeds_untouched": [
+      1001,
+      1002,
+      1003,
+      1004,
+      1005
+    ],
+    "algorithm": "cnn_gru",
+    "test_seeds_untouched_for": "cnn_gru",
+    "candidate_search_complete": true
+  },
+  "candidates": [
+    {
+      "checkpoint": "bc",
+      "report": "artifacts/algorithms/learning-bc-native-validation/report.json",
+      "success": 14,
+      "episodes": 16,
+      "illegal_switches": 0,
+      "tracking_error_m": 0.011520544935617128
+    },
+    {
+      "checkpoint": "dagger-model",
+      "report": "artifacts/algorithms/learning-dagger-validation/report.json",
+      "success": 15,
+      "episodes": 16,
+      "illegal_switches": 0,
+      "tracking_error_m": 0.014352390186890303
+    },
+    {
+      "checkpoint": "acquisition-model",
+      "report": "artifacts/algorithms/learning-acquisition-validation/report.json",
+      "success": 15,
+      "episodes": 16,
+      "illegal_switches": 0,
+      "tracking_error_m": 0.01686889012517038
+    },
+    {
+      "checkpoint": "averaged",
+      "report": "artifacts/algorithms/learning-averaged-validation/report.json",
+      "success": 15,
+      "episodes": 16,
+      "illegal_switches": 0,
+      "tracking_error_m": 0.020697034755328622
+    },
+    {
+      "checkpoint": "weighted",
+      "report": "artifacts/algorithms/learning-weighted-validation/report.json",
+      "success": 15,
+      "episodes": 16,
+      "illegal_switches": 0,
+      "tracking_error_m": 0.020531911915469044
+    }
+  ],
+  "selected": {
+    "checkpoint": "dagger-model",
+    "report": "artifacts/algorithms/learning-dagger-validation/report.json",
+    "success": 15,
+    "episodes": 16,
+    "illegal_switches": 0,
+    "tracking_error_m": 0.014352390186890303
+  },
+  "checkpoint_sha256": "8184a5a2effc11a935e2033740814b56be2c74cb173720503423e104ab44a0d0"
+}

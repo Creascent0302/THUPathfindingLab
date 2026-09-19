@@ -1,0 +1,17 @@
+cnn_gru              bend          204 success              0.984 frames=291
+cnn_gru              bend          203 success              0.985 frames=295
+cnn_gru              straight      203 success              0.983 frames=298
+cnn_gru              straight      204 success              0.987 frames=324
+cnn_gru              s_curve       203 success              0.984 frames=304
+cnn_gru              s_curve       204 success              0.983 frames=294
+cnn_gru              sharp         203 success              0.984 frames=304
+cnn_gru              sharp         204 success              0.984 frames=298
+cnn_gru              hairpin       204 success              0.987 frames=340
+cnn_gru              hairpin       203 success              0.988 frames=347
+cnn_gru              parallel      203 success              0.984 frames=296
+cnn_gru              close_lines   203 success              0.982 frames=299
+cnn_gru              close_lines   204 success              0.987 frames=326
+cnn_gru              repeated      204 success              0.997 frames=1287
+cnn_gru              repeated      203 success              0.997 frames=1321
+cnn_gru              parallel      204 episode_timeout      0.000 frames=4000
+cnn_gru 15 / 16 success

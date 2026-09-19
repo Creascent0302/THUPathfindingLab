@@ -1,0 +1,7 @@
+﻿algorithm,family,seed,state,success,completion,reason,run_id
+temporal_pursuit,parallel,204,completed,True,0.9848064257516147,success,082f1b3e358e4e90973ddcade5d04117
+temporal_pursuit,repeated,204,completed,True,0.9964981527323076,success,f1c3ef80b8874738875c12739c41dbe1
+temporal_mpc,parallel,204,completed,True,0.9855388021161202,success,2f03d89cd60e4b57895c04e7a5cfca3a
+temporal_mpc,repeated,204,completed,True,0.9966986459933583,success,afdef62a1ed94b91be9c26dadc79409c
+scanline_pid,parallel,204,completed,False,0.0,episode_timeout,59e76d5d2c7a499fbb5bd08663a1621a
+scanline_pid,repeated,204,completed,False,0.20343218380467934,episode_timeout,be2a2e79293e4000afd47e640e688870

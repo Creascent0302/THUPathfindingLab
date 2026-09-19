@@ -1,0 +1,7 @@
+﻿algorithm,family,seed,success,reason,completion,illegal_switches,inference_mean_ms
+temporal_pursuit,parallel,1005,True,success,0.9837389219595528,0,18.481659038932122
+temporal_pursuit,hairpin,1005,True,success,0.9842977292728378,0,15.992652922761371
+temporal_pursuit,repeated,1005,True,success,0.9963013015148346,0,18.956569649767093
+temporal_mpc,parallel,1005,True,success,0.9844698585332824,0,17.005642430123054
+temporal_mpc,hairpin,1005,True,success,0.9843827465663872,0,16.544467420652722
+temporal_mpc,repeated,1005,True,success,0.9963839015973788,0,17.91759445824517

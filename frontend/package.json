@@ -1,0 +1,25 @@
+{
+  "name": "pathfinding-lab-ui",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc -b && vite build",
+    "format": "prettier --write src",
+    "check": "tsc -b && prettier --check src"
+  },
+  "dependencies": {
+    "@fontsource/noto-sans-sc": "5.2.5",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.6",
+    "@types/react-dom": "19.1.5",
+    "@vitejs/plugin-react": "4.5.1",
+    "prettier": "3.5.3",
+    "typescript": "5.8.3",
+    "vite": "6.3.5"
+  }
+}

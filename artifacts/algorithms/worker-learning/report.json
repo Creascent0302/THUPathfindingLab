@@ -1,0 +1,154 @@
+{
+  "plan": {
+    "algorithms": [
+      "cnn_gru"
+    ],
+    "seeds": [
+      204
+    ],
+    "families": [
+      "parallel",
+      "repeated"
+    ],
+    "max_steps": 4000,
+    "split": "validation",
+    "timing": "worker_protocol_round_trip",
+    "disclaimer": "实际独立进程闭环评测；保留失败，性能结论仅适用于列出的场景集合。"
+  },
+  "environment": {
+    "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+    "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.31",
+    "packages": {
+      "numpy": "2.2.6",
+      "opencv-python-headless": "4.11.0.86",
+      "fastapi": "0.115.12",
+      "pydantic": "2.11.5",
+      "uvicorn": "0.34.3"
+    }
+  },
+  "elapsed_wall_s": 119.44636694993824,
+  "runs": [
+    {
+      "algorithm": "cnn_gru",
+      "execution": "action",
+      "family": "parallel",
+      "seed": 204,
+      "run_id": "e42e1b8f6e314dcdb4e1a24deb2f90c1",
+      "state": "completed",
+      "metrics": {
+        "evaluator_version": "1.0",
+        "reason": "success",
+        "frames": 330,
+        "success": true,
+        "acquisition_success": true,
+        "acquisition_time_s": 3.2,
+        "completion": 0.9863428816968964,
+        "tracking_lateral_error_m": {
+          "mean": 0.028913889944723256,
+          "p95": 0.03961956110575167,
+          "max": 0.1938063166316344
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.7959214328932388,
+          "p95": 1.4959220673141822,
+          "max": 1.5112637143437855
+        },
+        "heading_error_rad": {
+          "mean": 0.02780844416754407,
+          "p95": 0.2420887395090317,
+          "max": 0.33356340647981675
+        },
+        "illegal_switches": [],
+        "lost_count": 0,
+        "lost_duration_s": 0.0,
+        "recovery_rate": null,
+        "inference_ms": {
+          "mean": 13.30221751422593,
+          "p95": 18.902718974277377,
+          "max": 30.297132208943367
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.7676546548424344,
+          "p95": 0.8114434480667114,
+          "max": 0.8544746041297913
+        },
+        "simulation_time_s": 16.5,
+        "completion_time_s": 16.5,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 1.538768350414466,
+        "safety_intervention_frames": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true
+      }
+    },
+    {
+      "algorithm": "cnn_gru",
+      "execution": "action",
+      "family": "repeated",
+      "seed": 204,
+      "run_id": "83c8bb0a25784627bc3ef3e14e58e1b2",
+      "state": "completed",
+      "metrics": {
+        "evaluator_version": "1.0",
+        "reason": "success",
+        "frames": 1290,
+        "success": true,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.15,
+        "completion": 0.9971122695654705,
+        "tracking_lateral_error_m": {
+          "mean": 0.01274821365598989,
+          "p95": 0.03412966401500143,
+          "max": 0.17969795087183552
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.9820081414550276,
+          "p95": 1.4910185208044981,
+          "max": 1.4993557301406515
+        },
+        "heading_error_rad": {
+          "mean": 0.017348106833919907,
+          "p95": 0.06953265625010496,
+          "max": 0.22563037044928835
+        },
+        "illegal_switches": [],
+        "lost_count": 0,
+        "lost_duration_s": 0.0,
+        "recovery_rate": null,
+        "inference_ms": {
+          "mean": 13.679136135146138,
+          "p95": 19.614481693133712,
+          "max": 24.995925836265087
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.7960414467375407,
+          "p95": 0.8103676438331604,
+          "max": 0.8437138199806213
+        },
+        "simulation_time_s": 64.5,
+        "completion_time_s": 64.5,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 3.381464587459341,
+        "safety_intervention_frames": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true
+      }
+    }
+  ]
+}

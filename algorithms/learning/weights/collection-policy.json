@@ -1,0 +1,16 @@
+{
+  "purpose": "DAgger collection policy, not the published driver",
+  "model_id": "cpu-bc-seed42-epoch7",
+  "epoch": 7,
+  "sha256": "efdd308ccbacc6170a127cf8061ecda64ccca699b3f01578af2822ba9fcc2df5",
+  "original_path": "artifacts/learning/epoch-snapshot.pt",
+  "actual_collection_plan": {
+    "command": "collect",
+    "data": "artifacts/learning/dagger",
+    "episodes_per_family": 8,
+    "validation_seeds": 2,
+    "jobs": 4,
+    "checkpoint": "artifacts/learning/epoch-snapshot.pt",
+    "beta": 0.25
+  }
+}

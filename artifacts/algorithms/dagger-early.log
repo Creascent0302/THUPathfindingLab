@@ -1,0 +1,3 @@
+cnn_gru              parallel      204 episode_timeout      0.000 frames=4000
+cnn_gru              parallel      203 episode_timeout      0.000 frames=4000
+cnn_gru 0 / 2 success

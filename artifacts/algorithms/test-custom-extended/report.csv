@@ -1,0 +1,11 @@
+﻿algorithm,family,seed,success,reason,completion,illegal_switches,inference_mean_ms
+temporal_pursuit,custom,1001,True,success,0.9882985113187612,0,16.180301330418192
+temporal_pursuit,custom,1002,True,success,0.9898513934149974,0,15.783580561795558
+temporal_pursuit,custom,1003,True,success,0.9892252849928449,0,15.674902654576059
+temporal_pursuit,custom,1004,False,episode_timeout,0.3527531776587442,0,16.57479797420092
+temporal_pursuit,custom,1005,True,success,0.9913241813368587,0,17.59732631979057
+temporal_mpc,custom,1001,True,success,0.9879428222969187,0,18.583137795039917
+temporal_mpc,custom,1002,True,success,0.9896902618745814,0,20.028146204839008
+temporal_mpc,custom,1003,True,success,0.9891456172867742,0,23.03673749855702
+temporal_mpc,custom,1004,True,success,0.9889822269889725,0,23.70041554584067
+temporal_mpc,custom,1005,True,success,0.9913621474573038,0,16.85418352195672

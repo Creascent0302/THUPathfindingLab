@@ -1,0 +1,10 @@
+temporal_pursuit     parallel        7 success              0.985 frames=403
+temporal_pursuit     close_lines     7 episode_timeout      0.000 frames=4000
+temporal_pursuit     repeated        7 episode_timeout      0.000 frames=4000
+temporal_mpc         close_lines     7 success              0.985 frames=364
+temporal_mpc         parallel        7 episode_timeout      0.000 frames=4000
+temporal_pursuit     hairpin         7 episode_timeout      0.000 frames=4000
+temporal_mpc         repeated        7 episode_timeout      0.000 frames=4000
+temporal_mpc         hairpin         7 episode_timeout      0.000 frames=4000
+temporal_pursuit 1 / 4 success
+temporal_mpc 1 / 4 success

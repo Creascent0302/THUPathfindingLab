@@ -1,0 +1,4 @@
+cnn_gru        parallel     seed=204    completed  success              completion=0.986
+cnn_gru        repeated     seed=204    completed  success              completion=0.997
+
+报告：artifacts/algorithms/worker-learning/report.md

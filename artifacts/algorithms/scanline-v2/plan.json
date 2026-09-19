@@ -1,0 +1,41 @@
+{
+  "algorithms": [
+    "scanline_pid"
+  ],
+  "families": [
+    "straight",
+    "bend",
+    "s_curve",
+    "sharp",
+    "hairpin",
+    "parallel",
+    "close_lines",
+    "repeated"
+  ],
+  "seeds": [
+    7
+  ],
+  "steps": 4000,
+  "resolution": 320,
+  "jobs": 4,
+  "parameters": {},
+  "suite": "core",
+  "split": "development",
+  "output": "artifacts/algorithms/scanline-v2",
+  "timing": "in_process_inference",
+  "code_sha256": {
+    "algorithms/__init__.py": "08f5f58aa57f280f42729c8a3222cf7d792b37eb2304963f58bbc39b106241fa",
+    "algorithms/examples.py": "e93c6f81bd78b21e2e1ab709366e4e0b4ed4c895b888a4b2834a4c2100bf3e82",
+    "algorithms/learning/__init__.py": "22013f582d9a48ad8396ee16caac83a6016dcdd327e686ccb6a21cd4be3b588c",
+    "algorithms/learning/algorithm.py": "b54381d831aac5f71b25824358d5faa6b8a2c03f2474d225fcf47e60150338ae",
+    "algorithms/learning/data.py": "85f0c817db8df79985975356381f3cd28044f5360849e9f855ce29d115a06c3b",
+    "algorithms/learning/model.py": "8b305f75d606dc5ced3badb8c623d9b9d327777e22f4f2ab4f5d93b098a29343",
+    "algorithms/learning/train.py": "aef7063b17f1f94ad3488878c149f0af469c934c23fd690992394455e6e41f24",
+    "algorithms/modular/__init__.py": "eeccb5f09492121f56d5081dfeaef423b3a5f739860535d2de2b601ad9741a31",
+    "algorithms/modular/algorithm.py": "01d9974b6ef4c92f3dfec5480b8a3391bc131e86462d8b2f92a365ccf8b2f21a",
+    "algorithms/modular/control.py": "21fdab85c3b0d8df82cbb809f59543d400a3b6984e1800c50efbe2b1593c9302",
+    "algorithms/modular/vision.py": "44a0d4fe28254d79523877117201458980c978950f27c7ef2cc87ef24f8a80c1",
+    "algorithms/scanline.py": "057b7079bb082fcb5d69811708ac081079500a0e4bc6b76e869f7572b2f4e52d"
+  },
+  "checkpoint_sha256": "1c9e86af6c43e3c72d264dc82ab73caff13593eca4ea41b110b9a16cb3e45886"
+}

@@ -1,0 +1,151 @@
+{
+  "algorithm": "temporal_pursuit",
+  "family": "repeated",
+  "seed": 1,
+  "split": "development",
+  "parameters": {},
+  "metrics": {
+    "evaluator_version": "1.0",
+    "reason": "success",
+    "frames": 1315,
+    "success": true,
+    "acquisition_success": true,
+    "acquisition_time_s": 2.2,
+    "completion": 0.9964055973711904,
+    "tracking_lateral_error_m": {
+      "mean": 0.013487752756817368,
+      "p95": 0.03371405453371298,
+      "max": 0.1704917716333006
+    },
+    "acquisition_lateral_error_m": {
+      "mean": 0.9827794988763137,
+      "p95": 1.509042115353259,
+      "max": 1.517737687497227
+    },
+    "heading_error_rad": {
+      "mean": 0.020134119913251237,
+      "p95": 0.07946507703554266,
+      "max": 0.23124670076907305
+    },
+    "illegal_switches": [],
+    "lost_count": 0,
+    "lost_duration_s": 0.0,
+    "recovery_rate": null,
+    "inference_ms": {
+      "mean": 21.226682638600753,
+      "p95": 30.47606414183974,
+      "max": 59.818877838552
+    },
+    "timeout_count": 0,
+    "timeout_rate": 0.0,
+    "speed_mps": {
+      "mean": 0.7795057034220532,
+      "p95": 0.8,
+      "max": 0.8
+    },
+    "simulation_time_s": 65.75,
+    "completion_time_s": 65.75,
+    "action_saturation_frames": 0,
+    "steering_total_variation_rad": 5.318038904817638,
+    "safety_intervention_frames": 0,
+    "failure_counts": {
+      "timeout": 0,
+      "crash": 0,
+      "protocol": 0,
+      "invalid_output": 0,
+      "exception": 0
+    },
+    "truth_metrics_available": true
+  },
+  "failures": [],
+  "wall_s": 46.892626277171075,
+  "last_frame": {
+    "frame_id": 1314,
+    "timestamp_s": 65.75,
+    "dt_s": 0.05,
+    "output": {
+      "protocol_version": "1.0",
+      "status": "TRACK",
+      "confidence": 0.75,
+      "centerline_px": [
+        [
+          -88.94209752015848,
+          34423.50490220794
+        ],
+        [
+          137.86748697140212,
+          2485.0154546031363
+        ],
+        [
+          159.89968205966875,
+          397.21396777722686
+        ]
+      ],
+      "candidates_px": [],
+      "local_path_m": [
+        [
+          -0.09130121246857562,
+          0.003989641956081351
+        ],
+        [
+          -0.04630810295000614,
+          0.004777103605949083
+        ],
+        [
+          0.19668962704071044,
+          -0.0005302794134969999
+        ]
+      ],
+      "action": {
+        "steering_angle_rad": -0.008484267036360921,
+        "speed_mps": 0.35
+      },
+      "lateral_error_m": null,
+      "heading_error_rad": -0.01569338216588619,
+      "curvature_per_m": -0.026513970674849997,
+      "debug": {
+        "identity_initialized": true,
+        "prediction_only": true,
+        "missing_s": 2.250000000000097,
+        "observed_points": 3,
+        "motion_source": "previous_command_model"
+      },
+      "diagnostics": [
+        "沿已观测终点进入相机近端盲区；有界运动预测"
+      ]
+    },
+    "applied": {
+      "requested": {
+        "steering_angle_rad": -0.008484267036360921,
+        "speed_mps": 0.35
+      },
+      "bounded": {
+        "steering_angle_rad": -0.008484267036360921,
+        "speed_mps": 0.35
+      },
+      "actual": {
+        "steering_angle_rad": -0.008484267036360921,
+        "speed_mps": 0.35
+      },
+      "interventions": []
+    },
+    "evaluation": {
+      "phase": "tracking",
+      "lateral_error_m": 0.003774720981965629,
+      "heading_error_rad": 0.029627624849127177,
+      "progress_m": 49.84950592605844,
+      "completion": 0.9964055973711904,
+      "switch_count": 0,
+      "reason": "success"
+    },
+    "inference_ms": 10.568439029157162,
+    "interventions": [],
+    "pose": {
+      "x_m": 9.9584374589869,
+      "y_m": 11.736859453731974,
+      "yaw_rad": -0.029627624849127177,
+      "speed_mps": 0.35,
+      "steering_angle_rad": -0.008484267036360921
+    }
+  }
+}

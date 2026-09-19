@@ -1,0 +1,9 @@
+temporal_pursuit     bend          203 success              0.983 frames=320
+temporal_pursuit     straight      203 success              0.984 frames=329
+temporal_pursuit     s_curve       203 success              0.983 frames=328
+temporal_pursuit     sharp         203 success              0.984 frames=328
+temporal_pursuit     hairpin       203 success              0.986 frames=372
+temporal_pursuit     parallel      203 success              0.984 frames=329
+temporal_pursuit     close_lines   203 success              0.984 frames=323
+temporal_pursuit     repeated      203 success              0.997 frames=1352
+temporal_pursuit 8 / 8 success

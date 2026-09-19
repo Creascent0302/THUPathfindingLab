@@ -1,0 +1,9 @@
+﻿algorithm,family,seed,success,reason,completion,illegal_switches,inference_mean_ms
+temporal_pursuit,straight,203,True,success,0.9835571248631776,0,12.581032927298075
+temporal_pursuit,bend,203,True,success,0.9828102862242534,0,12.18922397820279
+temporal_pursuit,s_curve,203,True,success,0.9832875585919776,0,17.83302005823338
+temporal_pursuit,sharp,203,True,success,0.9838469963226769,0,11.992521322809342
+temporal_pursuit,hairpin,203,True,success,0.9861751914846859,0,13.363599822285675
+temporal_pursuit,parallel,203,True,success,0.9835550023800392,0,19.85870039594391
+temporal_pursuit,close_lines,203,True,success,0.9835004906847084,0,13.040171192249646
+temporal_pursuit,repeated,203,True,success,0.9967282005435902,0,14.961580176198492

@@ -1,0 +1,121 @@
+{
+  "algorithm": "scanline_pid",
+  "family": "s_curve",
+  "seed": 1,
+  "split": "development",
+  "parameters": {},
+  "metrics": {
+    "evaluator_version": "1.0",
+    "reason": "episode_timeout",
+    "frames": 2500,
+    "success": false,
+    "acquisition_success": true,
+    "acquisition_time_s": 3.0500000000000003,
+    "completion": 0.9789681020701283,
+    "tracking_lateral_error_m": {
+      "mean": 0.009560333388824904,
+      "p95": 0.04106323355941107,
+      "max": 0.1891965149058179
+    },
+    "acquisition_lateral_error_m": {
+      "mean": 0.9127549232036974,
+      "p95": 1.503094858032918,
+      "max": 1.5177376869071533
+    },
+    "heading_error_rad": {
+      "mean": 0.014175346772461355,
+      "p95": 0.08361050048554179,
+      "max": 0.2447862047493885
+    },
+    "illegal_switches": [],
+    "lost_count": 1,
+    "lost_duration_s": 98.54999999999654,
+    "recovery_rate": 0.0,
+    "inference_ms": {
+      "mean": 5.7304669167846445,
+      "p95": 6.682100007310509,
+      "max": 7.801873609423637
+    },
+    "timeout_count": 0,
+    "timeout_rate": 0.0,
+    "speed_mps": {
+      "mean": 0.09065376360889307,
+      "p95": 0.48780487804878053,
+      "max": 0.5
+    },
+    "simulation_time_s": 125.0,
+    "completion_time_s": null,
+    "action_saturation_frames": 0,
+    "steering_total_variation_rad": 1.7872711088489088,
+    "safety_intervention_frames": 1971,
+    "failure_counts": {
+      "timeout": 0,
+      "crash": 0,
+      "protocol": 0,
+      "invalid_output": 0,
+      "exception": 0
+    },
+    "truth_metrics_available": true
+  },
+  "failures": [],
+  "wall_s": 50.1808612421155,
+  "last_frame": {
+    "frame_id": 2499,
+    "timestamp_s": 125.0,
+    "dt_s": 0.05,
+    "output": {
+      "protocol_version": "1.0",
+      "status": "LOST",
+      "confidence": 0.0,
+      "centerline_px": null,
+      "candidates_px": null,
+      "local_path_m": null,
+      "action": {
+        "steering_angle_rad": -0.009920261226456242,
+        "speed_mps": 0.0
+      },
+      "lateral_error_m": null,
+      "heading_error_rad": null,
+      "curvature_per_m": null,
+      "debug": {},
+      "diagnostics": [
+        "扫描线丢失，停车"
+      ]
+    },
+    "applied": {
+      "requested": {
+        "steering_angle_rad": 0.0,
+        "speed_mps": 0.0
+      },
+      "bounded": {
+        "steering_angle_rad": 0.0,
+        "speed_mps": 0.0
+      },
+      "actual": {
+        "steering_angle_rad": 0.0,
+        "speed_mps": 0.0
+      },
+      "interventions": []
+    },
+    "evaluation": {
+      "phase": "tracking",
+      "lateral_error_m": 0.004762925231954588,
+      "heading_error_rad": 0.004018316601582139,
+      "progress_m": 9.934940341985318,
+      "completion": 0.9789681020701283,
+      "switch_count": 0,
+      "reason": null
+    },
+    "inference_ms": 5.2804723381996155,
+    "interventions": [
+      "status_stop:LOST"
+    ],
+    "pose": {
+      "x_m": 9.044417743719528,
+      "y_m": 0.004762925231954588,
+      "yaw_rad": -0.004018316601582139,
+      "speed_mps": 0.0,
+      "steering_angle_rad": 0.0
+    }
+  }
+}

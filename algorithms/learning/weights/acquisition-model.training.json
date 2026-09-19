@@ -1,0 +1,104 @@
+{
+  "plan": {
+    "command": "fit",
+    "data": [
+      "artifacts/learning/data",
+      "artifacts/learning/dagger"
+    ],
+    "output": "artifacts/learning/acquisition-model.pt",
+    "epochs": 4,
+    "batch_size": 32,
+    "sequence_length": 12,
+    "threads": 4,
+    "lr": 0.00015,
+    "seed": 42,
+    "resume": "artifacts/learning/bc.pt",
+    "acquisition_weight": 8.0,
+    "torch_version": "2.7.1+cpu",
+    "parameters": 401259,
+    "training_frames": 28901,
+    "validation_frames": 7311,
+    "training_episodes": 128,
+    "validation_episodes": 32,
+    "device": "cpu",
+    "data_manifests_sha256": {
+      "artifacts/learning/data": "f4f5e0e0dd133fd252e18bb1f85a4524b73fb860c8bf12029ad693223728c225",
+      "artifacts/learning/dagger": "7cf9a1f01982405ff8ea6678389802a8311fcdc5f0f07edc9e91f54038d97bac"
+    },
+    "source_sha256": {
+      "__init__.py": "22013f582d9a48ad8396ee16caac83a6016dcdd327e686ccb6a21cd4be3b588c",
+      "algorithm.py": "3ce3bc39a19510e3e7b6bb9c65cbce65a29e6afba19bd420304e6bb15c5a38a6",
+      "data.py": "27ded8737d0ea9b26891bb3f8f9528a12434b96085b56112e13859ebea326478",
+      "model.py": "8b305f75d606dc5ced3badb8c623d9b9d327777e22f4f2ab4f5d93b098a29343",
+      "train.py": "ae954ae49b8dcc535e5bc9583b4b59ad098be2e169f6a6af68312a629db3e0e1"
+    }
+  },
+  "epochs": [
+    {
+      "epoch": 1,
+      "train": {
+        "loss": 0.1978623224364153,
+        "steering_normalized_mae": 0.02764476102105519,
+        "speed_mae": 0.012156889887862886,
+        "visibility_brier": 0.002402260508189926
+      },
+      "validation": {
+        "loss": 0.015053930895111593,
+        "steering_normalized_mae": 0.019570303510646432,
+        "speed_mae": 0.00846709839391465,
+        "visibility_brier": 0.001311672779484936
+      },
+      "elapsed_s": 88.44793660286814
+    },
+    {
+      "epoch": 2,
+      "train": {
+        "loss": 0.18150564281046005,
+        "steering_normalized_mae": 0.02781882245480398,
+        "speed_mae": 0.010472759364099787,
+        "visibility_brier": 0.0014621973858968363
+      },
+      "validation": {
+        "loss": 0.015296887238921763,
+        "steering_normalized_mae": 0.019939172544142826,
+        "speed_mae": 0.008337162751831165,
+        "visibility_brier": 0.0006066847157463988
+      },
+      "elapsed_s": 172.08776488155127
+    },
+    {
+      "epoch": 3,
+      "train": {
+        "loss": 0.15793598643628473,
+        "steering_normalized_mae": 0.024235888529939673,
+        "speed_mae": 0.010001183303497582,
+        "visibility_brier": 0.0008358381292059782
+      },
+      "validation": {
+        "loss": 0.013777112848043036,
+        "steering_normalized_mae": 0.019327578863420455,
+        "speed_mae": 0.008044089805208095,
+        "visibility_brier": 0.0003386070132312104
+      },
+      "elapsed_s": 264.4709617206827
+    },
+    {
+      "epoch": 4,
+      "train": {
+        "loss": 0.15371999671648207,
+        "steering_normalized_mae": 0.021540561690926552,
+        "speed_mae": 0.009606594147777786,
+        "visibility_brier": 0.0005098645810408974
+      },
+      "validation": {
+        "loss": 0.013849416861728745,
+        "steering_normalized_mae": 0.02018944941917244,
+        "speed_mae": 0.008059877629841672,
+        "visibility_brier": 0.00044201415918447855
+      },
+      "elapsed_s": 363.2507149176672
+    }
+  ],
+  "best_validation_loss": 0.013777112848043036,
+  "checkpoint_sha256": "8bd34b493f29433059ae7cbbbae0eccd3d5e10bfb20c861f2315e4e213c303a3"
+}

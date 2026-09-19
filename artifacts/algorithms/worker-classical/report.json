@@ -1,0 +1,400 @@
+{
+  "plan": {
+    "algorithms": [
+      "temporal_pursuit",
+      "temporal_mpc",
+      "scanline_pid"
+    ],
+    "seeds": [
+      204
+    ],
+    "families": [
+      "parallel",
+      "repeated"
+    ],
+    "max_steps": 4000,
+    "split": "validation",
+    "timing": "worker_protocol_round_trip",
+    "disclaimer": "实际独立进程闭环评测；保留失败，性能结论仅适用于列出的场景集合。"
+  },
+  "environment": {
+    "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+    "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.31",
+    "packages": {
+      "numpy": "2.2.6",
+      "opencv-python-headless": "4.11.0.86",
+      "fastapi": "0.115.12",
+      "pydantic": "2.11.5",
+      "uvicorn": "0.34.3"
+    }
+  },
+  "elapsed_wall_s": 1040.027152011171,
+  "runs": [
+    {
+      "algorithm": "temporal_pursuit",
+      "execution": "action",
+      "family": "parallel",
+      "seed": 204,
+      "run_id": "082f1b3e358e4e90973ddcade5d04117",
+      "state": "completed",
+      "metrics": {
+        "evaluator_version": "1.0",
+        "reason": "success",
+        "frames": 348,
+        "success": true,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.3000000000000003,
+        "completion": 0.9848064257516147,
+        "tracking_lateral_error_m": {
+          "mean": 0.015980722747213457,
+          "p95": 0.074097755475456,
+          "max": 0.19611734437866304
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.9632078392967985,
+          "p95": 1.5021901416085859,
+          "max": 1.5112637018970543
+        },
+        "heading_error_rad": {
+          "mean": 0.01811073993206864,
+          "p95": 0.15964026597955402,
+          "max": 0.20098277474551507
+        },
+        "illegal_switches": [],
+        "lost_count": 0,
+        "lost_duration_s": 0.0,
+        "recovery_rate": null,
+        "inference_ms": {
+          "mean": 35.925062978104954,
+          "p95": 43.16640812903643,
+          "max": 53.54762077331543
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.7238505747126436,
+          "p95": 0.8,
+          "max": 0.8
+        },
+        "simulation_time_s": 17.400000000000002,
+        "completion_time_s": 17.400000000000002,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 0.5270472192959482,
+        "safety_intervention_frames": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true
+      }
+    },
+    {
+      "algorithm": "temporal_pursuit",
+      "execution": "action",
+      "family": "repeated",
+      "seed": 204,
+      "run_id": "f1c3ef80b8874738875c12739c41dbe1",
+      "state": "completed",
+      "metrics": {
+        "evaluator_version": "1.0",
+        "reason": "success",
+        "frames": 1318,
+        "success": true,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.15,
+        "completion": 0.9964981527323076,
+        "tracking_lateral_error_m": {
+          "mean": 0.01249949992602784,
+          "p95": 0.03370481371305983,
+          "max": 0.18245331695632938
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.9822207611830843,
+          "p95": 1.4910184761927048,
+          "max": 1.499355729803794
+        },
+        "heading_error_rad": {
+          "mean": 0.01852020850571378,
+          "p95": 0.07439027799305287,
+          "max": 0.2314970167654895
+        },
+        "illegal_switches": [],
+        "lost_count": 0,
+        "lost_duration_s": 0.0,
+        "recovery_rate": null,
+        "inference_ms": {
+          "mean": 35.36083579575007,
+          "p95": 41.57852842472492,
+          "max": 72.9038305580616
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.7795523520485583,
+          "p95": 0.8,
+          "max": 0.8
+        },
+        "simulation_time_s": 65.9,
+        "completion_time_s": 65.9,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 4.810225058621649,
+        "safety_intervention_frames": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true
+      }
+    },
+    {
+      "algorithm": "temporal_mpc",
+      "execution": "action",
+      "family": "parallel",
+      "seed": 204,
+      "run_id": "2f03d89cd60e4b57895c04e7a5cfca3a",
+      "state": "completed",
+      "metrics": {
+        "evaluator_version": "1.0",
+        "reason": "success",
+        "frames": 348,
+        "success": true,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.2,
+        "completion": 0.9855388021161202,
+        "tracking_lateral_error_m": {
+          "mean": 0.010859145136001676,
+          "p95": 0.030715989432339323,
+          "max": 0.17657026419614288
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.982450604461998,
+          "p95": 1.5028640122939048,
+          "max": 1.5112637018970543
+        },
+        "heading_error_rad": {
+          "mean": 0.012570521291505009,
+          "p95": 0.07754946577961686,
+          "max": 0.11980602732412304
+        },
+        "illegal_switches": [],
+        "lost_count": 0,
+        "lost_duration_s": 0.0,
+        "recovery_rate": null,
+        "inference_ms": {
+          "mean": 36.24787013014329,
+          "p95": 40.41858580894768,
+          "max": 55.946686305105686
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.7238505747126436,
+          "p95": 0.8,
+          "max": 0.8
+        },
+        "simulation_time_s": 17.400000000000002,
+        "completion_time_s": 17.400000000000002,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 1.0384514652203907,
+        "safety_intervention_frames": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true
+      }
+    },
+    {
+      "algorithm": "temporal_mpc",
+      "execution": "action",
+      "family": "repeated",
+      "seed": 204,
+      "run_id": "afdef62a1ed94b91be9c26dadc79409c",
+      "state": "completed",
+      "metrics": {
+        "evaluator_version": "1.0",
+        "reason": "success",
+        "frames": 1314,
+        "success": true,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.15,
+        "completion": 0.9966986459933583,
+        "tracking_lateral_error_m": {
+          "mean": 0.014093316601188328,
+          "p95": 0.030221905087760244,
+          "max": 0.18052921443659142
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.9816259872023485,
+          "p95": 1.4910179058156374,
+          "max": 1.4993557280514456
+        },
+        "heading_error_rad": {
+          "mean": 0.014749075319941714,
+          "p95": 0.06983999667194205,
+          "max": 0.22579807392138918
+        },
+        "illegal_switches": [],
+        "lost_count": 0,
+        "lost_duration_s": 0.0,
+        "recovery_rate": null,
+        "inference_ms": {
+          "mean": 36.009830677147555,
+          "p95": 41.58879844471812,
+          "max": 96.92465700209141
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.7791476407914764,
+          "p95": 0.8,
+          "max": 0.8
+        },
+        "simulation_time_s": 65.7,
+        "completion_time_s": 65.7,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 7.937547578526402,
+        "safety_intervention_frames": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true
+      }
+    },
+    {
+      "algorithm": "scanline_pid",
+      "execution": "action",
+      "family": "parallel",
+      "seed": 204,
+      "run_id": "59e76d5d2c7a499fbb5bd08663a1621a",
+      "state": "completed",
+      "metrics": {
+        "evaluator_version": "1.0",
+        "reason": "episode_timeout",
+        "frames": 4000,
+        "success": false,
+        "acquisition_success": false,
+        "acquisition_time_s": null,
+        "completion": 0.0,
+        "tracking_lateral_error_m": {
+          "mean": null,
+          "p95": null,
+          "max": null
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 10.189289125785628,
+          "p95": 11.02119800937274,
+          "max": 11.02119800937274
+        },
+        "heading_error_rad": {
+          "mean": null,
+          "p95": null,
+          "max": null
+        },
+        "illegal_switches": [],
+        "lost_count": 1,
+        "lost_duration_s": 173.30000000000516,
+        "recovery_rate": 0.0,
+        "inference_ms": {
+          "mean": 35.44211093662307,
+          "p95": 38.70566627010703,
+          "max": 89.70646094530821
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.06512823367066276,
+          "p95": 0.4999349043093347,
+          "max": 0.5
+        },
+        "simulation_time_s": 200.0,
+        "completion_time_s": null,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 0.10206274838651183,
+        "safety_intervention_frames": 3466,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true
+      }
+    },
+    {
+      "algorithm": "scanline_pid",
+      "execution": "action",
+      "family": "repeated",
+      "seed": 204,
+      "run_id": "be2a2e79293e4000afd47e640e688870",
+      "state": "completed",
+      "metrics": {
+        "evaluator_version": "1.0",
+        "reason": "episode_timeout",
+        "frames": 4000,
+        "success": false,
+        "acquisition_success": true,
+        "acquisition_time_s": 3.0,
+        "completion": 0.20343218380467934,
+        "tracking_lateral_error_m": {
+          "mean": 0.022206279310308767,
+          "p95": 0.024006636876331644,
+          "max": 0.18420634222551877
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.9122233143373366,
+          "p95": 1.485077881165705,
+          "max": 1.4993557306460683
+        },
+        "heading_error_rad": {
+          "mean": 0.0774027468923935,
+          "p95": 0.0861963379320061,
+          "max": 0.09742753294632367
+        },
+        "illegal_switches": [],
+        "lost_count": 1,
+        "lost_duration_s": 173.25000000000514,
+        "recovery_rate": 0.0,
+        "inference_ms": {
+          "mean": 35.57741647679359,
+          "p95": 38.78276566974819,
+          "max": 82.52888824790716
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.05850873289373478,
+          "p95": 0.49922483733755435,
+          "max": 0.5
+        },
+        "simulation_time_s": 200.0,
+        "completion_time_s": null,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 0.7232061289737084,
+        "safety_intervention_frames": 3465,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true
+      }
+    }
+  ]
+}

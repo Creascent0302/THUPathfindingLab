@@ -1,0 +1,3 @@
+﻿algorithm,family,seed,success,reason,completion,illegal_switches,inference_mean_ms
+temporal_pursuit,custom,1005,True,success,0.9913241813368587,0,18.279918357792837
+temporal_mpc,custom,1005,True,success,0.9913621474573038,0,16.74087571204993

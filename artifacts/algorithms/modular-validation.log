@@ -1,0 +1,34 @@
+temporal_pursuit     bend          201 success              0.983 frames=321
+temporal_pursuit     straight      202 success              0.985 frames=358
+temporal_pursuit     straight      201 success              0.984 frames=341
+temporal_pursuit     bend          202 success              0.982 frames=312
+temporal_pursuit     s_curve       201 success              0.984 frames=341
+temporal_pursuit     s_curve       202 success              0.983 frames=313
+temporal_pursuit     sharp         201 success              0.984 frames=332
+temporal_pursuit     sharp         202 success              0.983 frames=318
+temporal_pursuit     hairpin       201 success              0.986 frames=376
+temporal_pursuit     hairpin       202 success              0.986 frames=359
+temporal_pursuit     parallel      201 success              0.984 frames=341
+temporal_pursuit     parallel      202 success              0.985 frames=358
+temporal_pursuit     close_lines   201 success              0.984 frames=341
+temporal_pursuit     close_lines   202 success              0.985 frames=358
+temporal_mpc         straight      202 success              0.985 frames=359
+temporal_mpc         straight      201 success              0.984 frames=341
+temporal_mpc         bend          201 success              0.984 frames=322
+temporal_mpc         bend          202 success              0.983 frames=313
+temporal_pursuit     repeated      202 success              0.997 frames=1292
+temporal_pursuit     repeated      201 success              0.997 frames=1381
+temporal_mpc         s_curve       201 success              0.984 frames=336
+temporal_mpc         s_curve       202 success              0.982 frames=312
+temporal_mpc         sharp         202 success              0.983 frames=317
+temporal_mpc         sharp         201 success              0.983 frames=338
+temporal_mpc         hairpin       201 success              0.986 frames=382
+temporal_mpc         hairpin       202 success              0.986 frames=364
+temporal_mpc         parallel      201 success              0.984 frames=341
+temporal_mpc         close_lines   202 success              0.985 frames=358
+temporal_mpc         parallel      202 success              0.985 frames=359
+temporal_mpc         close_lines   201 success              0.984 frames=341
+temporal_mpc         repeated      201 success              0.997 frames=1377
+temporal_mpc         repeated      202 success              0.997 frames=1287
+temporal_pursuit 16 / 16 success
+temporal_mpc 16 / 16 success

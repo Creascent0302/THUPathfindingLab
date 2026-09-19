@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "thu-pathfinding-lab"
+version = "0.1.0"
+description = "智能交通创新实践：视觉寻迹实验平台"
+requires-python = ">=3.10"
+dependencies = [
+  "fastapi==0.115.12", "uvicorn==0.34.3", "numpy==2.2.6",
+  "opencv-python-headless==4.11.0.86", "pydantic==2.11.5",
+  "python-multipart==0.0.20", "websockets==15.0.1",
+]
+
+[project.optional-dependencies]
+learning = ["torch==2.7.1"]
+test = ["pytest==8.3.5", "httpx==0.28.1"]
+
+[project.scripts]
+pathlab = "pathlab.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["pathlab*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+

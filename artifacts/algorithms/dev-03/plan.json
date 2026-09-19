@@ -1,0 +1,28 @@
+{
+  "algorithms": [
+    "temporal_pursuit",
+    "temporal_mpc",
+    "scanline_pid"
+  ],
+  "families": [
+    "straight",
+    "bend",
+    "s_curve",
+    "sharp",
+    "hairpin",
+    "parallel",
+    "close_lines",
+    "repeated"
+  ],
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "steps": 2500,
+  "resolution": 320,
+  "jobs": 6,
+  "parameters": {},
+  "split": "development",
+  "output": "artifacts/algorithms/dev-03"
+}

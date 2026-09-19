@@ -1,0 +1,12 @@
+temporal_pursuit     custom       1001 success              0.988 frames=448
+temporal_pursuit     custom       1003 success              0.989 frames=490
+temporal_pursuit     custom       1002 success              0.990 frames=502
+temporal_mpc         custom       1001 success              0.988 frames=438
+temporal_mpc         custom       1002 success              0.990 frames=493
+temporal_pursuit     custom       1005 success              0.991 frames=592
+temporal_mpc         custom       1003 success              0.989 frames=479
+temporal_mpc         custom       1004 success              0.989 frames=462
+temporal_mpc         custom       1005 success              0.991 frames=580
+temporal_pursuit     custom       1004 episode_timeout      0.353 frames=4000
+temporal_pursuit 4 / 5 success
+temporal_mpc 5 / 5 success

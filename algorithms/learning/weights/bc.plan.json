@@ -1,0 +1,21 @@
+{
+  "command": "fit",
+  "data": [
+    "artifacts/learning/data"
+  ],
+  "output": "algorithms/learning/weights/driver.pt",
+  "epochs": 20,
+  "batch_size": 32,
+  "sequence_length": 12,
+  "threads": 4,
+  "lr": 0.0005,
+  "seed": 42,
+  "resume": null,
+  "torch_version": "2.7.1+cpu",
+  "parameters": 401259,
+  "training_frames": 14252,
+  "validation_frames": 3618,
+  "training_episodes": 64,
+  "validation_episodes": 16,
+  "device": "cpu"
+}

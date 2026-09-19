@@ -1,0 +1,17 @@
+﻿algorithm,family,seed,success,reason,completion,illegal_switches,inference_mean_ms
+cnn_gru,straight,203,True,success,0.9833966085869627,0,5.1783348837246495
+cnn_gru,straight,204,True,success,0.9849218995246055,0,4.579902993976523
+cnn_gru,bend,203,True,success,0.9821616101842418,0,4.820189228663942
+cnn_gru,bend,204,True,success,0.9826032242505263,0,4.26057846427469
+cnn_gru,s_curve,203,True,success,0.9829482507319081,0,4.380151504253755
+cnn_gru,s_curve,204,True,success,0.9826705802448881,0,4.074930131586419
+cnn_gru,sharp,203,True,success,0.9831441389038356,0,4.143442286819708
+cnn_gru,sharp,204,True,success,0.9833868386584586,0,5.142540531232953
+cnn_gru,hairpin,203,True,success,0.9855709603776437,0,5.087523581995361
+cnn_gru,hairpin,204,True,success,0.9856746102362544,0,4.0490714603723665
+cnn_gru,parallel,203,False,episode_timeout,0.0,0,4.55186143075116
+cnn_gru,parallel,204,False,episode_timeout,0.0,0,4.489446590421721
+cnn_gru,close_lines,203,True,success,0.9832888482387848,0,4.592830169325073
+cnn_gru,close_lines,204,True,success,0.9844693371629284,0,5.664977085540237
+cnn_gru,repeated,203,True,success,0.9968651498966727,0,3.99429156060656
+cnn_gru,repeated,204,True,success,0.996644536086475,0,3.980821509553347

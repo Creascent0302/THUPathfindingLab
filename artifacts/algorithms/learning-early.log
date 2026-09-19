@@ -1,0 +1,9 @@
+cnn_gru              straight      203 success              0.983 frames=311
+cnn_gru              bend          203 success              0.983 frames=324
+cnn_gru              sharp         203 success              0.984 frames=331
+cnn_gru              s_curve       203 success              0.983 frames=334
+cnn_gru              hairpin       203 success              0.986 frames=374
+cnn_gru              close_lines   203 success              0.983 frames=307
+cnn_gru              repeated      203 success              0.997 frames=1378
+cnn_gru              parallel      203 episode_timeout      0.000 frames=4000
+cnn_gru 7 / 8 success

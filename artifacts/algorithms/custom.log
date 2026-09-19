@@ -1,0 +1,8 @@
+temporal_pursuit     repeated        9 success              0.989 frames=485
+temporal_pursuit     repeated        7 success              0.992 frames=579
+temporal_pursuit     repeated        8 success              0.992 frames=597
+temporal_mpc         repeated        9 success              0.989 frames=482
+temporal_mpc         repeated        7 success              0.991 frames=573
+temporal_mpc         repeated        8 success              0.992 frames=589
+temporal_pursuit 3 / 3 success
+temporal_mpc 3 / 3 success

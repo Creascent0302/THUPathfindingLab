@@ -1,0 +1,90 @@
+[
+  {
+    "id": "stop",
+    "name": "停车示例",
+    "version": "1.0",
+    "capabilities": [
+      "action"
+    ],
+    "entrypoint": "algorithms.examples:Stop",
+    "description": "始终请求零速，用于检查接口和停车行为；不具有寻迹能力。"
+  },
+  {
+    "id": "constant",
+    "name": "固定动作示例",
+    "version": "1.0",
+    "capabilities": [
+      "action"
+    ],
+    "entrypoint": "algorithms.examples:Constant",
+    "description": "参数 speed_mps、steering_angle_rad；仅验证图像随动作变化，不做视觉决策。"
+  },
+  {
+    "id": "image_probe",
+    "name": "图像分割探针",
+    "version": "1.0",
+    "capabilities": [
+      "perception"
+    ],
+    "entrypoint": "algorithms.examples:ImageProbe",
+    "description": "显示暗线候选与绿色标记，验证 RGB 输入和跨帧状态；不选择目标、不驾驶。"
+  },
+  {
+    "id": "external_stop",
+    "name": "独立进程示例",
+    "version": "1.0",
+    "capabilities": [
+      "action"
+    ],
+    "command": [
+      "{python}",
+      "-m",
+      "student_template.stdio"
+    ],
+    "description": "通过标准输入输出 JSON Lines 接入的停车示例。"
+  },
+  {
+    "id": "temporal_pursuit",
+    "name": "时序拓扑 + 调速 Pure Pursuit",
+    "version": "0.1",
+    "capabilities": [
+      "action"
+    ],
+    "entrypoint": "algorithms.modular.algorithm:TemporalPursuit",
+    "description": "鸟瞰骨架、目标身份关联、短时预测与曲率调速。"
+  },
+  {
+    "id": "temporal_mpc",
+    "name": "时序拓扑 + 预测控制 MPC",
+    "version": "0.1",
+    "capabilities": [
+      "action"
+    ],
+    "entrypoint": "algorithms.modular.algorithm:TemporalMPC",
+    "description": "相同视觉信息，使用有限时域的转向约束轨迹优化。"
+  },
+  {
+    "id": "scanline_pid",
+    "name": "扫描线 PD 基线",
+    "version": "1.0",
+    "capabilities": [
+      "action"
+    ],
+    "entrypoint": "algorithms.scanline:ScanlinePID",
+    "description": "图像扫描线关联与平滑 PD 控制；用于比较时序拓扑算法的收益。"
+  },
+  {
+    "id": "cnn_gru",
+    "name": "端到端 CNN + GRU",
+    "version": "1.0",
+    "capabilities": [
+      "action"
+    ],
+    "entrypoint": "algorithms.learning.algorithm:RecurrentPolicy",
+    "description": "真实 CPU 模仿学习权重，时序图像直接输出动作；默认绿色标记初始化，无专家回退。",
+    "runtime_requirements": [
+      "torch"
+    ],
+    "checkpoint_file": "algorithms/learning/weights/driver.pt"
+  }
+]

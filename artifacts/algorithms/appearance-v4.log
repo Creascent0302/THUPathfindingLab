@@ -1,0 +1,10 @@
+temporal_pursuit     parallel        7 success              0.986 frames=357
+temporal_pursuit     close_lines     7 success              0.984 frames=356
+temporal_pursuit     hairpin         7 success              0.986 frames=365
+temporal_mpc         close_lines     7 success              0.985 frames=356
+temporal_mpc         parallel        7 success              0.985 frames=356
+temporal_mpc         hairpin         7 success              0.985 frames=363
+temporal_pursuit     repeated        7 success              0.996 frames=1330
+temporal_mpc         repeated        7 success              0.997 frames=1326
+temporal_pursuit 4 / 4 success
+temporal_mpc 4 / 4 success

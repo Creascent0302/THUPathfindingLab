@@ -1,0 +1,8 @@
+temporal_pursuit     parallel     1005 success              0.984 frames=330
+temporal_mpc         parallel     1005 success              0.984 frames=330
+temporal_pursuit     hairpin      1005 success              0.985 frames=349
+temporal_mpc         hairpin      1005 success              0.986 frames=351
+temporal_pursuit     repeated     1005 success              0.996 frames=1253
+temporal_mpc         repeated     1005 success              0.996 frames=1253
+temporal_pursuit 3 / 3 success
+temporal_mpc 3 / 3 success

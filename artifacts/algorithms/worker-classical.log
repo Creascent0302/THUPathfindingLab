@@ -1,0 +1,8 @@
+temporal_pursuit parallel     seed=204    completed  success              completion=0.985
+temporal_pursuit repeated     seed=204    completed  success              completion=0.996
+temporal_mpc   parallel     seed=204    completed  success              completion=0.986
+temporal_mpc   repeated     seed=204    completed  success              completion=0.997
+scanline_pid   parallel     seed=204    completed  episode_timeout      completion=0.000
+scanline_pid   repeated     seed=204    completed  episode_timeout      completion=0.203
+
+报告：artifacts/algorithms/worker-classical/report.md

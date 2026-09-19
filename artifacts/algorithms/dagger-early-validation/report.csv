@@ -1,0 +1,3 @@
+﻿algorithm,family,seed,success,reason,completion,illegal_switches,inference_mean_ms
+cnn_gru,parallel,203,False,episode_timeout,0.0,0,2.3842986496165395
+cnn_gru,parallel,204,False,episode_timeout,0.0,0,2.2882237115409225

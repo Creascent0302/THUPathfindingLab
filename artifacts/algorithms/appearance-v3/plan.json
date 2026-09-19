@@ -1,0 +1,38 @@
+{
+  "algorithms": [
+    "temporal_pursuit",
+    "temporal_mpc"
+  ],
+  "families": [
+    "parallel",
+    "close_lines",
+    "hairpin",
+    "repeated"
+  ],
+  "seeds": [
+    8
+  ],
+  "steps": 4000,
+  "resolution": 320,
+  "jobs": 4,
+  "parameters": {},
+  "suite": "appearance",
+  "split": "development",
+  "output": "artifacts/algorithms/appearance-v3",
+  "timing": "in_process_inference",
+  "code_sha256": {
+    "algorithms/__init__.py": "08f5f58aa57f280f42729c8a3222cf7d792b37eb2304963f58bbc39b106241fa",
+    "algorithms/examples.py": "e93c6f81bd78b21e2e1ab709366e4e0b4ed4c895b888a4b2834a4c2100bf3e82",
+    "algorithms/learning/__init__.py": "22013f582d9a48ad8396ee16caac83a6016dcdd327e686ccb6a21cd4be3b588c",
+    "algorithms/learning/algorithm.py": "b54381d831aac5f71b25824358d5faa6b8a2c03f2474d225fcf47e60150338ae",
+    "algorithms/learning/data.py": "fc71e8a33c04133ee9f6a38e5c67b424b1be1976e065836c24a9afde84131488",
+    "algorithms/learning/model.py": "8b305f75d606dc5ced3badb8c623d9b9d327777e22f4f2ab4f5d93b098a29343",
+    "algorithms/learning/train.py": "a5619322a08e533c3ba844ad7c8e9b9bd810ef1846f27f971d37fdaf35b80e2d",
+    "algorithms/modular/__init__.py": "eeccb5f09492121f56d5081dfeaef423b3a5f739860535d2de2b601ad9741a31",
+    "algorithms/modular/algorithm.py": "01d9974b6ef4c92f3dfec5480b8a3391bc131e86462d8b2f92a365ccf8b2f21a",
+    "algorithms/modular/control.py": "21fdab85c3b0d8df82cbb809f59543d400a3b6984e1800c50efbe2b1593c9302",
+    "algorithms/modular/vision.py": "30b0e1a7222c0116750425a2798e4a85444de6fbbca5ed8dd718926046963fa5",
+    "algorithms/scanline.py": "75b59619eeb1e769284dec568bd4e202bd4ab7373a11d28ac291f9c3fe212b80"
+  },
+  "checkpoint_sha256": "27677b895b06f3201a47d43a2783537dfcfb71b425db5acdcba53b1c18c15aaa"
+}

@@ -1,0 +1,33 @@
+{
+  "command": "fit",
+  "data": [
+    "artifacts/learning/data",
+    "artifacts/learning/dagger"
+  ],
+  "output": "artifacts/learning/dagger-model.pt",
+  "epochs": 8,
+  "batch_size": 32,
+  "sequence_length": 12,
+  "threads": 4,
+  "lr": 0.00015,
+  "seed": 42,
+  "resume": "artifacts/learning/bc.pt",
+  "torch_version": "2.7.1+cpu",
+  "parameters": 401259,
+  "training_frames": 28901,
+  "validation_frames": 7311,
+  "training_episodes": 128,
+  "validation_episodes": 32,
+  "device": "cpu",
+  "data_manifests_sha256": {
+    "artifacts/learning/data": "f4f5e0e0dd133fd252e18bb1f85a4524b73fb860c8bf12029ad693223728c225",
+    "artifacts/learning/dagger": "7cf9a1f01982405ff8ea6678389802a8311fcdc5f0f07edc9e91f54038d97bac"
+  },
+  "source_sha256": {
+    "__init__.py": "22013f582d9a48ad8396ee16caac83a6016dcdd327e686ccb6a21cd4be3b588c",
+    "algorithm.py": "3ce3bc39a19510e3e7b6bb9c65cbce65a29e6afba19bd420304e6bb15c5a38a6",
+    "data.py": "27ded8737d0ea9b26891bb3f8f9528a12434b96085b56112e13859ebea326478",
+    "model.py": "8b305f75d606dc5ced3badb8c623d9b9d327777e22f4f2ab4f5d93b098a29343",
+    "train.py": "e3e258de1c19d03581a4b3d16e7a0fc25ebed14038382540d7333cfa0695c7ca"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "algorithms": [
+    "stop",
+    "constant"
+  ],
+  "seeds": [
+    101,
+    102
+  ],
+  "families": [
+    "straight",
+    "bend",
+    "s_curve",
+    "sharp",
+    "hairpin",
+    "parallel",
+    "close_lines",
+    "repeated"
+  ],
+  "max_steps": 400,
+  "split": "test",
+  "disclaimer": "内置算法均为平台探针；本报告不是正式寻迹性能验收。"
+}

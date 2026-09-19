@@ -1,0 +1,18 @@
+temporal_pursuit     straight      204 success              0.985 frames=348
+temporal_pursuit     bend          204 success              0.983 frames=315
+temporal_pursuit     s_curve       204 success              0.984 frames=319
+temporal_pursuit     sharp         204 success              0.983 frames=328
+temporal_pursuit     hairpin       204 success              0.986 frames=363
+temporal_pursuit     parallel      204 success              0.985 frames=348
+temporal_pursuit     close_lines   204 success              0.985 frames=348
+temporal_mpc         straight      204 success              0.984 frames=347
+temporal_mpc         bend          204 success              0.983 frames=315
+temporal_mpc         sharp         204 success              0.983 frames=322
+temporal_mpc         hairpin       204 success              0.985 frames=363
+temporal_mpc         s_curve       204 success              0.984 frames=320
+temporal_mpc         close_lines   204 success              0.984 frames=347
+temporal_mpc         parallel      204 success              0.986 frames=348
+temporal_pursuit     repeated      204 success              0.996 frames=1318
+temporal_mpc         repeated      204 success              0.997 frames=1314
+temporal_pursuit 8 / 8 success
+temporal_mpc 8 / 8 success

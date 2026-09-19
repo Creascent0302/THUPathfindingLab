@@ -1,0 +1,9 @@
+temporal_pursuit     straight      203 episode_timeout      0.920 frames=4000
+temporal_pursuit     s_curve       203 episode_timeout      0.921 frames=4000
+temporal_pursuit     bend          203 episode_timeout      0.914 frames=4000
+temporal_pursuit     parallel      203 illegal_switch       0.976 frames=318
+temporal_pursuit     sharp         203 episode_timeout      0.926 frames=4000
+temporal_pursuit     hairpin       203 episode_timeout      0.717 frames=4000
+temporal_pursuit     close_lines   203 episode_timeout      0.916 frames=4000
+temporal_pursuit     repeated      203 episode_timeout      0.202 frames=4000
+temporal_pursuit 0 / 8 success

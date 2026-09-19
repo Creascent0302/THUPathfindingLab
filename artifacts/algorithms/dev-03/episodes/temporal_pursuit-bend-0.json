@@ -1,0 +1,159 @@
+{
+  "algorithm": "temporal_pursuit",
+  "family": "bend",
+  "seed": 0,
+  "split": "development",
+  "parameters": {},
+  "metrics": {
+    "evaluator_version": "1.0",
+    "reason": "success",
+    "frames": 317,
+    "success": true,
+    "acquisition_success": true,
+    "acquisition_time_s": 2.5,
+    "completion": 0.9834503054368903,
+    "tracking_lateral_error_m": {
+      "mean": 0.023752035124105526,
+      "p95": 0.05522684995332888,
+      "max": 0.19598327871845014
+    },
+    "acquisition_lateral_error_m": {
+      "mean": 0.9302893595687156,
+      "p95": 1.5178900728218414,
+      "max": 1.528105618128847
+    },
+    "heading_error_rad": {
+      "mean": 0.04022701496608906,
+      "p95": 0.19501076586675764,
+      "max": 0.3110665014931726
+    },
+    "illegal_switches": [],
+    "lost_count": 0,
+    "lost_duration_s": 0.0,
+    "recovery_rate": null,
+    "inference_ms": {
+      "mean": 18.975063873460805,
+      "p95": 26.061621308326718,
+      "max": 41.15825146436691
+    },
+    "timeout_count": 0,
+    "timeout_rate": 0.0,
+    "speed_mps": {
+      "mean": 0.716403785488959,
+      "p95": 0.8,
+      "max": 0.8
+    },
+    "simulation_time_s": 15.850000000000001,
+    "completion_time_s": 15.850000000000001,
+    "action_saturation_frames": 0,
+    "steering_total_variation_rad": 1.835814459709729,
+    "safety_intervention_frames": 0,
+    "failure_counts": {
+      "timeout": 0,
+      "crash": 0,
+      "protocol": 0,
+      "invalid_output": 0,
+      "exception": 0
+    },
+    "truth_metrics_available": true
+  },
+  "failures": [],
+  "wall_s": 10.309139280579984,
+  "last_frame": {
+    "frame_id": 316,
+    "timestamp_s": 15.850000000000001,
+    "dt_s": 0.05,
+    "output": {
+      "protocol_version": "1.0",
+      "status": "TRACK",
+      "confidence": 0.75,
+      "centerline_px": [
+        [
+          259.6622163310155,
+          5652.893410257505
+        ],
+        [
+          232.77381110846483,
+          1675.9035295423291
+        ],
+        [
+          248.39611156303468,
+          1115.9733152265658
+        ],
+        [
+          159.2256561087582,
+          422.7937494991782
+        ]
+      ],
+      "candidates_px": [],
+      "local_path_m": [
+        [
+          -0.07340524485454367,
+          -0.009766435094186551
+        ],
+        [
+          -0.023154145831726876,
+          -0.023902454583387186
+        ],
+        [
+          0.012185356457963361,
+          -0.0432962571480475
+        ],
+        [
+          0.17983651300860282,
+          0.00034294406534786484
+        ]
+      ],
+      "action": {
+        "steering_angle_rad": 0.0054870499773858545,
+        "speed_mps": 0.35
+      },
+      "lateral_error_m": null,
+      "heading_error_rad": 0.0398986892352647,
+      "curvature_per_m": 0.017147203267393243,
+      "debug": {
+        "identity_initialized": true,
+        "prediction_only": true,
+        "missing_s": 2.200000000000019,
+        "observed_points": 4,
+        "motion_source": "previous_command_model"
+      },
+      "diagnostics": [
+        "沿已观测终点进入相机近端盲区；有界运动预测"
+      ]
+    },
+    "applied": {
+      "requested": {
+        "steering_angle_rad": 0.0054870499773858545,
+        "speed_mps": 0.35
+      },
+      "bounded": {
+        "steering_angle_rad": 0.0054870499773858545,
+        "speed_mps": 0.35
+      },
+      "actual": {
+        "steering_angle_rad": 0.0054870499773858545,
+        "speed_mps": 0.35
+      },
+      "interventions": []
+    },
+    "evaluation": {
+      "phase": "tracking",
+      "lateral_error_m": 0.005974296447932126,
+      "heading_error_rad": 0.015678693808523825,
+      "progress_m": 9.833954185422357,
+      "completion": 0.9834503054368903,
+      "switch_count": 0,
+      "reason": "success"
+    },
+    "inference_ms": 11.043601669371128,
+    "interventions": [],
+    "pose": {
+      "x_m": 4.266962294114577,
+      "y_m": 6.107448881405654,
+      "yaw_rad": 1.5551176329863727,
+      "speed_mps": 0.35,
+      "steering_angle_rad": 0.0054870499773858545
+    }
+  }
+}

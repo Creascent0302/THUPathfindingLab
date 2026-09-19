@@ -1,0 +1,159 @@
+{
+  "algorithm": "temporal_pursuit",
+  "family": "straight",
+  "seed": 7,
+  "split": "development",
+  "parameters": {},
+  "metrics": {
+    "evaluator_version": "1.0",
+    "reason": "success",
+    "frames": 357,
+    "success": true,
+    "acquisition_success": true,
+    "acquisition_time_s": 2.25,
+    "completion": 0.9858708867779662,
+    "tracking_lateral_error_m": {
+      "mean": 0.010719434345567049,
+      "p95": 0.05188012046558739,
+      "max": 0.17299710038105764
+    },
+    "acquisition_lateral_error_m": {
+      "mean": 0.9677662414266767,
+      "p95": 1.5023094197621962,
+      "max": 1.5112080927286884
+    },
+    "heading_error_rad": {
+      "mean": 0.01572649990040556,
+      "p95": 0.12424979098633364,
+      "max": 0.15341309930006375
+    },
+    "illegal_switches": [],
+    "lost_count": 0,
+    "lost_duration_s": 0.0,
+    "recovery_rate": null,
+    "inference_ms": {
+      "mean": 19.348141121618053,
+      "p95": 23.390265740454197,
+      "max": 36.19235381484032
+    },
+    "timeout_count": 0,
+    "timeout_rate": 0.0,
+    "speed_mps": {
+      "mean": 0.7231932773109242,
+      "p95": 0.8,
+      "max": 0.8
+    },
+    "simulation_time_s": 17.85,
+    "completion_time_s": 17.85,
+    "action_saturation_frames": 0,
+    "steering_total_variation_rad": 1.0358879805340953,
+    "safety_intervention_frames": 0,
+    "failure_counts": {
+      "timeout": 0,
+      "crash": 0,
+      "protocol": 0,
+      "invalid_output": 0,
+      "exception": 0
+    },
+    "truth_metrics_available": true
+  },
+  "failures": [],
+  "wall_s": 11.969936774112284,
+  "last_frame": {
+    "frame_id": 356,
+    "timestamp_s": 17.85,
+    "dt_s": 0.05,
+    "output": {
+      "protocol_version": "1.0",
+      "status": "TRACK",
+      "confidence": 0.75,
+      "centerline_px": [
+        [
+          133.8259202471778,
+          3652.514809177931
+        ],
+        [
+          190.8212170843263,
+          1536.5193174955627
+        ],
+        [
+          239.4115547051604,
+          1054.9142444260312
+        ],
+        [
+          159.21997028250232,
+          423.9663221690911
+        ]
+      ],
+      "candidates_px": [],
+      "local_path_m": [
+        [
+          -0.0617345621519574,
+          0.0038670660524681394
+        ],
+        [
+          -0.016734363658324213,
+          -0.011132338453498297
+        ],
+        [
+          0.018266033333758466,
+          -0.04113187528986684
+        ],
+        [
+          0.179110554845164,
+          0.00034912643634980937
+        ]
+      ],
+      "action": {
+        "steering_angle_rad": 0.0055859648812442535,
+        "speed_mps": 0.35
+      },
+      "lateral_error_m": null,
+      "heading_error_rad": -0.014605608380225272,
+      "curvature_per_m": 0.017456321817490468,
+      "debug": {
+        "identity_initialized": true,
+        "prediction_only": true,
+        "missing_s": 2.2000000000000233,
+        "observed_points": 4,
+        "motion_source": "previous_command_model"
+      },
+      "diagnostics": [
+        "沿已观测终点进入相机近端盲区；有界运动预测"
+      ]
+    },
+    "applied": {
+      "requested": {
+        "steering_angle_rad": 0.0055859648812442535,
+        "speed_mps": 0.35
+      },
+      "bounded": {
+        "steering_angle_rad": 0.0055859648812442535,
+        "speed_mps": 0.35
+      },
+      "actual": {
+        "steering_angle_rad": 0.0055859648812442535,
+        "speed_mps": 0.35
+      },
+      "interventions": []
+    },
+    "evaluation": {
+      "phase": "tracking",
+      "lateral_error_m": 0.0005162649499594271,
+      "heading_error_rad": 0.002094094616830411,
+      "progress_m": 11.388160746385678,
+      "completion": 0.9858708867779662,
+      "switch_count": 0,
+      "reason": "success"
+    },
+    "inference_ms": 10.475894436240196,
+    "interventions": [],
+    "pose": {
+      "x_m": 11.388160746385678,
+      "y_m": -0.0005162649499594271,
+      "yaw_rad": 0.002094094616830411,
+      "speed_mps": 0.35,
+      "steering_angle_rad": 0.0055859648812442535
+    }
+  }
+}

@@ -1,0 +1,167 @@
+{
+  "algorithm": "temporal_mpc",
+  "family": "bend",
+  "seed": 0,
+  "split": "development",
+  "parameters": {},
+  "metrics": {
+    "evaluator_version": "1.0",
+    "reason": "success",
+    "frames": 317,
+    "success": true,
+    "acquisition_success": true,
+    "acquisition_time_s": 2.25,
+    "completion": 0.9828444207697391,
+    "tracking_lateral_error_m": {
+      "mean": 0.021187066008377217,
+      "p95": 0.04889682258268733,
+      "max": 0.1756306481234955
+    },
+    "acquisition_lateral_error_m": {
+      "mean": 0.9871859937143005,
+      "p95": 1.5195436395017394,
+      "max": 1.528105618128847
+    },
+    "heading_error_rad": {
+      "mean": 0.029995382093002315,
+      "p95": 0.1414665493641446,
+      "max": 0.16550165530261474
+    },
+    "illegal_switches": [],
+    "lost_count": 0,
+    "lost_duration_s": 0.0,
+    "recovery_rate": null,
+    "inference_ms": {
+      "mean": 13.642299397369664,
+      "p95": 18.89071613550186,
+      "max": 40.680223144590855
+    },
+    "timeout_count": 0,
+    "timeout_rate": 0.0,
+    "speed_mps": {
+      "mean": 0.7149842271293375,
+      "p95": 0.8,
+      "max": 0.8
+    },
+    "simulation_time_s": 15.850000000000001,
+    "completion_time_s": 15.850000000000001,
+    "action_saturation_frames": 0,
+    "steering_total_variation_rad": 3.3693090224349733,
+    "safety_intervention_frames": 0,
+    "failure_counts": {
+      "timeout": 0,
+      "crash": 0,
+      "protocol": 0,
+      "invalid_output": 0,
+      "exception": 0
+    },
+    "truth_metrics_available": true
+  },
+  "failures": [],
+  "wall_s": 7.774340367875993,
+  "last_frame": {
+    "frame_id": 316,
+    "timestamp_s": 15.850000000000001,
+    "dt_s": 0.05,
+    "output": {
+      "protocol_version": "1.0",
+      "status": "TRACK",
+      "confidence": 0.75,
+      "centerline_px": [
+        [
+          -805.5547242056961,
+          36625.51061352713
+        ],
+        [
+          133.82370661185445,
+          2246.577315487075
+        ],
+        [
+          199.89254233181018,
+          1267.0392599795216
+        ],
+        [
+          235.3112145498406,
+          990.6957585045362
+        ],
+        [
+          154.7838078668486,
+          417.3460649606319
+        ]
+      ],
+      "candidates_px": [],
+      "local_path_m": [
+        [
+          -0.09151323764918988,
+          0.014566224244976167
+        ],
+        [
+          -0.04120302843408487,
+          0.006266655055412032
+        ],
+        [
+          -0.00037866807913970507,
+          -0.017363232832802774
+        ],
+        [
+          0.025454310625896183,
+          -0.041501526294130085
+        ],
+        [
+          0.18326035233056454,
+          0.005968974198179967
+        ]
+      ],
+      "action": {
+        "steering_angle_rad": 0.0052148052324861305,
+        "speed_mps": 0.35
+      },
+      "lateral_error_m": null,
+      "heading_error_rad": -0.03127828337666081,
+      "curvature_per_m": 0.01629641407440015,
+      "debug": {
+        "identity_initialized": true,
+        "prediction_only": true,
+        "missing_s": 2.2500000000000195,
+        "observed_points": 5,
+        "motion_source": "previous_command_model"
+      },
+      "diagnostics": [
+        "沿已观测终点进入相机近端盲区；有界运动预测"
+      ]
+    },
+    "applied": {
+      "requested": {
+        "steering_angle_rad": 0.0052148052324861305,
+        "speed_mps": 0.35
+      },
+      "bounded": {
+        "steering_angle_rad": 0.0052148052324861305,
+        "speed_mps": 0.35
+      },
+      "actual": {
+        "steering_angle_rad": 0.0052148052324861305,
+        "speed_mps": 0.35
+      },
+      "interventions": []
+    },
+    "evaluation": {
+      "phase": "tracking",
+      "lateral_error_m": 0.0036682730413142295,
+      "heading_error_rad": 0.03313274406452482,
+      "progress_m": 9.827895676898363,
+      "completion": 0.9828444207697391,
+      "switch_count": 0,
+      "reason": "success"
+    },
+    "inference_ms": 8.049791678786278,
+    "interventions": [],
+    "pose": {
+      "x_m": 4.2692683175211945,
+      "y_m": 6.101390372881661,
+      "yaw_rad": 1.5376635827303717,
+      "speed_mps": 0.35,
+      "steering_angle_rad": 0.0052148052324861305
+    }
+  }
+}

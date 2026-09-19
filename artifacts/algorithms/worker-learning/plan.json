@@ -1,0 +1,16 @@
+{
+  "algorithms": [
+    "cnn_gru"
+  ],
+  "seeds": [
+    204
+  ],
+  "families": [
+    "parallel",
+    "repeated"
+  ],
+  "max_steps": 4000,
+  "split": "validation",
+  "timing": "worker_protocol_round_trip",
+  "disclaimer": "实际独立进程闭环评测；保留失败，性能结论仅适用于列出的场景集合。"
+}

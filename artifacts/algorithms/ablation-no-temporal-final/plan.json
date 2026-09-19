@@ -1,0 +1,66 @@
+{
+  "algorithms": [
+    "temporal_pursuit"
+  ],
+  "families": [
+    "straight",
+    "bend",
+    "s_curve",
+    "sharp",
+    "hairpin",
+    "parallel",
+    "close_lines",
+    "repeated"
+  ],
+  "seeds": [
+    203
+  ],
+  "steps": 4000,
+  "resolution": 320,
+  "jobs": 3,
+  "parameters": {
+    "temporal": false
+  },
+  "suite": "core",
+  "split": "validation",
+  "output": "artifacts/algorithms/ablation-no-temporal-final",
+  "timing": "in_process_inference",
+  "environment": {
+    "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+    "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.31",
+    "packages": {
+      "numpy": "2.2.6",
+      "opencv-python-headless": "4.11.0.86",
+      "fastapi": "0.115.12",
+      "pydantic": "2.11.5",
+      "uvicorn": "0.34.3"
+    }
+  },
+  "evaluator_version": "1.0",
+  "thresholds": {
+    "acquire_distance_m": 0.2,
+    "acquire_heading_rad": 0.45,
+    "entry_arc_m": 0.5,
+    "track_distance_m": 0.24,
+    "track_heading_rad": 0.65,
+    "offtrack_timeout_s": 2.0,
+    "switch_distance_m": 0.14,
+    "switch_margin_m": 0.035,
+    "switch_duration_s": 0.5,
+    "finish_remaining_m": 0.18
+  },
+  "code_sha256": {
+    "algorithms/__init__.py": "08f5f58aa57f280f42729c8a3222cf7d792b37eb2304963f58bbc39b106241fa",
+    "algorithms/examples.py": "e93c6f81bd78b21e2e1ab709366e4e0b4ed4c895b888a4b2834a4c2100bf3e82",
+    "algorithms/learning/__init__.py": "22013f582d9a48ad8396ee16caac83a6016dcdd327e686ccb6a21cd4be3b588c",
+    "algorithms/learning/algorithm.py": "3ce3bc39a19510e3e7b6bb9c65cbce65a29e6afba19bd420304e6bb15c5a38a6",
+    "algorithms/learning/data.py": "27ded8737d0ea9b26891bb3f8f9528a12434b96085b56112e13859ebea326478",
+    "algorithms/learning/model.py": "8b305f75d606dc5ced3badb8c623d9b9d327777e22f4f2ab4f5d93b098a29343",
+    "algorithms/learning/train.py": "e3e258de1c19d03581a4b3d16e7a0fc25ebed14038382540d7333cfa0695c7ca",
+    "algorithms/modular/__init__.py": "eeccb5f09492121f56d5081dfeaef423b3a5f739860535d2de2b601ad9741a31",
+    "algorithms/modular/algorithm.py": "01d9974b6ef4c92f3dfec5480b8a3391bc131e86462d8b2f92a365ccf8b2f21a",
+    "algorithms/modular/control.py": "21fdab85c3b0d8df82cbb809f59543d400a3b6984e1800c50efbe2b1593c9302",
+    "algorithms/modular/vision.py": "07208bc65e8694e61a06b5380fc3dcba8c606f59ad8017397a4e64add5a030e9",
+    "algorithms/scanline.py": "54e699a4c63b27fb45df86d7a64dc1cbb67649d8fb7eda125b4bf5f6bf0c8f8b"
+  }
+}

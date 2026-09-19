@@ -1,0 +1,9 @@
+scanline_pid         bend            7 success              0.983 frames=498
+scanline_pid         straight        7 success              0.986 frames=533
+scanline_pid         sharp           7 success              0.984 frames=532
+scanline_pid         s_curve         7 success              0.984 frames=539
+scanline_pid         close_lines     7 success              0.985 frames=531
+scanline_pid         hairpin         7 episode_timeout      0.725 frames=4000
+scanline_pid         parallel        7 episode_timeout      0.000 frames=4000
+scanline_pid         repeated        7 episode_timeout      0.204 frames=4000
+scanline_pid 5 / 8 success

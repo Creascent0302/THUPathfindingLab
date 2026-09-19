@@ -1,0 +1,6 @@
+
+> pathfinding-lab-ui@0.1.0 check
+> tsc -b && prettier --check src
+
+Checking formatting...
+All matched files use Prettier code style!

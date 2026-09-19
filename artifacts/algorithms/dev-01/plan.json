@@ -1,0 +1,20 @@
+{
+  "algorithms": [
+    "temporal_pursuit"
+  ],
+  "families": [
+    "straight",
+    "bend",
+    "s_curve",
+    "hairpin"
+  ],
+  "seeds": [
+    7
+  ],
+  "steps": 1400,
+  "resolution": 320,
+  "jobs": 4,
+  "parameters": {},
+  "split": "development",
+  "output": "artifacts/algorithms/dev-01"
+}

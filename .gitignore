@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+.pytest_cache/
+*.egg-info/
+frontend/node_modules/
+frontend/dist/
+frontend/*.tsbuildinfo
+artifacts/runs/
+artifacts/uploads/
+artifacts/browser/
+.cache/
+artifacts/submissions/
+artifacts/maps/
+artifacts/browser-authoring/
+artifacts/learning/

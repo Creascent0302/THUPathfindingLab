@@ -1,0 +1,1630 @@
+{
+  "data": {
+    "manifest_sha256": "f4f5e0e0dd133fd252e18bb1f85a4524b73fb860c8bf12029ad693223728c225",
+    "plan": {
+      "command": "collect",
+      "data": "artifacts/learning/data",
+      "episodes_per_family": 8,
+      "validation_seeds": 2,
+      "jobs": 4,
+      "checkpoint": null,
+      "beta": 0.2
+    },
+    "episodes": [
+      {
+        "file": "development-straight-0.npz",
+        "family": "straight",
+        "seed": 0,
+        "split": "development",
+        "frames": 150,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-straight-1.npz",
+        "family": "straight",
+        "seed": 1,
+        "split": "development",
+        "frames": 155,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-straight-2.npz",
+        "family": "straight",
+        "seed": 2,
+        "split": "development",
+        "frames": 171,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-straight-3.npz",
+        "family": "straight",
+        "seed": 3,
+        "split": "development",
+        "frames": 171,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-straight-4.npz",
+        "family": "straight",
+        "seed": 4,
+        "split": "development",
+        "frames": 174,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-straight-5.npz",
+        "family": "straight",
+        "seed": 5,
+        "split": "development",
+        "frames": 162,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-straight-6.npz",
+        "family": "straight",
+        "seed": 6,
+        "split": "development",
+        "frames": 159,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-straight-7.npz",
+        "family": "straight",
+        "seed": 7,
+        "split": "development",
+        "frames": 171,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "validation-straight-201.npz",
+        "family": "straight",
+        "seed": 201,
+        "split": "validation",
+        "frames": 162,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "validation-straight-202.npz",
+        "family": "straight",
+        "seed": 202,
+        "split": "validation",
+        "frames": 169,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-bend-0.npz",
+        "family": "bend",
+        "seed": 0,
+        "split": "development",
+        "frames": 149,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-bend-1.npz",
+        "family": "bend",
+        "seed": 1,
+        "split": "development",
+        "frames": 147,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-bend-2.npz",
+        "family": "bend",
+        "seed": 2,
+        "split": "development",
+        "frames": 145,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-bend-3.npz",
+        "family": "bend",
+        "seed": 3,
+        "split": "development",
+        "frames": 150,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-bend-4.npz",
+        "family": "bend",
+        "seed": 4,
+        "split": "development",
+        "frames": 151,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-bend-5.npz",
+        "family": "bend",
+        "seed": 5,
+        "split": "development",
+        "frames": 155,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-bend-6.npz",
+        "family": "bend",
+        "seed": 6,
+        "split": "development",
+        "frames": 148,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-bend-7.npz",
+        "family": "bend",
+        "seed": 7,
+        "split": "development",
+        "frames": 150,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "validation-bend-201.npz",
+        "family": "bend",
+        "seed": 201,
+        "split": "validation",
+        "frames": 156,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "validation-bend-202.npz",
+        "family": "bend",
+        "seed": 202,
+        "split": "validation",
+        "frames": 147,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-s_curve-0.npz",
+        "family": "s_curve",
+        "seed": 0,
+        "split": "development",
+        "frames": 155,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-s_curve-1.npz",
+        "family": "s_curve",
+        "seed": 1,
+        "split": "development",
+        "frames": 149,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-s_curve-2.npz",
+        "family": "s_curve",
+        "seed": 2,
+        "split": "development",
+        "frames": 144,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-s_curve-3.npz",
+        "family": "s_curve",
+        "seed": 3,
+        "split": "development",
+        "frames": 144,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-s_curve-4.npz",
+        "family": "s_curve",
+        "seed": 4,
+        "split": "development",
+        "frames": 163,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-s_curve-5.npz",
+        "family": "s_curve",
+        "seed": 5,
+        "split": "development",
+        "frames": 156,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-s_curve-6.npz",
+        "family": "s_curve",
+        "seed": 6,
+        "split": "development",
+        "frames": 151,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-s_curve-7.npz",
+        "family": "s_curve",
+        "seed": 7,
+        "split": "development",
+        "frames": 154,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "validation-s_curve-201.npz",
+        "family": "s_curve",
+        "seed": 201,
+        "split": "validation",
+        "frames": 164,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "validation-s_curve-202.npz",
+        "family": "s_curve",
+        "seed": 202,
+        "split": "validation",
+        "frames": 147,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-sharp-0.npz",
+        "family": "sharp",
+        "seed": 0,
+        "split": "development",
+        "frames": 156,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-sharp-1.npz",
+        "family": "sharp",
+        "seed": 1,
+        "split": "development",
+        "frames": 157,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-sharp-2.npz",
+        "family": "sharp",
+        "seed": 2,
+        "split": "development",
+        "frames": 151,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-sharp-3.npz",
+        "family": "sharp",
+        "seed": 3,
+        "split": "development",
+        "frames": 149,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-sharp-4.npz",
+        "family": "sharp",
+        "seed": 4,
+        "split": "development",
+        "frames": 157,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-sharp-5.npz",
+        "family": "sharp",
+        "seed": 5,
+        "split": "development",
+        "frames": 160,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-sharp-6.npz",
+        "family": "sharp",
+        "seed": 6,
+        "split": "development",
+        "frames": 157,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-sharp-7.npz",
+        "family": "sharp",
+        "seed": 7,
+        "split": "development",
+        "frames": 158,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "validation-sharp-201.npz",
+        "family": "sharp",
+        "seed": 201,
+        "split": "validation",
+        "frames": 157,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "validation-sharp-202.npz",
+        "family": "sharp",
+        "seed": 202,
+        "split": "validation",
+        "frames": 152,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-hairpin-0.npz",
+        "family": "hairpin",
+        "seed": 0,
+        "split": "development",
+        "frames": 174,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-hairpin-1.npz",
+        "family": "hairpin",
+        "seed": 1,
+        "split": "development",
+        "frames": 174,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-hairpin-2.npz",
+        "family": "hairpin",
+        "seed": 2,
+        "split": "development",
+        "frames": 169,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-hairpin-3.npz",
+        "family": "hairpin",
+        "seed": 3,
+        "split": "development",
+        "frames": 165,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-hairpin-4.npz",
+        "family": "hairpin",
+        "seed": 4,
+        "split": "development",
+        "frames": 183,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-hairpin-5.npz",
+        "family": "hairpin",
+        "seed": 5,
+        "split": "development",
+        "frames": 178,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-hairpin-6.npz",
+        "family": "hairpin",
+        "seed": 6,
+        "split": "development",
+        "frames": 172,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-hairpin-7.npz",
+        "family": "hairpin",
+        "seed": 7,
+        "split": "development",
+        "frames": 173,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "validation-hairpin-201.npz",
+        "family": "hairpin",
+        "seed": 201,
+        "split": "validation",
+        "frames": 183,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "validation-hairpin-202.npz",
+        "family": "hairpin",
+        "seed": 202,
+        "split": "validation",
+        "frames": 169,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-parallel-0.npz",
+        "family": "parallel",
+        "seed": 0,
+        "split": "development",
+        "frames": 151,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-parallel-1.npz",
+        "family": "parallel",
+        "seed": 1,
+        "split": "development",
+        "frames": 155,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-parallel-2.npz",
+        "family": "parallel",
+        "seed": 2,
+        "split": "development",
+        "frames": 172,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-parallel-3.npz",
+        "family": "parallel",
+        "seed": 3,
+        "split": "development",
+        "frames": 169,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-parallel-4.npz",
+        "family": "parallel",
+        "seed": 4,
+        "split": "development",
+        "frames": 173,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-parallel-5.npz",
+        "family": "parallel",
+        "seed": 5,
+        "split": "development",
+        "frames": 162,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-parallel-6.npz",
+        "family": "parallel",
+        "seed": 6,
+        "split": "development",
+        "frames": 160,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-parallel-7.npz",
+        "family": "parallel",
+        "seed": 7,
+        "split": "development",
+        "frames": 169,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "validation-parallel-201.npz",
+        "family": "parallel",
+        "seed": 201,
+        "split": "validation",
+        "frames": 163,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "validation-parallel-202.npz",
+        "family": "parallel",
+        "seed": 202,
+        "split": "validation",
+        "frames": 170,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-close_lines-0.npz",
+        "family": "close_lines",
+        "seed": 0,
+        "split": "development",
+        "frames": 156,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-close_lines-1.npz",
+        "family": "close_lines",
+        "seed": 1,
+        "split": "development",
+        "frames": 152,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-close_lines-2.npz",
+        "family": "close_lines",
+        "seed": 2,
+        "split": "development",
+        "frames": 171,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-close_lines-3.npz",
+        "family": "close_lines",
+        "seed": 3,
+        "split": "development",
+        "frames": 169,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-close_lines-4.npz",
+        "family": "close_lines",
+        "seed": 4,
+        "split": "development",
+        "frames": 174,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-close_lines-5.npz",
+        "family": "close_lines",
+        "seed": 5,
+        "split": "development",
+        "frames": 167,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-close_lines-6.npz",
+        "family": "close_lines",
+        "seed": 6,
+        "split": "development",
+        "frames": 157,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-close_lines-7.npz",
+        "family": "close_lines",
+        "seed": 7,
+        "split": "development",
+        "frames": 168,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "validation-close_lines-201.npz",
+        "family": "close_lines",
+        "seed": 201,
+        "split": "validation",
+        "frames": 166,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "validation-close_lines-202.npz",
+        "family": "close_lines",
+        "seed": 202,
+        "split": "validation",
+        "frames": 172,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-repeated-0.npz",
+        "family": "repeated",
+        "seed": 0,
+        "split": "development",
+        "frames": 668,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-repeated-1.npz",
+        "family": "repeated",
+        "seed": 1,
+        "split": "development",
+        "frames": 656,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-repeated-2.npz",
+        "family": "repeated",
+        "seed": 2,
+        "split": "development",
+        "frames": 644,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-repeated-3.npz",
+        "family": "repeated",
+        "seed": 3,
+        "split": "development",
+        "frames": 627,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-repeated-4.npz",
+        "family": "repeated",
+        "seed": 4,
+        "split": "development",
+        "frames": 680,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-repeated-5.npz",
+        "family": "repeated",
+        "seed": 5,
+        "split": "development",
+        "frames": 672,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-repeated-6.npz",
+        "family": "repeated",
+        "seed": 6,
+        "split": "development",
+        "frames": 660,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "development-repeated-7.npz",
+        "family": "repeated",
+        "seed": 7,
+        "split": "development",
+        "frames": 663,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "validation-repeated-201.npz",
+        "family": "repeated",
+        "seed": 201,
+        "split": "validation",
+        "frames": 691,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      },
+      {
+        "file": "validation-repeated-202.npz",
+        "family": "repeated",
+        "seed": 202,
+        "split": "validation",
+        "frames": 650,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": null
+      }
+    ]
+  },
+  "dagger": {
+    "manifest_sha256": "7cf9a1f01982405ff8ea6678389802a8311fcdc5f0f07edc9e91f54038d97bac",
+    "plan": {
+      "command": "collect",
+      "data": "artifacts/learning/dagger",
+      "episodes_per_family": 8,
+      "validation_seeds": 2,
+      "jobs": 4,
+      "checkpoint": "artifacts/learning/epoch-snapshot.pt",
+      "beta": 0.25
+    },
+    "episodes": [
+      {
+        "file": "development-straight-0.npz",
+        "family": "straight",
+        "seed": 0,
+        "split": "development",
+        "frames": 155,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-straight-1.npz",
+        "family": "straight",
+        "seed": 1,
+        "split": "development",
+        "frames": 156,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-straight-2.npz",
+        "family": "straight",
+        "seed": 2,
+        "split": "development",
+        "frames": 180,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-straight-3.npz",
+        "family": "straight",
+        "seed": 3,
+        "split": "development",
+        "frames": 175,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-straight-4.npz",
+        "family": "straight",
+        "seed": 4,
+        "split": "development",
+        "frames": 179,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-straight-5.npz",
+        "family": "straight",
+        "seed": 5,
+        "split": "development",
+        "frames": 170,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-straight-6.npz",
+        "family": "straight",
+        "seed": 6,
+        "split": "development",
+        "frames": 163,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-straight-7.npz",
+        "family": "straight",
+        "seed": 7,
+        "split": "development",
+        "frames": 177,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "validation-straight-201.npz",
+        "family": "straight",
+        "seed": 201,
+        "split": "validation",
+        "frames": 167,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "validation-straight-202.npz",
+        "family": "straight",
+        "seed": 202,
+        "split": "validation",
+        "frames": 173,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-bend-0.npz",
+        "family": "bend",
+        "seed": 0,
+        "split": "development",
+        "frames": 158,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-bend-1.npz",
+        "family": "bend",
+        "seed": 1,
+        "split": "development",
+        "frames": 156,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-bend-2.npz",
+        "family": "bend",
+        "seed": 2,
+        "split": "development",
+        "frames": 157,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-bend-3.npz",
+        "family": "bend",
+        "seed": 3,
+        "split": "development",
+        "frames": 151,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-bend-4.npz",
+        "family": "bend",
+        "seed": 4,
+        "split": "development",
+        "frames": 157,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-bend-5.npz",
+        "family": "bend",
+        "seed": 5,
+        "split": "development",
+        "frames": 156,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-bend-6.npz",
+        "family": "bend",
+        "seed": 6,
+        "split": "development",
+        "frames": 149,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-bend-7.npz",
+        "family": "bend",
+        "seed": 7,
+        "split": "development",
+        "frames": 153,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "validation-bend-201.npz",
+        "family": "bend",
+        "seed": 201,
+        "split": "validation",
+        "frames": 156,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "validation-bend-202.npz",
+        "family": "bend",
+        "seed": 202,
+        "split": "validation",
+        "frames": 154,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-s_curve-0.npz",
+        "family": "s_curve",
+        "seed": 0,
+        "split": "development",
+        "frames": 156,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-s_curve-1.npz",
+        "family": "s_curve",
+        "seed": 1,
+        "split": "development",
+        "frames": 159,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-s_curve-2.npz",
+        "family": "s_curve",
+        "seed": 2,
+        "split": "development",
+        "frames": 152,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-s_curve-3.npz",
+        "family": "s_curve",
+        "seed": 3,
+        "split": "development",
+        "frames": 151,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-s_curve-4.npz",
+        "family": "s_curve",
+        "seed": 4,
+        "split": "development",
+        "frames": 162,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-s_curve-5.npz",
+        "family": "s_curve",
+        "seed": 5,
+        "split": "development",
+        "frames": 165,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-s_curve-6.npz",
+        "family": "s_curve",
+        "seed": 6,
+        "split": "development",
+        "frames": 158,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-s_curve-7.npz",
+        "family": "s_curve",
+        "seed": 7,
+        "split": "development",
+        "frames": 159,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "validation-s_curve-201.npz",
+        "family": "s_curve",
+        "seed": 201,
+        "split": "validation",
+        "frames": 164,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "validation-s_curve-202.npz",
+        "family": "s_curve",
+        "seed": 202,
+        "split": "validation",
+        "frames": 152,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-sharp-0.npz",
+        "family": "sharp",
+        "seed": 0,
+        "split": "development",
+        "frames": 160,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-sharp-1.npz",
+        "family": "sharp",
+        "seed": 1,
+        "split": "development",
+        "frames": 159,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-sharp-2.npz",
+        "family": "sharp",
+        "seed": 2,
+        "split": "development",
+        "frames": 155,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-sharp-3.npz",
+        "family": "sharp",
+        "seed": 3,
+        "split": "development",
+        "frames": 149,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-sharp-4.npz",
+        "family": "sharp",
+        "seed": 4,
+        "split": "development",
+        "frames": 158,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-sharp-5.npz",
+        "family": "sharp",
+        "seed": 5,
+        "split": "development",
+        "frames": 158,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-sharp-6.npz",
+        "family": "sharp",
+        "seed": 6,
+        "split": "development",
+        "frames": 156,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-sharp-7.npz",
+        "family": "sharp",
+        "seed": 7,
+        "split": "development",
+        "frames": 159,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "validation-sharp-201.npz",
+        "family": "sharp",
+        "seed": 201,
+        "split": "validation",
+        "frames": 160,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "validation-sharp-202.npz",
+        "family": "sharp",
+        "seed": 202,
+        "split": "validation",
+        "frames": 157,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-hairpin-0.npz",
+        "family": "hairpin",
+        "seed": 0,
+        "split": "development",
+        "frames": 181,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-hairpin-1.npz",
+        "family": "hairpin",
+        "seed": 1,
+        "split": "development",
+        "frames": 186,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-hairpin-2.npz",
+        "family": "hairpin",
+        "seed": 2,
+        "split": "development",
+        "frames": 176,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-hairpin-3.npz",
+        "family": "hairpin",
+        "seed": 3,
+        "split": "development",
+        "frames": 176,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-hairpin-4.npz",
+        "family": "hairpin",
+        "seed": 4,
+        "split": "development",
+        "frames": 182,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-hairpin-5.npz",
+        "family": "hairpin",
+        "seed": 5,
+        "split": "development",
+        "frames": 178,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-hairpin-6.npz",
+        "family": "hairpin",
+        "seed": 6,
+        "split": "development",
+        "frames": 177,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-hairpin-7.npz",
+        "family": "hairpin",
+        "seed": 7,
+        "split": "development",
+        "frames": 177,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "validation-hairpin-201.npz",
+        "family": "hairpin",
+        "seed": 201,
+        "split": "validation",
+        "frames": 186,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "validation-hairpin-202.npz",
+        "family": "hairpin",
+        "seed": 202,
+        "split": "validation",
+        "frames": 180,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-parallel-0.npz",
+        "family": "parallel",
+        "seed": 0,
+        "split": "development",
+        "frames": 165,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-parallel-1.npz",
+        "family": "parallel",
+        "seed": 1,
+        "split": "development",
+        "frames": 164,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-parallel-2.npz",
+        "family": "parallel",
+        "seed": 2,
+        "split": "development",
+        "frames": 189,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-parallel-3.npz",
+        "family": "parallel",
+        "seed": 3,
+        "split": "development",
+        "frames": 178,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-parallel-4.npz",
+        "family": "parallel",
+        "seed": 4,
+        "split": "development",
+        "frames": 195,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-parallel-5.npz",
+        "family": "parallel",
+        "seed": 5,
+        "split": "development",
+        "frames": 168,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-parallel-6.npz",
+        "family": "parallel",
+        "seed": 6,
+        "split": "development",
+        "frames": 175,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-parallel-7.npz",
+        "family": "parallel",
+        "seed": 7,
+        "split": "development",
+        "frames": 177,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "validation-parallel-201.npz",
+        "family": "parallel",
+        "seed": 201,
+        "split": "validation",
+        "frames": 169,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "validation-parallel-202.npz",
+        "family": "parallel",
+        "seed": 202,
+        "split": "validation",
+        "frames": 176,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-close_lines-0.npz",
+        "family": "close_lines",
+        "seed": 0,
+        "split": "development",
+        "frames": 153,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-close_lines-1.npz",
+        "family": "close_lines",
+        "seed": 1,
+        "split": "development",
+        "frames": 159,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-close_lines-2.npz",
+        "family": "close_lines",
+        "seed": 2,
+        "split": "development",
+        "frames": 173,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-close_lines-3.npz",
+        "family": "close_lines",
+        "seed": 3,
+        "split": "development",
+        "frames": 169,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-close_lines-4.npz",
+        "family": "close_lines",
+        "seed": 4,
+        "split": "development",
+        "frames": 174,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-close_lines-5.npz",
+        "family": "close_lines",
+        "seed": 5,
+        "split": "development",
+        "frames": 168,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-close_lines-6.npz",
+        "family": "close_lines",
+        "seed": 6,
+        "split": "development",
+        "frames": 163,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-close_lines-7.npz",
+        "family": "close_lines",
+        "seed": 7,
+        "split": "development",
+        "frames": 172,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "validation-close_lines-201.npz",
+        "family": "close_lines",
+        "seed": 201,
+        "split": "validation",
+        "frames": 169,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "validation-close_lines-202.npz",
+        "family": "close_lines",
+        "seed": 202,
+        "split": "validation",
+        "frames": 175,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-repeated-0.npz",
+        "family": "repeated",
+        "seed": 0,
+        "split": "development",
+        "frames": 681,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-repeated-1.npz",
+        "family": "repeated",
+        "seed": 1,
+        "split": "development",
+        "frames": 676,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-repeated-2.npz",
+        "family": "repeated",
+        "seed": 2,
+        "split": "development",
+        "frames": 640,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-repeated-3.npz",
+        "family": "repeated",
+        "seed": 3,
+        "split": "development",
+        "frames": 641,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-repeated-4.npz",
+        "family": "repeated",
+        "seed": 4,
+        "split": "development",
+        "frames": 698,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-repeated-5.npz",
+        "family": "repeated",
+        "seed": 5,
+        "split": "development",
+        "frames": 677,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-repeated-6.npz",
+        "family": "repeated",
+        "seed": 6,
+        "split": "development",
+        "frames": 680,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "development-repeated-7.npz",
+        "family": "repeated",
+        "seed": 7,
+        "split": "development",
+        "frames": 673,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "validation-repeated-201.npz",
+        "family": "repeated",
+        "seed": 201,
+        "split": "validation",
+        "frames": 701,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      },
+      {
+        "file": "validation-repeated-202.npz",
+        "family": "repeated",
+        "seed": 202,
+        "split": "validation",
+        "frames": 654,
+        "reason": "teacher_complete",
+        "teacher": "privileged_ordered_path_pursuit",
+        "behavior_checkpoint": "artifacts/learning/epoch-snapshot.pt"
+      }
+    ]
+  }
+}

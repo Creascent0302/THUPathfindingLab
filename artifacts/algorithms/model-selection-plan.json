@@ -1,0 +1,43 @@
+{
+  "candidates": [
+    "bc",
+    "dagger-model",
+    "acquisition-model",
+    "averaged",
+    "weighted"
+  ],
+  "validation_seeds": [
+    203,
+    204
+  ],
+  "families": [
+    "straight",
+    "bend",
+    "s_curve",
+    "sharp",
+    "hairpin",
+    "parallel",
+    "close_lines",
+    "repeated"
+  ],
+  "resolution": [
+    640,
+    360
+  ],
+  "steps": 4000,
+  "selection_order": [
+    "maximum full closed-loop success count",
+    "minimum illegal switch count",
+    "minimum mean tracking lateral error across successfully completed episodes"
+  ],
+  "test_seeds_untouched": [
+    1001,
+    1002,
+    1003,
+    1004,
+    1005
+  ],
+  "algorithm": "cnn_gru",
+  "test_seeds_untouched_for": "cnn_gru",
+  "candidate_search_complete": true
+}
