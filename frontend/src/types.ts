@@ -1,4 +1,5 @@
 export type Point = [number, number];
+export type SavedMap = { id: string; scene: Scene };
 export type Action = { steering_angle_rad: number; speed_mps: number };
 export type Pose = {
   x_m: number;
@@ -54,6 +55,10 @@ export type ObjectScatter = {
   spread_m: number;
   scale: number;
 };
+export type DistractorDesign = {
+  waypoints: Point[];
+  interpolation: "polyline" | "smooth";
+};
 export type Scene = {
   render_version?: "1" | "2" | "3";
   name: string;
@@ -99,7 +104,11 @@ export type Scene = {
     sun_elevation_rad?: number;
     [key: string]: unknown;
   };
-  design?: { waypoints: Point[]; radius_m: number } | null;
+  design?: {
+    waypoints: Point[];
+    radius_m: number;
+    distractors?: DistractorDesign[] | null;
+  } | null;
   task_hint: Hint;
   dt_s: number;
 };
@@ -120,6 +129,20 @@ export type Evaluation = {
   progress_m: number;
   completion: number;
   reason: string | null;
+  route_identity?: "wrong_branch" | "confirmed" | "unconfirmed" | "avoiding";
+  avoidance_active?: boolean;
+  reference_arc_m?: number;
+  reference_window_m?: [number, number];
+  entry_distance_m?: number;
+  acquisition_grace_s?: number;
+  other_route?: {
+    kind: "distractor" | "target_nonlocal";
+    index: number | null;
+    arc_m: number;
+    distance_m: number;
+  } | null;
+  wrong_route_duration_s?: number;
+  offtrack_duration_s?: number;
 };
 export type Frame = {
   frame_id: number;
@@ -163,6 +186,7 @@ export type Metrics = {
   score?: Score | null;
   collision_count?: number | null;
   collision_duration_s?: number | null;
+  avoidance_duration_s?: number | null;
   completion_time_s?: number | null;
   simulation_time_s?: number | null;
   steering_rate_rad_s?: Distribution;
@@ -329,6 +353,7 @@ export const reasonLabel: Record<string, string> = {
   success: "连续完成目标路径",
   episode_timeout: "达到回合时限",
   deviation: "持续偏离路径",
+  acquisition_failed: "未从起点合法接入",
   illegal_switch: "非法换线",
   user_cancelled: "手动停止",
   client_disconnected: "浏览器断线",

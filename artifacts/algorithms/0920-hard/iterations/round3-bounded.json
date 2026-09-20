@@ -1,0 +1,3223 @@
+{
+  "plan": {
+    "algorithms": [
+      "temporal_pursuit",
+      "temporal_mpc",
+      "temporal_pursuit_avoidance",
+      "temporal_mpc_avoidance"
+    ],
+    "scene_files": [
+      "artifacts/algorithms/0920-hard/scenes/block-coil.json",
+      "artifacts/algorithms/0920-hard/scenes/block-neighbor.json",
+      "artifacts/algorithms/0920-hard/scenes/block-double.json",
+      "artifacts/algorithms/0920-hard/scenes/user-0920.json",
+      "artifacts/algorithms/0920-hard/scenes/user-0920-obstacles.json"
+    ],
+    "families": [
+      "straight",
+      "bend",
+      "s_curve",
+      "sharp",
+      "hairpin",
+      "parallel",
+      "close_lines",
+      "repeated"
+    ],
+    "seeds": [
+      7,
+      920
+    ],
+    "steps": 1500,
+    "resolution": 0,
+    "jobs": 4,
+    "parameters": {},
+    "suite": "core",
+    "split": "development",
+    "output": "artifacts/challenge-search/release-candidate",
+    "timing": "in_process_inference",
+    "environment": {
+      "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+      "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.31",
+      "packages": {
+        "numpy": "2.2.6",
+        "opencv-python-headless": "4.11.0.86",
+        "fastapi": "0.115.12",
+        "pydantic": "2.11.5",
+        "uvicorn": "0.34.3"
+      }
+    },
+    "evaluator_version": "4.0",
+    "thresholds": {
+      "acquire_distance_m": 0.2,
+      "acquire_heading_rad": 0.45,
+      "entry_arc_m": 0.5,
+      "identity_neighborhood_m": 0.75,
+      "approach_improvement_m": 0.01,
+      "track_distance_m": 0.24,
+      "track_heading_rad": 0.65,
+      "offtrack_timeout_s": 2.0,
+      "switch_distance_m": 0.14,
+      "switch_margin_m": 0.035,
+      "switch_duration_s": 0.5,
+      "finish_remaining_m": 0.18,
+      "avoidance_approach_m": 2.5,
+      "avoidance_departure_m": 2.5,
+      "avoidance_max_offset_m": 1.2
+    },
+    "scene_sources": [
+      {
+        "case": "00-block-coil",
+        "file": "/home/liuzonghao/THUPathfindingLab/artifacts/challenge-search/release-candidate/scenes/00-block-coil.json",
+        "sha256": "1481e60480ad9969bbf1f034922369aa2e06c2536840b9df71e9fea29064cb0a",
+        "seeds": [
+          920
+        ]
+      },
+      {
+        "case": "01-block-neighbor",
+        "file": "/home/liuzonghao/THUPathfindingLab/artifacts/challenge-search/release-candidate/scenes/01-block-neighbor.json",
+        "sha256": "921abc0cb5c798fb70a4ff062ba9b44eebb4e5d3f00e6ec9b183b90181e916e6",
+        "seeds": [
+          920
+        ]
+      },
+      {
+        "case": "02-block-double",
+        "file": "/home/liuzonghao/THUPathfindingLab/artifacts/challenge-search/release-candidate/scenes/02-block-double.json",
+        "sha256": "e35fd4cc9f55c226669282f725393d429f4e3c8c5517d87107f61d5a5367929e",
+        "seeds": [
+          920
+        ]
+      },
+      {
+        "case": "03-user-0920",
+        "file": "/home/liuzonghao/THUPathfindingLab/artifacts/challenge-search/release-candidate/scenes/03-user-0920.json",
+        "sha256": "10a1a2eb08097ef79b017cb8301a1728bf8c0fb7be217b3f495a3f707a46300e",
+        "seeds": [
+          7
+        ]
+      },
+      {
+        "case": "04-user-0920-obstacles",
+        "file": "/home/liuzonghao/THUPathfindingLab/artifacts/challenge-search/release-candidate/scenes/04-user-0920-obstacles.json",
+        "sha256": "aeeb9dfbc0a2f0f4c6a63b673b9e6439d1571f2c724da2f1c30674a7e33ea206",
+        "seeds": [
+          7
+        ]
+      }
+    ],
+    "motion_model": "inertial_v2",
+    "render_version": "3",
+    "code_sha256": {
+      "algorithms/__init__.py": "08f5f58aa57f280f42729c8a3222cf7d792b37eb2304963f58bbc39b106241fa",
+      "algorithms/avoidance.py": "4a6b43d6d59b9d6030b0a309f2b97dad0ce7d687ea6b2b419883614709c5a892",
+      "algorithms/examples.py": "e93c6f81bd78b21e2e1ab709366e4e0b4ed4c895b888a4b2834a4c2100bf3e82",
+      "algorithms/learning/__init__.py": "22013f582d9a48ad8396ee16caac83a6016dcdd327e686ccb6a21cd4be3b588c",
+      "algorithms/learning/algorithm.py": "410283c51d2ce19d29b184658105f68a04992690adb11d687c0cf6179cfade8c",
+      "algorithms/learning/custom_data.py": "c076fd92a3cd9f2630df1f601b25cae23ecf47677e4602bfff199832fd9aef80",
+      "algorithms/learning/data.py": "1dc15872bc64d01aa07e8ca36e29ea06d8db1d72a87bbc044c19c0207d6fa173",
+      "algorithms/learning/model.py": "f56e89e21be96100ab795f0163371d062a4fdee5a43dbcdb380cf5324e03a4f1",
+      "algorithms/learning/train.py": "090cde84cd9294ba6d4c8361e0b2b60c64e1792c3a420b548c67e640d95e03db",
+      "algorithms/modular/__init__.py": "eeccb5f09492121f56d5081dfeaef423b3a5f739860535d2de2b601ad9741a31",
+      "algorithms/modular/algorithm.py": "3e0e8cb570e5f449421ab9086af542435d4c71cf060c6315b539f973586bf612",
+      "algorithms/modular/control.py": "61cdf48cd76c25acb1c2ad9a5bcbdc4d6fc35949146b6cc2405bf492d19632b8",
+      "algorithms/modular/obstacles.py": "ec7cc21d3cac5e1afc99c62208d5e750642331f169a2275c186795a9425d9ca0",
+      "algorithms/modular/vision.py": "af407dcd2d905261a5c9aa60c3a3f04176bb180c8817a0eea05775a4723a448d",
+      "algorithms/scanline.py": "85bef17907f9d94a505f88c374a31b758cfa5fd952e176a1d01b29b9d1b5122c"
+    },
+    "platform_sha256": {
+      "pathlab/__init__.py": "4c2a0990ea293b33c8bb306a60e7ed457a07e72ed5763c236704efb2d3102702",
+      "pathlab/adapters.py": "6c22b335de3a532f30f348fae9c16af4e1de4026bffaaeacf04c7235360e7532",
+      "pathlab/api.py": "6f9bf8f172b2c694ee34e3cb8ba65f8d6884f190c5d3979b1dff2e9af3fc483d",
+      "pathlab/benchmark.py": "89e389728d2ab9cc673ba5bcb1565db6a8e0a9f511d58f3b3905ea543df9315c",
+      "pathlab/cli.py": "1af52ce9eadf19c211d4ad9ef84589096c807fe9d6cbc86db9ef770a636855e2",
+      "pathlab/config.py": "ed8fab38f4fa59145d9a42f498d4b9bf18f8b37305f220fcdb5810f7c2e19004",
+      "pathlab/dynamics.py": "09d2774b5fdaf15aa375ad12971741963eba22739d6831c89ca247ad98ef8118",
+      "pathlab/engine.py": "6f714cc9f3396c360ef5e475ad5848ef181c3191b9d42121946a5beb3435b0f4",
+      "pathlab/evaluation.py": "59bc5f520df262034d7002852e71ecf33379dc6b0da9a41a47a743919e32ed68",
+      "pathlab/map_editor.py": "b4d4c6dbbd10bfedc598eb726a6a2c5a3b32ced6f2166eec7c861453bb906cab",
+      "pathlab/map_library.py": "2c1bf5d91305fdad566e90ebd70870869ce4fb44aea1dccf0d7da2b926888fd4",
+      "pathlab/registry.py": "75ca2595ad0488f1f8c2d0153fb39fea3a7d586dfa00ef72d1b568c91939d26c",
+      "pathlab/scenarios.py": "007cefec7dc505081324683a9125ab8b2248b9921545cb573b8f4bf6d1af603e",
+      "pathlab/scene_objects.py": "e331142f9558672a42fdbbc4f66ff53ee58c66542bd56b6fc3fffaa68c5b2962",
+      "pathlab/sdk.py": "ca8956d1a5f5528f8827dd287b8f6227660e30313c07636039fb4f6324223258",
+      "pathlab/simulation.py": "1d9b1780596a68b8041791e222c435af6b1d38ea548f923ea8bd45f635437a5b",
+      "pathlab/sources.py": "acb009b455197cc67fac6868a835f2b5d7d99822dabb2cf69af5add4e6a1d3ee",
+      "pathlab/storage.py": "4ed3fbc064a119dcd087bd0f80d703571d589d324378bf92d0672e54e240010e",
+      "pathlab/submissions.py": "8d18ff773c5bba360135e71cd7f6f8a98296bf174461310c15e240060516de39",
+      "pathlab/worker.py": "a48f3f73d6ae4c9162be80a75fa6c17b3ac88615eb56f06c98160b549947484b"
+    }
+  },
+  "runs": [
+    {
+      "algorithm": "temporal_pursuit",
+      "case": "00-block-coil",
+      "family": "custom",
+      "seed": 920,
+      "split": "development",
+      "suite": "core",
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "metrics": {
+        "evaluator_version": "4.0",
+        "reason": "collision",
+        "frames": 121,
+        "task_frames": 110,
+        "success": false,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.2,
+        "completion": 0.07566024189038528,
+        "tracking_lateral_error_m": {
+          "mean": 0.015399101518698248,
+          "p95": 0.05203529687713289,
+          "max": 0.18394885539881328
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.9934460623962417,
+          "p95": 1.4943500000000483,
+          "max": 1.499625
+        },
+        "heading_error_rad": {
+          "mean": 0.011944323223300978,
+          "p95": 0.06577845925791989,
+          "max": 0.10314280031076395
+        },
+        "illegal_switches": [],
+        "lost_count": 0,
+        "lost_duration_s": 0.0,
+        "recovery_rate": null,
+        "inference_ms": {
+          "mean": 19.514529313892126,
+          "p95": 24.325247341766953,
+          "max": 28.45901157706976
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.6905867768595089,
+          "p95": 0.7999999999997861,
+          "max": 0.7999999999999696
+        },
+        "simulation_time_s": 5.5,
+        "completion_time_s": null,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 0.43470396489994567,
+        "safety_intervention_frames": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true,
+        "collision_count": 1,
+        "collisions": [
+          {
+            "object_index": 0,
+            "timestamp_s": 5.5
+          }
+        ],
+        "collision_duration_s": 0.6,
+        "avoidance_frames": 0,
+        "avoidance_duration_s": 0.0,
+        "acceleration_mps2": {
+          "mean": 0.26416666666666044,
+          "p95": 1.5149999999997652,
+          "max": 1.8000000000000005
+        },
+        "vector_acceleration_mps2": {
+          "mean": 0.2730193686536288,
+          "p95": 1.515929217024933,
+          "max": 1.8003211714127525
+        },
+        "jerk_mps3": {
+          "mean": 0.8067226890754214,
+          "p95": 6.000000000000004,
+          "max": 27.999999999974822
+        },
+        "steering_rate_rad_s": {
+          "mean": 0.0724506608166576,
+          "p95": 0.3596502033337813,
+          "max": 1.2
+        },
+        "realtime_miss_rate": 0.0,
+        "score": {
+          "version": "4.0",
+          "total": 2.85,
+          "quality": 53.77,
+          "components": {
+            "tracking": {
+              "value": 78.32,
+              "weight": 35
+            },
+            "efficiency": {
+              "value": 29.27,
+              "weight": 20
+            },
+            "smoothness": {
+              "value": 70.03,
+              "weight": 15
+            },
+            "safety": {
+              "value": 0.0,
+              "weight": 20
+            },
+            "realtime": {
+              "value": 100.0,
+              "weight": 10
+            }
+          },
+          "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+        }
+      },
+      "failures": [],
+      "wall_s": 5.896521993912756,
+      "inference_frames": 110,
+      "terminal_pose": {
+        "x_m": 2.453463300706774,
+        "y_m": 0.024202746196085353,
+        "yaw_rad": 0.10314280031076395,
+        "speed_mps": 0.7700000000000046,
+        "steering_angle_rad": 0.002234789075937993,
+        "velocity_x_mps": 0.7674692813149671,
+        "velocity_y_mps": 0.062377097062103475,
+        "yaw_rate_rad_s": 0.14404094019529373,
+        "acceleration_mps2": -0.2999999999997663
+      },
+      "terminal_debug": {
+        "identity_initialized": true,
+        "prediction_only": true,
+        "missing_s": 0.05,
+        "observed_points": 11,
+        "motion_source": "previous_command_model",
+        "motion_model": "inertial_v2",
+        "estimated_speed_mps": 0.7849999999999933,
+        "estimated_lateral_speed_mps": -0.019179804567313146
+      },
+      "scene_name": "0920挑战·套圈占道"
+    },
+    {
+      "algorithm": "temporal_pursuit",
+      "case": "01-block-neighbor",
+      "family": "custom",
+      "seed": 920,
+      "split": "development",
+      "suite": "core",
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "metrics": {
+        "evaluator_version": "4.0",
+        "reason": "episode_timeout",
+        "frames": 1500,
+        "task_frames": 1500,
+        "success": false,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.2,
+        "completion": 0.10358343114347536,
+        "tracking_lateral_error_m": {
+          "mean": 0.0013719366397706894,
+          "p95": 0.0010430243660953242,
+          "max": 0.1839462856248977
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.993445797446746,
+          "p95": 1.4943499999999998,
+          "max": 1.499625
+        },
+        "heading_error_rad": {
+          "mean": 0.00029738449736551464,
+          "p95": 0.0002974084447444625,
+          "max": 0.0002974084447444625
+        },
+        "illegal_switches": [],
+        "lost_count": 1,
+        "lost_duration_s": 68.69999999999824,
+        "recovery_rate": 0.0,
+        "inference_ms": {
+          "mean": 13.544896656647325,
+          "p95": 14.475056063383818,
+          "max": 39.6944023668766
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.06099526060523211,
+          "p95": 0.7999667803637466,
+          "max": 0.7999999999999993
+        },
+        "simulation_time_s": 75.0,
+        "completion_time_s": null,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 0.08609308513420512,
+        "safety_intervention_frames": 1374,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true,
+        "collision_count": 0,
+        "collisions": [],
+        "collision_duration_s": 0.0,
+        "avoidance_frames": 0,
+        "avoidance_duration_s": 0.0,
+        "acceleration_mps2": {
+          "mean": 0.0211474316210807,
+          "p95": 2.897369433263366e-07,
+          "max": 1.8000000000000005
+        },
+        "vector_acceleration_mps2": {
+          "mean": 0.021150583515134533,
+          "p95": 3.214553893897702e-07,
+          "max": 1.8000000000000005
+        },
+        "jerk_mps3": {
+          "mean": 0.0733565954834898,
+          "p95": 1.2438383656387323e-08,
+          "max": 23.23514178441961
+        },
+        "steering_rate_rad_s": {
+          "mean": 0.0011486735841788542,
+          "p95": 0.0,
+          "max": 0.18281847095934287
+        },
+        "realtime_miss_rate": 0.0,
+        "score": {
+          "version": "4.0",
+          "total": 4.11,
+          "quality": 62.07,
+          "components": {
+            "tracking": {
+              "value": 99.57,
+              "weight": 35
+            },
+            "efficiency": {
+              "value": 2.73,
+              "weight": 20
+            },
+            "smoothness": {
+              "value": 100.0,
+              "weight": 15
+            },
+            "safety": {
+              "value": 8.4,
+              "weight": 20
+            },
+            "realtime": {
+              "value": 100.0,
+              "weight": 10
+            }
+          },
+          "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+        }
+      },
+      "failures": [],
+      "wall_s": 68.7100679250434,
+      "inference_frames": 1500,
+      "terminal_pose": {
+        "x_m": 3.074644362705343,
+        "y_m": 0.0010430243660953242,
+        "yaw_rad": 0.0002974084447444625,
+        "speed_mps": 0.0,
+        "steering_angle_rad": 0.0,
+        "velocity_x_mps": 0.0,
+        "velocity_y_mps": 0.0,
+        "yaw_rate_rad_s": 0.0,
+        "acceleration_mps2": 0.0
+      },
+      "terminal_debug": {
+        "identity_initialized": true,
+        "prediction_only": false,
+        "missing_s": 69.10000000000056,
+        "observed_points": 0,
+        "motion_source": "previous_command_model",
+        "motion_model": "inertial_v2",
+        "estimated_speed_mps": 0.0,
+        "estimated_lateral_speed_mps": 0.0
+      },
+      "scene_name": "0920挑战·占道与邻线"
+    },
+    {
+      "algorithm": "temporal_pursuit",
+      "case": "02-block-double",
+      "family": "custom",
+      "seed": 920,
+      "split": "development",
+      "suite": "core",
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "metrics": {
+        "evaluator_version": "4.0",
+        "reason": "collision",
+        "frames": 132,
+        "task_frames": 122,
+        "success": false,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.2,
+        "completion": 0.08699733573227852,
+        "tracking_lateral_error_m": {
+          "mean": 0.0077648828448036835,
+          "p95": 0.02795034169791948,
+          "max": 0.18394636697820765
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.9934457944467486,
+          "p95": 1.4943499999999998,
+          "max": 1.499625
+        },
+        "heading_error_rad": {
+          "mean": 0.006627962858046633,
+          "p95": 0.05343534026164215,
+          "max": 0.10549547912535528
+        },
+        "illegal_switches": [],
+        "lost_count": 0,
+        "lost_duration_s": 0.0,
+        "recovery_rate": null,
+        "inference_ms": {
+          "mean": 18.205217536172416,
+          "p95": 19.993179198354483,
+          "max": 27.415642514824867
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.7011818181818182,
+          "p95": 0.7999999999999963,
+          "max": 0.7999999999999995
+        },
+        "simulation_time_s": 6.1000000000000005,
+        "completion_time_s": null,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 0.4114723723561636,
+        "safety_intervention_frames": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true,
+        "collision_count": 1,
+        "collisions": [
+          {
+            "object_index": 0,
+            "timestamp_s": 6.1000000000000005
+          }
+        ],
+        "collision_duration_s": 0.5499999999999999,
+        "avoidance_frames": 0,
+        "avoidance_duration_s": 0.0,
+        "acceleration_mps2": {
+          "mean": 0.24198473282442734,
+          "p95": 1.3499999999999968,
+          "max": 1.800000000000002
+        },
+        "vector_acceleration_mps2": {
+          "mean": 0.24965951509486053,
+          "p95": 1.3553492153069657,
+          "max": 1.8011099529247971
+        },
+        "jerk_mps3": {
+          "mean": 0.6000000000000024,
+          "p95": 5.099999999999972,
+          "max": 21.999999999999872
+        },
+        "steering_rate_rad_s": {
+          "mean": 0.06282020952002497,
+          "p95": 0.3587946837084463,
+          "max": 1.2
+        },
+        "realtime_miss_rate": 0.0,
+        "score": {
+          "version": "4.0",
+          "total": 3.36,
+          "quality": 57.77,
+          "components": {
+            "tracking": {
+              "value": 88.35,
+              "weight": 35
+            },
+            "efficiency": {
+              "value": 31.64,
+              "weight": 20
+            },
+            "smoothness": {
+              "value": 70.1,
+              "weight": 15
+            },
+            "safety": {
+              "value": 0.0,
+              "weight": 20
+            },
+            "realtime": {
+              "value": 100.0,
+              "weight": 10
+            }
+          },
+          "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+        }
+      },
+      "failures": [],
+      "wall_s": 6.1265218229964375,
+      "inference_frames": 122,
+      "terminal_pose": {
+        "x_m": 2.9339097903332063,
+        "y_m": -0.008570302095271038,
+        "yaw_rad": -0.10549547912535528,
+        "speed_mps": 0.7549999999999999,
+        "steering_angle_rad": -0.037217124260462614,
+        "velocity_x_mps": 0.7526054796251115,
+        "velocity_y_mps": -0.060083209287252186,
+        "yaw_rate_rad_s": -0.20541059353057872,
+        "acceleration_mps2": -0.599999999999997
+      },
+      "terminal_debug": {
+        "identity_initialized": true,
+        "prediction_only": true,
+        "missing_s": 0.10000000000000071,
+        "observed_points": 7,
+        "motion_source": "previous_command_model",
+        "motion_model": "inertial_v2",
+        "estimated_speed_mps": 0.7849999999999995,
+        "estimated_lateral_speed_mps": 0.021195482010304186
+      },
+      "scene_name": "0920挑战·连续占道"
+    },
+    {
+      "algorithm": "temporal_pursuit",
+      "case": "03-user-0920",
+      "family": "custom",
+      "seed": 7,
+      "split": "development",
+      "suite": "core",
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "metrics": {
+        "evaluator_version": "4.0",
+        "reason": "success",
+        "frames": 880,
+        "task_frames": 873,
+        "success": true,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.2,
+        "completion": 0.9948424447324258,
+        "tracking_lateral_error_m": {
+          "mean": 0.03268133190023981,
+          "p95": 0.09055452877183659,
+          "max": 0.18396511140282706
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.9934469944511488,
+          "p95": 1.4943500000000483,
+          "max": 1.499625
+        },
+        "heading_error_rad": {
+          "mean": 0.04156507126258625,
+          "p95": 0.11663744127541203,
+          "max": 0.2425271782345355
+        },
+        "illegal_switches": [],
+        "lost_count": 0,
+        "lost_duration_s": 0.0,
+        "recovery_rate": null,
+        "inference_ms": {
+          "mean": 16.38856731389328,
+          "p95": 22.281832434237003,
+          "max": 44.42941304296255
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.7627994039995675,
+          "p95": 0.8000000000000002,
+          "max": 0.8000000000000003
+        },
+        "simulation_time_s": 43.650000000000006,
+        "completion_time_s": 43.650000000000006,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 3.9767027951137286,
+        "safety_intervention_frames": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true,
+        "collision_count": 0,
+        "collisions": [],
+        "collision_duration_s": 0.0,
+        "avoidance_frames": 0,
+        "avoidance_duration_s": 0.0,
+        "acceleration_mps2": {
+          "mean": 0.0371012593309814,
+          "p95": 0.11130176590092372,
+          "max": 1.8000000000000005
+        },
+        "vector_acceleration_mps2": {
+          "mean": 0.2291306625111726,
+          "p95": 0.6247115248274269,
+          "max": 1.8000000522203052
+        },
+        "jerk_mps3": {
+          "mean": 0.16716061595704745,
+          "p95": 0.1886749205825699,
+          "max": 22.00004889411273
+        },
+        "steering_rate_rad_s": {
+          "mean": 0.09048242992295173,
+          "p95": 0.32698460564760773,
+          "max": 0.7510825699626478
+        },
+        "realtime_miss_rate": 0.0,
+        "score": {
+          "version": "4.0",
+          "total": 88.96,
+          "quality": 72.41,
+          "components": {
+            "tracking": {
+              "value": 62.27,
+              "weight": 35
+            },
+            "efficiency": {
+              "value": 48.49,
+              "weight": 20
+            },
+            "smoothness": {
+              "value": 72.75,
+              "weight": 15
+            },
+            "safety": {
+              "value": 100.0,
+              "weight": 20
+            },
+            "realtime": {
+              "value": 100.0,
+              "weight": 10
+            }
+          },
+          "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+        }
+      },
+      "failures": [],
+      "wall_s": 41.32698181644082,
+      "inference_frames": 873,
+      "terminal_pose": {
+        "x_m": 0.5580714729579418,
+        "y_m": 1.946307725542562,
+        "yaw_rad": -2.861685584613277,
+        "speed_mps": 0.35000013242155514,
+        "steering_angle_rad": -0.018979037390479417,
+        "velocity_x_mps": -0.336160687669135,
+        "velocity_y_mps": -0.09744785662558418,
+        "yaw_rate_rad_s": -0.02206475765035548,
+        "acceleration_mps2": -1.018627347286009e-06
+      },
+      "terminal_debug": {
+        "identity_initialized": true,
+        "prediction_only": true,
+        "missing_s": 2.450000000000081,
+        "observed_points": 2,
+        "motion_source": "previous_command_model",
+        "motion_model": "inertial_v2",
+        "estimated_speed_mps": 0.3500001833529225,
+        "estimated_lateral_speed_mps": 0.0007757382041955746
+      },
+      "scene_name": "0920测试"
+    },
+    {
+      "algorithm": "temporal_pursuit",
+      "case": "04-user-0920-obstacles",
+      "family": "custom",
+      "seed": 7,
+      "split": "development",
+      "suite": "core",
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "metrics": {
+        "evaluator_version": "4.0",
+        "reason": "collision",
+        "frames": 209,
+        "task_frames": 197,
+        "success": false,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.2,
+        "completion": 0.1853301720739266,
+        "tracking_lateral_error_m": {
+          "mean": 0.01606128108744718,
+          "p95": 0.043980469510232996,
+          "max": 0.1839501277511258
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.9934462748203686,
+          "p95": 1.4943500000000483,
+          "max": 1.499625
+        },
+        "heading_error_rad": {
+          "mean": 0.01365245233651225,
+          "p95": 0.06705236484970371,
+          "max": 0.12341748468100411
+        },
+        "illegal_switches": [],
+        "lost_count": 0,
+        "lost_duration_s": 0.0,
+        "recovery_rate": null,
+        "inference_ms": {
+          "mean": 19.070431618445415,
+          "p95": 22.794972732663155,
+          "max": 37.2182484716177
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.7375745246068258,
+          "p95": 0.8000000000000003,
+          "max": 0.8000000000000003
+        },
+        "simulation_time_s": 9.850000000000001,
+        "completion_time_s": null,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 0.84041386344531,
+        "safety_intervention_frames": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true,
+        "collision_count": 1,
+        "collisions": [
+          {
+            "object_index": 1,
+            "timestamp_s": 9.850000000000001
+          }
+        ],
+        "collision_duration_s": 0.25,
+        "avoidance_frames": 0,
+        "avoidance_duration_s": 0.0,
+        "acceleration_mps2": {
+          "mean": 0.15436203587704253,
+          "p95": 0.8000000000000014,
+          "max": 1.8000000000000005
+        },
+        "vector_acceleration_mps2": {
+          "mean": 0.22406426238026642,
+          "p95": 0.8000008253770459,
+          "max": 1.8063766825730843
+        },
+        "jerk_mps3": {
+          "mean": 0.4018621987011046,
+          "p95": 2.7055847769465675,
+          "max": 16.192640955104217
+        },
+        "steering_rate_rad_s": {
+          "mean": 0.0808090253312798,
+          "p95": 0.3110843799828588,
+          "max": 1.2
+        },
+        "realtime_miss_rate": 0.0,
+        "score": {
+          "version": "4.0",
+          "total": 7.16,
+          "quality": 57.7,
+          "components": {
+            "tracking": {
+              "value": 81.67,
+              "weight": 35
+            },
+            "efficiency": {
+              "value": 40.03,
+              "weight": 20
+            },
+            "smoothness": {
+              "value": 74.08,
+              "weight": 15
+            },
+            "safety": {
+              "value": 0.0,
+              "weight": 20
+            },
+            "realtime": {
+              "value": 100.0,
+              "weight": 10
+            }
+          },
+          "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+        }
+      },
+      "failures": [],
+      "wall_s": 10.260338127613068,
+      "inference_frames": 197,
+      "terminal_pose": {
+        "x_m": 5.813957489992563,
+        "y_m": 0.4388328337024568,
+        "yaw_rad": 0.9660440755188553,
+        "speed_mps": 0.7888976959435814,
+        "steering_angle_rad": 0.30763736524414764,
+        "velocity_x_mps": 0.499896358743562,
+        "velocity_y_mps": 0.6102976365512318,
+        "yaw_rate_rad_s": 0.7909366739206807,
+        "acceleration_mps2": 0.08540233889552692
+      },
+      "terminal_debug": {
+        "identity_initialized": true,
+        "prediction_only": false,
+        "missing_s": 0,
+        "observed_points": 37,
+        "motion_source": "previous_command_model",
+        "motion_model": "inertial_v2",
+        "estimated_speed_mps": 0.7846275789988052,
+        "estimated_lateral_speed_mps": -0.06417072397385079
+      },
+      "scene_name": "0920测试"
+    },
+    {
+      "algorithm": "temporal_mpc",
+      "case": "00-block-coil",
+      "family": "custom",
+      "seed": 920,
+      "split": "development",
+      "suite": "core",
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "metrics": {
+        "evaluator_version": "4.0",
+        "reason": "collision",
+        "frames": 119,
+        "task_frames": 110,
+        "success": false,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.2,
+        "completion": 0.07555590719932412,
+        "tracking_lateral_error_m": {
+          "mean": 0.0250551700318829,
+          "p95": 0.05319606817808572,
+          "max": 0.18421170322688935
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.9934809105662247,
+          "p95": 1.4943500000260967,
+          "max": 1.499625000000001
+        },
+        "heading_error_rad": {
+          "mean": 0.011728566301682593,
+          "p95": 0.04859306735421768,
+          "max": 0.1127281498888264
+        },
+        "illegal_switches": [],
+        "lost_count": 0,
+        "lost_duration_s": 0.0,
+        "recovery_rate": null,
+        "inference_ms": {
+          "mean": 20.52105713466352,
+          "p95": 22.20980552956462,
+          "max": 22.436223924160004
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.6887478991596733,
+          "p95": 0.7999999999996014,
+          "max": 0.7999999999999419
+        },
+        "simulation_time_s": 5.5,
+        "completion_time_s": null,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 1.0660325735517895,
+        "safety_intervention_frames": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true,
+        "collision_count": 1,
+        "collisions": [
+          {
+            "object_index": 0,
+            "timestamp_s": 5.5
+          }
+        ],
+        "collision_duration_s": 0.49999999999999994,
+        "avoidance_frames": 0,
+        "avoidance_duration_s": 0.0,
+        "acceleration_mps2": {
+          "mean": 0.2686440677965981,
+          "p95": 1.5449999999995503,
+          "max": 1.8000000000000005
+        },
+        "vector_acceleration_mps2": {
+          "mean": 0.27490482378391523,
+          "p95": 1.5615280621424648,
+          "max": 1.8108625041613329
+        },
+        "jerk_mps3": {
+          "mean": 0.8205128205124093,
+          "p95": 6.000000000000004,
+          "max": 27.999999999951637
+        },
+        "steering_rate_rad_s": {
+          "mean": 0.18068348704267617,
+          "p95": 1.2,
+          "max": 1.2
+        },
+        "realtime_miss_rate": 0.0,
+        "score": {
+          "version": "4.0",
+          "total": 2.65,
+          "quality": 43.09,
+          "components": {
+            "tracking": {
+              "value": 77.83,
+              "weight": 35
+            },
+            "efficiency": {
+              "value": 29.23,
+              "weight": 20
+            },
+            "smoothness": {
+              "value": 0.0,
+              "weight": 15
+            },
+            "safety": {
+              "value": 0.0,
+              "weight": 20
+            },
+            "realtime": {
+              "value": 100.0,
+              "weight": 10
+            }
+          },
+          "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+        }
+      },
+      "failures": [],
+      "wall_s": 5.707287738099694,
+      "inference_frames": 110,
+      "terminal_pose": {
+        "x_m": 2.4471663796547594,
+        "y_m": 0.01606974857354066,
+        "yaw_rad": -0.1127281498888264,
+        "speed_mps": 0.6950000000000539,
+        "steering_angle_rad": -0.23033554797761746,
+        "velocity_x_mps": 0.693080817519953,
+        "velocity_y_mps": -0.0516137615946428,
+        "yaw_rate_rad_s": -0.4786327701935831,
+        "acceleration_mps2": -0.8999999999995523
+      },
+      "terminal_debug": {
+        "identity_initialized": true,
+        "prediction_only": true,
+        "missing_s": 0.15000000000000002,
+        "observed_points": 8,
+        "motion_source": "previous_command_model",
+        "motion_model": "inertial_v2",
+        "estimated_speed_mps": 0.7400000000000312,
+        "estimated_lateral_speed_mps": 0.023983669083755394
+      },
+      "scene_name": "0920挑战·套圈占道"
+    },
+    {
+      "algorithm": "temporal_mpc",
+      "case": "01-block-neighbor",
+      "family": "custom",
+      "seed": 920,
+      "split": "development",
+      "suite": "core",
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "metrics": {
+        "evaluator_version": "4.0",
+        "reason": "episode_timeout",
+        "frames": 1500,
+        "task_frames": 1500,
+        "success": false,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.2,
+        "completion": 0.10223471628820802,
+        "tracking_lateral_error_m": {
+          "mean": 0.01723504019163541,
+          "p95": 0.017250556879180073,
+          "max": 0.18401057157762316
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.9934538812827794,
+          "p95": 1.4943499999999998,
+          "max": 1.499625
+        },
+        "heading_error_rad": {
+          "mean": 0.0039530909167015595,
+          "p95": 0.003953090920142177,
+          "max": 0.003953090920142177
+        },
+        "illegal_switches": [],
+        "lost_count": 1,
+        "lost_duration_s": 68.74999999999824,
+        "recovery_rate": 0.0,
+        "inference_ms": {
+          "mean": 14.460248041277131,
+          "p95": 15.765175595879555,
+          "max": 29.216290451586246
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.060461927271898766,
+          "p95": 0.7999540035805719,
+          "max": 0.7999999999999985
+        },
+        "simulation_time_s": 75.0,
+        "completion_time_s": null,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 0.24667119364157417,
+        "safety_intervention_frames": 1375,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true,
+        "collision_count": 0,
+        "collisions": [],
+        "collision_duration_s": 0.0,
+        "avoidance_frames": 0,
+        "avoidance_duration_s": 0.0,
+        "acceleration_mps2": {
+          "mean": 0.02114743162108068,
+          "p95": 2.897369428822474e-07,
+          "max": 1.8000000000000005
+        },
+        "vector_acceleration_mps2": {
+          "mean": 0.02114750552928935,
+          "p95": 2.897369435024974e-07,
+          "max": 1.8000000000000005
+        },
+        "jerk_mps3": {
+          "mean": 0.0733565954834896,
+          "p95": 1.2438414742632012e-08,
+          "max": 23.235141784419522
+        },
+        "steering_rate_rad_s": {
+          "mean": 0.003291143344117067,
+          "p95": 0.0,
+          "max": 1.2
+        },
+        "realtime_miss_rate": 0.0,
+        "score": {
+          "version": "4.0",
+          "total": 4.0,
+          "quality": 59.69,
+          "components": {
+            "tracking": {
+              "value": 92.81,
+              "weight": 35
+            },
+            "efficiency": {
+              "value": 2.7,
+              "weight": 20
+            },
+            "smoothness": {
+              "value": 100.0,
+              "weight": 15
+            },
+            "safety": {
+              "value": 8.33,
+              "weight": 20
+            },
+            "realtime": {
+              "value": 100.0,
+              "weight": 10
+            }
+          },
+          "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+        }
+      },
+      "failures": [],
+      "wall_s": 68.9521447122097,
+      "inference_frames": 1500,
+      "terminal_pose": {
+        "x_m": 3.0346107542327596,
+        "y_m": 0.017250556879180073,
+        "yaw_rad": 0.003953090920142177,
+        "speed_mps": 0.0,
+        "steering_angle_rad": 0.0,
+        "velocity_x_mps": 0.0,
+        "velocity_y_mps": 0.0,
+        "yaw_rate_rad_s": 0.0,
+        "acceleration_mps2": 0.0
+      },
+      "terminal_debug": {
+        "identity_initialized": true,
+        "prediction_only": false,
+        "missing_s": 69.15000000000056,
+        "observed_points": 0,
+        "motion_source": "previous_command_model",
+        "motion_model": "inertial_v2",
+        "estimated_speed_mps": 0.0,
+        "estimated_lateral_speed_mps": 0.0
+      },
+      "scene_name": "0920挑战·占道与邻线"
+    },
+    {
+      "algorithm": "temporal_mpc",
+      "case": "02-block-double",
+      "family": "custom",
+      "seed": 920,
+      "split": "development",
+      "suite": "core",
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "metrics": {
+        "evaluator_version": "4.0",
+        "reason": "collision",
+        "frames": 133,
+        "task_frames": 122,
+        "success": false,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.2,
+        "completion": 0.08701108671770552,
+        "tracking_lateral_error_m": {
+          "mean": 0.0170551294012298,
+          "p95": 0.028472682857411037,
+          "max": 0.18401057157762316
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.9934538812827794,
+          "p95": 1.4943499999999998,
+          "max": 1.499625
+        },
+        "heading_error_rad": {
+          "mean": 0.007209898087102962,
+          "p95": 0.027876997222610434,
+          "max": 0.08774155705855202
+        },
+        "illegal_switches": [],
+        "lost_count": 0,
+        "lost_duration_s": 0.0,
+        "recovery_rate": null,
+        "inference_ms": {
+          "mean": 20.153386961119097,
+          "p95": 21.613394608721137,
+          "max": 23.850764147937298
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.7019248120300752,
+          "p95": 0.7999999999999974,
+          "max": 0.7999999999999997
+        },
+        "simulation_time_s": 6.1000000000000005,
+        "completion_time_s": null,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 0.7746323299913397,
+        "safety_intervention_frames": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true,
+        "collision_count": 1,
+        "collisions": [
+          {
+            "object_index": 0,
+            "timestamp_s": 6.1000000000000005
+          }
+        ],
+        "collision_duration_s": 0.6,
+        "avoidance_frames": 0,
+        "avoidance_duration_s": 0.0,
+        "acceleration_mps2": {
+          "mean": 0.24015151515151506,
+          "p95": 1.3349999999999946,
+          "max": 1.8000000000000005
+        },
+        "vector_acceleration_mps2": {
+          "mean": 0.24699705915688075,
+          "p95": 1.3479698248317156,
+          "max": 1.8031546396688725
+        },
+        "jerk_mps3": {
+          "mean": 0.5954198473282464,
+          "p95": 4.99999999999998,
+          "max": 22.000000000000032
+        },
+        "steering_rate_rad_s": {
+          "mean": 0.11736853484717269,
+          "p95": 1.1421791211010683,
+          "max": 1.2000000000000002
+        },
+        "realtime_miss_rate": 0.0,
+        "score": {
+          "version": "4.0",
+          "total": 3.15,
+          "quality": 47.9,
+          "components": {
+            "tracking": {
+              "value": 88.14,
+              "weight": 35
+            },
+            "efficiency": {
+              "value": 31.65,
+              "weight": 20
+            },
+            "smoothness": {
+              "value": 4.82,
+              "weight": 15
+            },
+            "safety": {
+              "value": 0.0,
+              "weight": 20
+            },
+            "realtime": {
+              "value": 100.0,
+              "weight": 10
+            }
+          },
+          "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+        }
+      },
+      "failures": [],
+      "wall_s": 6.358893043361604,
+      "inference_frames": 122,
+      "terminal_pose": {
+        "x_m": 2.9355461357889463,
+        "y_m": 0.021107078014045728,
+        "yaw_rad": 0.08774155705855202,
+        "speed_mps": 0.7849999999999997,
+        "steering_angle_rad": 0.1747435564637336,
+        "velocity_x_mps": 0.7837324104882336,
+        "velocity_y_mps": 0.0445926983967387,
+        "yaw_rate_rad_s": 0.3759782055358606,
+        "acceleration_mps2": -0.2999999999999976
+      },
+      "terminal_debug": {
+        "identity_initialized": true,
+        "prediction_only": true,
+        "missing_s": 0.05000000000000071,
+        "observed_points": 15,
+        "motion_source": "previous_command_model",
+        "motion_model": "inertial_v2",
+        "estimated_speed_mps": 0.7999999999999998,
+        "estimated_lateral_speed_mps": -0.02168157595858843
+      },
+      "scene_name": "0920挑战·连续占道"
+    },
+    {
+      "algorithm": "temporal_mpc",
+      "case": "03-user-0920",
+      "family": "custom",
+      "seed": 7,
+      "split": "development",
+      "suite": "core",
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "metrics": {
+        "evaluator_version": "4.0",
+        "reason": "success",
+        "frames": 870,
+        "task_frames": 862,
+        "success": true,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.2,
+        "completion": 0.9944252312454703,
+        "tracking_lateral_error_m": {
+          "mean": 0.017834374851266942,
+          "p95": 0.04379713548833852,
+          "max": 0.18397283223693867
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.9934491881226652,
+          "p95": 1.4943500000260967,
+          "max": 1.499625000000001
+        },
+        "heading_error_rad": {
+          "mean": 0.03558766441977286,
+          "p95": 0.11658575681391718,
+          "max": 0.18419455565672482
+        },
+        "illegal_switches": [],
+        "lost_count": 0,
+        "lost_duration_s": 0.0,
+        "recovery_rate": null,
+        "inference_ms": {
+          "mean": 17.98799814301999,
+          "p95": 23.957630107179284,
+          "max": 40.09972419589758
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.7579623763643745,
+          "p95": 0.8000000000000002,
+          "max": 0.8000000000000003
+        },
+        "simulation_time_s": 43.1,
+        "completion_time_s": 43.1,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 10.327124672642107,
+        "safety_intervention_frames": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true,
+        "collision_count": 0,
+        "collisions": [],
+        "collision_duration_s": 0.0,
+        "avoidance_frames": 0,
+        "avoidance_duration_s": 0.0,
+        "acceleration_mps2": {
+          "mean": 0.03894236827692998,
+          "p95": 0.2503633319955457,
+          "max": 1.543180327891381
+        },
+        "vector_acceleration_mps2": {
+          "mean": 0.22783459771244616,
+          "p95": 0.6520250763458999,
+          "max": 1.543180346417445
+        },
+        "jerk_mps3": {
+          "mean": 0.20682843544943874,
+          "p95": 0.36293664945784554,
+          "max": 22.390688527924368
+        },
+        "steering_rate_rad_s": {
+          "mean": 0.2376783584037309,
+          "p95": 1.1720814015683971,
+          "max": 1.2000000000000004
+        },
+        "realtime_miss_rate": 0.0,
+        "score": {
+          "version": "4.0",
+          "total": 87.51,
+          "quality": 68.78,
+          "components": {
+            "tracking": {
+              "value": 81.75,
+              "weight": 35
+            },
+            "efficiency": {
+              "value": 49.09,
+              "weight": 20
+            },
+            "smoothness": {
+              "value": 2.33,
+              "weight": 15
+            },
+            "safety": {
+              "value": 100.0,
+              "weight": 20
+            },
+            "realtime": {
+              "value": 100.0,
+              "weight": 10
+            }
+          },
+          "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+        }
+      },
+      "failures": [],
+      "wall_s": 42.199075602926314,
+      "inference_frames": 862,
+      "terminal_pose": {
+        "x_m": 0.5698422275052705,
+        "y_m": 1.9531023997117574,
+        "yaw_rad": -2.8198374815742993,
+        "speed_mps": 0.24629540983674147,
+        "steering_angle_rad": -0.06663019091463611,
+        "velocity_x_mps": -0.23358194420650613,
+        "velocity_y_mps": -0.07810828539506617,
+        "yaw_rate_rad_s": -0.025457145883184693,
+        "acceleration_mps2": 0.5568196721086194
+      },
+      "terminal_debug": {
+        "identity_initialized": true,
+        "prediction_only": true,
+        "missing_s": 2.650000000000089,
+        "observed_points": 2,
+        "motion_source": "previous_command_model",
+        "motion_model": "inertial_v2",
+        "estimated_speed_mps": 0.21845442623131103,
+        "estimated_lateral_speed_mps": 5.9619280607582844e-05
+      },
+      "scene_name": "0920测试"
+    },
+    {
+      "algorithm": "temporal_mpc",
+      "case": "04-user-0920-obstacles",
+      "family": "custom",
+      "seed": 7,
+      "split": "development",
+      "suite": "core",
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "metrics": {
+        "evaluator_version": "4.0",
+        "reason": "collision",
+        "frames": 202,
+        "task_frames": 190,
+        "success": false,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.2,
+        "completion": 0.17687751330709692,
+        "tracking_lateral_error_m": {
+          "mean": 0.013577623633339628,
+          "p95": 0.048561860161026274,
+          "max": 0.18397283223693867
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.9934491881226652,
+          "p95": 1.4943500000260967,
+          "max": 1.499625000000001
+        },
+        "heading_error_rad": {
+          "mean": 0.01694370169163365,
+          "p95": 0.10366155946740324,
+          "max": 0.15647497062564808
+        },
+        "illegal_switches": [],
+        "lost_count": 0,
+        "lost_duration_s": 0.0,
+        "recovery_rate": null,
+        "inference_ms": {
+          "mean": 21.1800379678607,
+          "p95": 27.66133854165673,
+          "max": 33.007778227329254
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.7354257425742575,
+          "p95": 0.8,
+          "max": 0.8000000000000002
+        },
+        "simulation_time_s": 9.5,
+        "completion_time_s": null,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 2.167565237072324,
+        "safety_intervention_frames": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true,
+        "collision_count": 1,
+        "collisions": [
+          {
+            "object_index": 1,
+            "timestamp_s": 9.5
+          }
+        ],
+        "collision_duration_s": 0.65,
+        "avoidance_frames": 0,
+        "avoidance_duration_s": 0.0,
+        "acceleration_mps2": {
+          "mean": 0.15771144278606977,
+          "p95": 0.8000000000000029,
+          "max": 1.8000000000000005
+        },
+        "vector_acceleration_mps2": {
+          "mean": 0.2195757398438562,
+          "p95": 0.8001210901420348,
+          "max": 1.8187557204571037
+        },
+        "jerk_mps3": {
+          "mean": 0.39000000000000634,
+          "p95": 2.5963820301782565,
+          "max": 22.000000000000014
+        },
+        "steering_rate_rad_s": {
+          "mean": 0.2156781330420223,
+          "p95": 1.2,
+          "max": 1.2000000000000004
+        },
+        "realtime_miss_rate": 0.0,
+        "score": {
+          "version": "4.0",
+          "total": 6.32,
+          "quality": 45.84,
+          "components": {
+            "tracking": {
+              "value": 79.77,
+              "weight": 35
+            },
+            "efficiency": {
+              "value": 39.61,
+              "weight": 20
+            },
+            "smoothness": {
+              "value": 0.0,
+              "weight": 15
+            },
+            "safety": {
+              "value": 0.0,
+              "weight": 20
+            },
+            "realtime": {
+              "value": 100.0,
+              "weight": 10
+            }
+          },
+          "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+        }
+      },
+      "failures": [],
+      "wall_s": 10.374874700792134,
+      "inference_frames": 190,
+      "terminal_pose": {
+        "x_m": 5.597134065731772,
+        "y_m": 0.2803007794860087,
+        "yaw_rad": 0.7917626801017827,
+        "speed_mps": 0.7999999999999998,
+        "steering_angle_rad": 0.32525379385401393,
+        "velocity_x_mps": 0.6112564428044363,
+        "velocity_y_mps": 0.5161061529666806,
+        "yaw_rate_rad_s": 0.8958452362357984,
+        "acceleration_mps2": 6.167905692361981e-16
+      },
+      "terminal_debug": {
+        "identity_initialized": true,
+        "prediction_only": false,
+        "missing_s": 0,
+        "observed_points": 34,
+        "motion_source": "previous_command_model",
+        "motion_model": "inertial_v2",
+        "estimated_speed_mps": 0.8,
+        "estimated_lateral_speed_mps": -0.07118052374165366
+      },
+      "scene_name": "0920测试"
+    },
+    {
+      "algorithm": "temporal_pursuit_avoidance",
+      "case": "00-block-coil",
+      "family": "custom",
+      "seed": 920,
+      "split": "development",
+      "suite": "core",
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "metrics": {
+        "evaluator_version": "4.0",
+        "reason": "success",
+        "frames": 1082,
+        "task_frames": 1075,
+        "success": true,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.2,
+        "completion": 0.9945391285770955,
+        "tracking_lateral_error_m": {
+          "mean": 0.04374270275542606,
+          "p95": 0.11092419759632131,
+          "max": 0.23628179833966248
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.9934460623962417,
+          "p95": 1.4943500000000483,
+          "max": 1.499625
+        },
+        "heading_error_rad": {
+          "mean": 0.0821961501298481,
+          "p95": 0.41250998563060864,
+          "max": 0.5794548834734141
+        },
+        "illegal_switches": [],
+        "lost_count": 0,
+        "lost_duration_s": 0.0,
+        "recovery_rate": null,
+        "inference_ms": {
+          "mean": 32.200559428784736,
+          "p95": 43.71378272771835,
+          "max": 52.55528725683689
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.6278415878662504,
+          "p95": 0.8000000000000002,
+          "max": 0.8000000000000003
+        },
+        "simulation_time_s": 53.75,
+        "completion_time_s": 53.75,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 5.987340300049918,
+        "safety_intervention_frames": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true,
+        "collision_count": 0,
+        "collisions": [],
+        "collision_duration_s": 0.0,
+        "avoidance_frames": 235,
+        "avoidance_duration_s": 11.75,
+        "acceleration_mps2": {
+          "mean": 0.05144215608163773,
+          "p95": 0.34006596465746775,
+          "max": 1.8
+        },
+        "vector_acceleration_mps2": {
+          "mean": 0.21992123259282056,
+          "p95": 0.6301921426280447,
+          "max": 1.8062913155352263
+        },
+        "jerk_mps3": {
+          "mean": 0.277401017935739,
+          "p95": 1.7081938673478303,
+          "max": 22.00004889411269
+        },
+        "steering_rate_rad_s": {
+          "mean": 0.11077410360869415,
+          "p95": 0.4127930192192447,
+          "max": 1.2
+        },
+        "realtime_miss_rate": 0.0027906976744186047,
+        "score": {
+          "version": "4.0",
+          "total": 86.61,
+          "quality": 66.54,
+          "components": {
+            "tracking": {
+              "value": 53.78,
+              "weight": 35
+            },
+            "efficiency": {
+              "value": 39.37,
+              "weight": 20
+            },
+            "smoothness": {
+              "value": 65.6,
+              "weight": 15
+            },
+            "safety": {
+              "value": 100.0,
+              "weight": 20
+            },
+            "realtime": {
+              "value": 100.0,
+              "weight": 10
+            }
+          },
+          "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+        }
+      },
+      "failures": [],
+      "wall_s": 66.67883097473532,
+      "inference_frames": 1075,
+      "terminal_pose": {
+        "x_m": 0.566534894386307,
+        "y_m": 1.9515294018800402,
+        "yaw_rad": -2.8669649553820635,
+        "speed_mps": 0.3500001324215551,
+        "steering_angle_rad": -0.021746705281838925,
+        "velocity_x_mps": -0.336644504690558,
+        "velocity_y_mps": -0.09576309391803806,
+        "yaw_rate_rad_s": -0.024921235048914407,
+        "acceleration_mps2": -1.018627347286009e-06
+      },
+      "terminal_debug": {
+        "identity_initialized": true,
+        "prediction_only": true,
+        "missing_s": 2.450000000000085,
+        "observed_points": 2,
+        "motion_source": "previous_command_model",
+        "motion_model": "inertial_v2",
+        "estimated_speed_mps": 0.35000018335292254,
+        "estimated_lateral_speed_mps": 0.0008670660080731137,
+        "avoidance_active": false,
+        "avoidance_state": "已重新接入原目标路线",
+        "planning_rejections": {
+          "visibility": 0,
+          "corridor": 6,
+          "curvature": 5,
+          "obstacle": 6,
+          "other_route": 5,
+          "peak_curvature": 1.7098515532079452
+        },
+        "observed_obstacles": [],
+        "obstacle_source": "rgb_ground_contact_and_command_memory"
+      },
+      "scene_name": "0920挑战·套圈占道"
+    },
+    {
+      "algorithm": "temporal_pursuit_avoidance",
+      "case": "01-block-neighbor",
+      "family": "custom",
+      "seed": 920,
+      "split": "development",
+      "suite": "core",
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "metrics": {
+        "evaluator_version": "4.0",
+        "reason": "success",
+        "frames": 993,
+        "task_frames": 986,
+        "success": true,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.2,
+        "completion": 0.9941009777580192,
+        "tracking_lateral_error_m": {
+          "mean": 0.03788690439225795,
+          "p95": 0.11713210923820871,
+          "max": 0.23689907337764887
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.993445797446746,
+          "p95": 1.4943499999999998,
+          "max": 1.499625
+        },
+        "heading_error_rad": {
+          "mean": 0.0799559624399707,
+          "p95": 0.43076535381724723,
+          "max": 0.5710147187441703
+        },
+        "illegal_switches": [],
+        "lost_count": 0,
+        "lost_duration_s": 0.0,
+        "recovery_rate": null,
+        "inference_ms": {
+          "mean": 30.729885052504212,
+          "p95": 36.97681683115661,
+          "max": 52.54123080521822
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.63497049820206,
+          "p95": 0.8000000000000002,
+          "max": 0.8000000000000003
+        },
+        "simulation_time_s": 49.300000000000004,
+        "completion_time_s": 49.300000000000004,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 4.8014140087691715,
+        "safety_intervention_frames": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true,
+        "collision_count": 0,
+        "collisions": [],
+        "collision_duration_s": 0.0,
+        "avoidance_frames": 208,
+        "avoidance_duration_s": 10.4,
+        "acceleration_mps2": {
+          "mean": 0.05509359244971209,
+          "p95": 0.5273556478892565,
+          "max": 1.7999999999999998
+        },
+        "vector_acceleration_mps2": {
+          "mean": 0.1786146188924645,
+          "p95": 0.6285491490899225,
+          "max": 1.8063681865658592
+        },
+        "jerk_mps3": {
+          "mean": 0.2743890379965698,
+          "p95": 1.3326326440752598,
+          "max": 22.000179710387304
+        },
+        "steering_rate_rad_s": {
+          "mean": 0.09680270178970103,
+          "p95": 0.4092951078451432,
+          "max": 1.2
+        },
+        "realtime_miss_rate": 0.0010141987829614604,
+        "score": {
+          "version": "4.0",
+          "total": 86.31,
+          "quality": 65.78,
+          "components": {
+            "tracking": {
+              "value": 51.19,
+              "weight": 35
+            },
+            "efficiency": {
+              "value": 39.9,
+              "weight": 20
+            },
+            "smoothness": {
+              "value": 65.89,
+              "weight": 15
+            },
+            "safety": {
+              "value": 100.0,
+              "weight": 20
+            },
+            "realtime": {
+              "value": 100.0,
+              "weight": 10
+            }
+          },
+          "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+        }
+      },
+      "failures": [],
+      "wall_s": 59.5106914723292,
+      "inference_frames": 986,
+      "terminal_pose": {
+        "x_m": 7.824900611212059,
+        "y_m": 5.406311336595358,
+        "yaw_rad": -0.03619976244345846,
+        "speed_mps": 0.3500004867156323,
+        "steering_angle_rad": -0.013792310873656077,
+        "velocity_x_mps": 0.34978980678806415,
+        "velocity_y_mps": -0.012142148423908218,
+        "yaw_rate_rad_s": -0.015113508404731423,
+        "acceleration_mps2": -3.7439664017184055e-06
+      },
+      "terminal_debug": {
+        "identity_initialized": true,
+        "prediction_only": true,
+        "missing_s": 2.250000000000077,
+        "observed_points": 4,
+        "motion_source": "previous_command_model",
+        "motion_model": "inertial_v2",
+        "estimated_speed_mps": 0.35000067391395234,
+        "estimated_lateral_speed_mps": 0.0005157157423272708,
+        "avoidance_active": false,
+        "avoidance_state": "已重新接入原目标路线",
+        "planning_rejections": {
+          "visibility": 0,
+          "corridor": 6,
+          "curvature": 0,
+          "obstacle": 11,
+          "other_route": 6,
+          "peak_curvature": 1.562997313974565
+        },
+        "observed_obstacles": [],
+        "obstacle_source": "rgb_ground_contact_and_command_memory"
+      },
+      "scene_name": "0920挑战·占道与邻线"
+    },
+    {
+      "algorithm": "temporal_pursuit_avoidance",
+      "case": "02-block-double",
+      "family": "custom",
+      "seed": 920,
+      "split": "development",
+      "suite": "core",
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "metrics": {
+        "evaluator_version": "4.0",
+        "reason": "episode_timeout",
+        "frames": 1500,
+        "task_frames": 1500,
+        "success": false,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.2,
+        "completion": 0.16424314533341267,
+        "tracking_lateral_error_m": {
+          "mean": 0.07376457662961393,
+          "p95": 0.07180296325732051,
+          "max": 0.23789360617328148
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.9934457944467486,
+          "p95": 1.4943499999999998,
+          "max": 1.499625
+        },
+        "heading_error_rad": {
+          "mean": 0.3008114440027211,
+          "p95": 0.3131042677712689,
+          "max": 0.578587435798946
+        },
+        "illegal_switches": [],
+        "lost_count": 1,
+        "lost_duration_s": 55.59999999999898,
+        "recovery_rate": 0.0,
+        "inference_ms": {
+          "mean": 31.70717037220796,
+          "p95": 39.19820580631494,
+          "max": 49.55509305000305
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.09708780991037416,
+          "p95": 0.3576470588235294,
+          "max": 0.7999996461160377
+        },
+        "simulation_time_s": 75.0,
+        "completion_time_s": null,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 2.674957701704433,
+        "safety_intervention_frames": 1112,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true,
+        "collision_count": 0,
+        "collisions": [],
+        "collision_duration_s": 0.0,
+        "avoidance_frames": 251,
+        "avoidance_duration_s": 12.55,
+        "acceleration_mps2": {
+          "mean": 0.024412343890393835,
+          "p95": 0.006309805051229759,
+          "max": 1.7999999999999998
+        },
+        "vector_acceleration_mps2": {
+          "mean": 0.03344093281545557,
+          "p95": 0.08990770230516065,
+          "max": 1.8063655266443892
+        },
+        "jerk_mps3": {
+          "mean": 0.12540460631705982,
+          "p95": 0.009571058652487658,
+          "max": 18.941176470588236
+        },
+        "steering_rate_rad_s": {
+          "mean": 0.03568989595336134,
+          "p95": 0.322596898353827,
+          "max": 1.2
+        },
+        "realtime_miss_rate": 0.0,
+        "score": {
+          "version": "4.0",
+          "total": 6.1,
+          "quality": 51.64,
+          "components": {
+            "tracking": {
+              "value": 70.08,
+              "weight": 35
+            },
+            "efficiency": {
+              "value": 4.86,
+              "weight": 20
+            },
+            "smoothness": {
+              "value": 73.12,
+              "weight": 15
+            },
+            "safety": {
+              "value": 25.87,
+              "weight": 20
+            },
+            "realtime": {
+              "value": 100.0,
+              "weight": 10
+            }
+          },
+          "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+        }
+      },
+      "failures": [],
+      "wall_s": 94.64319539815187,
+      "inference_frames": 1500,
+      "terminal_pose": {
+        "x_m": 5.4664687333596875,
+        "y_m": 0.07180296325732051,
+        "yaw_rad": -0.29905199578064323,
+        "speed_mps": 0.0,
+        "steering_angle_rad": 0.0,
+        "velocity_x_mps": 0.0,
+        "velocity_y_mps": -0.0,
+        "yaw_rate_rad_s": 0.0,
+        "acceleration_mps2": 0.0
+      },
+      "terminal_debug": {
+        "identity_initialized": true,
+        "prediction_only": false,
+        "missing_s": 0,
+        "observed_points": 8,
+        "motion_source": "previous_command_model",
+        "motion_model": "inertial_v2",
+        "estimated_speed_mps": 0.0,
+        "estimated_lateral_speed_mps": 0.0,
+        "avoidance_active": true,
+        "avoidance_state": "占道物件后方目标路线尚未确认，制动等待",
+        "planning_rejections": {
+          "visibility": 0,
+          "corridor": 6,
+          "curvature": 4,
+          "obstacle": 7,
+          "other_route": 4,
+          "peak_curvature": 0.9715182210940563
+        },
+        "observed_obstacles": [
+          {
+            "center_m": [
+              0.9689461785561626,
+              0.31759878987951107
+            ],
+            "radius_m": 0.34796669543234493,
+            "age_s": 0
+          }
+        ],
+        "obstacle_source": "rgb_ground_contact_and_command_memory"
+      },
+      "scene_name": "0920挑战·连续占道"
+    },
+    {
+      "algorithm": "temporal_pursuit_avoidance",
+      "case": "03-user-0920",
+      "family": "custom",
+      "seed": 7,
+      "split": "development",
+      "suite": "core",
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "metrics": {
+        "evaluator_version": "4.0",
+        "reason": "episode_timeout",
+        "frames": 1500,
+        "task_frames": 1500,
+        "success": false,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.2,
+        "completion": 0.4662177816225262,
+        "tracking_lateral_error_m": {
+          "mean": 0.045168341814224106,
+          "p95": 0.0601875322694025,
+          "max": 0.18396511140282706
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.9934469944511488,
+          "p95": 1.4943500000000483,
+          "max": 1.499625
+        },
+        "heading_error_rad": {
+          "mean": 0.06625305922985936,
+          "p95": 0.09727774049708383,
+          "max": 0.2671068384887043
+        },
+        "illegal_switches": [],
+        "lost_count": 3,
+        "lost_duration_s": 52.499999999999154,
+        "recovery_rate": 0.6666666666666666,
+        "inference_ms": {
+          "mean": 29.83930638122062,
+          "p95": 37.47621304355562,
+          "max": 54.526010528206825
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.21920735244030265,
+          "p95": 0.7999999999999998,
+          "max": 0.8000000000000002
+        },
+        "simulation_time_s": 75.0,
+        "completion_time_s": null,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 3.8605697378604886,
+        "safety_intervention_frames": 1050,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true,
+        "collision_count": 0,
+        "collisions": [],
+        "collision_duration_s": 0.0,
+        "avoidance_frames": 0,
+        "avoidance_duration_s": 0.0,
+        "acceleration_mps2": {
+          "mean": 0.07197622476956883,
+          "p95": 0.7999999999999996,
+          "max": 1.8000000000000005
+        },
+        "vector_acceleration_mps2": {
+          "mean": 0.10776357340185998,
+          "p95": 0.8000000233190949,
+          "max": 1.8279108343380968
+        },
+        "jerk_mps3": {
+          "mean": 0.32101393560197095,
+          "p95": 1.5445039351504457,
+          "max": 33.59786435091729
+        },
+        "steering_rate_rad_s": {
+          "mean": 0.05150860223963294,
+          "p95": 0.2754880432379126,
+          "max": 1.2000000000000004
+        },
+        "realtime_miss_rate": 0.0013333333333333333,
+        "score": {
+          "version": "4.0",
+          "total": 17.87,
+          "quality": 56.42,
+          "components": {
+            "tracking": {
+              "value": 74.92,
+              "weight": 35
+            },
+            "efficiency": {
+              "value": 13.23,
+              "weight": 20
+            },
+            "smoothness": {
+              "value": 77.04,
+              "weight": 15
+            },
+            "safety": {
+              "value": 30.0,
+              "weight": 20
+            },
+            "realtime": {
+              "value": 100.0,
+              "weight": 10
+            }
+          },
+          "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+        }
+      },
+      "failures": [],
+      "wall_s": 89.18068165425211,
+      "inference_frames": 1500,
+      "terminal_pose": {
+        "x_m": -0.3999641202380195,
+        "y_m": 0.6693073346981144,
+        "yaw_rad": -2.0221037739949543,
+        "speed_mps": 0.0,
+        "steering_angle_rad": 0.0,
+        "velocity_x_mps": -0.0,
+        "velocity_y_mps": -0.0,
+        "yaw_rate_rad_s": 0.0,
+        "acceleration_mps2": 0.0
+      },
+      "terminal_debug": {
+        "identity_initialized": true,
+        "prediction_only": false,
+        "missing_s": 34.4500000000014,
+        "observed_points": 0,
+        "motion_source": "previous_command_model",
+        "motion_model": "inertial_v2",
+        "estimated_speed_mps": 0.0,
+        "estimated_lateral_speed_mps": 0.0,
+        "avoidance_active": false,
+        "avoidance_state": "占道物件后方目标路线尚未确认，制动等待",
+        "planning_rejections": {
+          "visibility": 0,
+          "corridor": 6,
+          "curvature": 9,
+          "obstacle": 9,
+          "other_route": 0,
+          "peak_curvature": 164.22806294080553
+        },
+        "observed_obstacles": [],
+        "obstacle_source": "rgb_ground_contact_and_command_memory"
+      },
+      "scene_name": "0920测试"
+    },
+    {
+      "algorithm": "temporal_pursuit_avoidance",
+      "case": "04-user-0920-obstacles",
+      "family": "custom",
+      "seed": 7,
+      "split": "development",
+      "suite": "core",
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "metrics": {
+        "evaluator_version": "4.0",
+        "reason": "episode_timeout",
+        "frames": 1500,
+        "task_frames": 1500,
+        "success": false,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.4000000000000004,
+        "completion": 0.0,
+        "tracking_lateral_error_m": {
+          "mean": 0.16761062322440315,
+          "p95": 0.16757644024307233,
+          "max": 0.19577424488380668
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.949996173229147,
+          "p95": 1.4933000000001022,
+          "max": 1.499625
+        },
+        "heading_error_rad": {
+          "mean": 0.002589157178052737,
+          "p95": 0.0025891041420722516,
+          "max": 0.0026296007030848223
+        },
+        "illegal_switches": [],
+        "lost_count": 2,
+        "lost_duration_s": 73.09999999999799,
+        "recovery_rate": 0.5,
+        "inference_ms": {
+          "mean": 59.16577384993434,
+          "p95": 60.42897393926978,
+          "max": 101.87277663499117
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.017765951696193178,
+          "p95": 0.0,
+          "max": 0.7914873531290754
+        },
+        "simulation_time_s": 75.0,
+        "completion_time_s": null,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 0.12576101170446208,
+        "safety_intervention_frames": 1462,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true,
+        "collision_count": 0,
+        "collisions": [],
+        "collision_duration_s": 0.0,
+        "avoidance_frames": 0,
+        "avoidance_duration_s": 0.0,
+        "acceleration_mps2": {
+          "mean": 0.025419752767391193,
+          "p95": 0.0,
+          "max": 1.8000000000000005
+        },
+        "vector_acceleration_mps2": {
+          "mean": 0.025421646336044136,
+          "p95": 0.0,
+          "max": 1.80000038478208
+        },
+        "jerk_mps3": {
+          "mean": 0.1130712443522801,
+          "p95": 0.0,
+          "max": 18.17371042847811
+        },
+        "steering_rate_rad_s": {
+          "mean": 0.0016779321108000278,
+          "p95": 0.0,
+          "max": 0.7682154207395806
+        },
+        "realtime_miss_rate": 0.9746666666666667,
+        "score": {
+          "version": "4.0",
+          "total": 0.0,
+          "quality": 34.34,
+          "components": {
+            "tracking": {
+              "value": 30.18,
+              "weight": 35
+            },
+            "efficiency": {
+              "value": 0.0,
+              "weight": 20
+            },
+            "smoothness": {
+              "value": 100.0,
+              "weight": 15
+            },
+            "safety": {
+              "value": 2.53,
+              "weight": 20
+            },
+            "realtime": {
+              "value": 82.74,
+              "weight": 10
+            }
+          },
+          "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+        }
+      },
+      "failures": [],
+      "wall_s": 140.50850011128932,
+      "inference_frames": 1500,
+      "terminal_pose": {
+        "x_m": -0.16756106949307048,
+        "y_m": -0.0022696508274172955,
+        "yaw_rad": -0.0025891041420722516,
+        "speed_mps": 0.0,
+        "steering_angle_rad": 0.0,
+        "velocity_x_mps": 0.0,
+        "velocity_y_mps": -0.0,
+        "yaw_rate_rad_s": 0.0,
+        "acceleration_mps2": 0.0
+      },
+      "terminal_debug": {
+        "identity_initialized": true,
+        "prediction_only": false,
+        "missing_s": 0,
+        "observed_points": 99,
+        "motion_source": "previous_command_model",
+        "motion_model": "inertial_v2",
+        "estimated_speed_mps": 0.0,
+        "estimated_lateral_speed_mps": 0.0,
+        "avoidance_active": true,
+        "avoidance_state": "没有满足转弯、障碍物净距和邻线隔离约束的绕行路线，制动",
+        "planning_rejections": {
+          "visibility": 0,
+          "corridor": 6,
+          "curvature": 0,
+          "obstacle": 9,
+          "other_route": 9,
+          "peak_curvature": 0.8160843401083666
+        },
+        "observed_obstacles": [
+          {
+            "center_m": [
+              2.579445166879033,
+              1.4272438948287478
+            ],
+            "radius_m": 0.2542337227701707,
+            "age_s": 0
+          },
+          {
+            "center_m": [
+              2.180422989564591,
+              0.3858343938714343
+            ],
+            "radius_m": 0.22768976321229756,
+            "age_s": 0
+          },
+          {
+            "center_m": [
+              5.058762363229586,
+              0.8360720235443301
+            ],
+            "radius_m": 0.41479090710607924,
+            "age_s": 0
+          }
+        ],
+        "obstacle_source": "rgb_ground_contact_and_command_memory"
+      },
+      "scene_name": "0920测试"
+    },
+    {
+      "algorithm": "temporal_mpc_avoidance",
+      "case": "00-block-coil",
+      "family": "custom",
+      "seed": 920,
+      "split": "development",
+      "suite": "core",
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "metrics": {
+        "evaluator_version": "4.0",
+        "reason": "success",
+        "frames": 1058,
+        "task_frames": 1051,
+        "success": true,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.2,
+        "completion": 0.994643682713675,
+        "tracking_lateral_error_m": {
+          "mean": 0.027729155075677258,
+          "p95": 0.1037007100429857,
+          "max": 0.23851156905345786
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.9934809105662247,
+          "p95": 1.4943500000260967,
+          "max": 1.499625000000001
+        },
+        "heading_error_rad": {
+          "mean": 0.08034195806280886,
+          "p95": 0.4502082121137354,
+          "max": 0.6490828963308779
+        },
+        "illegal_switches": [],
+        "lost_count": 0,
+        "lost_duration_s": 0.0,
+        "recovery_rate": null,
+        "inference_ms": {
+          "mean": 34.18089719498078,
+          "p95": 46.281476970762014,
+          "max": 55.846317671239376
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.6314077049233653,
+          "p95": 0.8000000000000002,
+          "max": 0.8000000000000003
+        },
+        "simulation_time_s": 52.550000000000004,
+        "completion_time_s": 52.550000000000004,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 15.489813893655104,
+        "safety_intervention_frames": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true,
+        "collision_count": 0,
+        "collisions": [],
+        "collision_duration_s": 0.0,
+        "avoidance_frames": 234,
+        "avoidance_duration_s": 11.700000000000001,
+        "acceleration_mps2": {
+          "mean": 0.05135975600675536,
+          "p95": 0.4362563543936052,
+          "max": 1.7999999999999998
+        },
+        "vector_acceleration_mps2": {
+          "mean": 0.22507188111300575,
+          "p95": 0.6650032545317929,
+          "max": 1.8062764037217487
+        },
+        "jerk_mps3": {
+          "mean": 0.2517506994868369,
+          "p95": 0.960842049023308,
+          "max": 22.000093737825452
+        },
+        "steering_rate_rad_s": {
+          "mean": 0.2930901398988667,
+          "p95": 1.2,
+          "max": 1.2000000000000004
+        },
+        "realtime_miss_rate": 0.003805899143672693,
+        "score": {
+          "version": "4.0",
+          "total": 83.17,
+          "quality": 57.93,
+          "components": {
+            "tracking": {
+              "value": 56.79,
+              "weight": 35
+            },
+            "efficiency": {
+              "value": 40.27,
+              "weight": 20
+            },
+            "smoothness": {
+              "value": 0.0,
+              "weight": 15
+            },
+            "safety": {
+              "value": 100.0,
+              "weight": 20
+            },
+            "realtime": {
+              "value": 100.0,
+              "weight": 10
+            }
+          },
+          "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+        }
+      },
+      "failures": [],
+      "wall_s": 67.44247196055949,
+      "inference_frames": 1051,
+      "terminal_pose": {
+        "x_m": 0.5624327584686162,
+        "y_m": 1.953283766939146,
+        "yaw_rad": -2.825886017414495,
+        "speed_mps": 0.3500002538732774,
+        "steering_angle_rad": -0.004559810456765342,
+        "velocity_x_mps": -0.3326451049838228,
+        "velocity_y_mps": -0.10884581683124113,
+        "yaw_rate_rad_s": -0.005211915053977196,
+        "acceleration_mps2": -1.9528713640020675e-06
+      },
+      "terminal_debug": {
+        "identity_initialized": true,
+        "prediction_only": true,
+        "missing_s": 2.350000000000077,
+        "observed_points": 3,
+        "motion_source": "previous_command_model",
+        "motion_model": "inertial_v2",
+        "estimated_speed_mps": 0.3500003515168455,
+        "estimated_lateral_speed_mps": 0.0001811492719881009,
+        "avoidance_active": false,
+        "avoidance_state": "已重新接入原目标路线",
+        "planning_rejections": {
+          "visibility": 0,
+          "corridor": 6,
+          "curvature": 5,
+          "obstacle": 6,
+          "other_route": 5,
+          "peak_curvature": 1.6236060442809994
+        },
+        "observed_obstacles": [],
+        "obstacle_source": "rgb_ground_contact_and_command_memory"
+      },
+      "scene_name": "0920挑战·套圈占道"
+    },
+    {
+      "algorithm": "temporal_mpc_avoidance",
+      "case": "01-block-neighbor",
+      "family": "custom",
+      "seed": 920,
+      "split": "development",
+      "suite": "core",
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "metrics": {
+        "evaluator_version": "4.0",
+        "reason": "success",
+        "frames": 996,
+        "task_frames": 989,
+        "success": true,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.2,
+        "completion": 0.9940353824167761,
+        "tracking_lateral_error_m": {
+          "mean": 0.028322003794287752,
+          "p95": 0.12030179609630019,
+          "max": 0.2375764172068755
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.9934538812827794,
+          "p95": 1.4943499999999998,
+          "max": 1.499625
+        },
+        "heading_error_rad": {
+          "mean": 0.06928420179080681,
+          "p95": 0.39683553125655613,
+          "max": 0.6197694137627092
+        },
+        "illegal_switches": [],
+        "lost_count": 0,
+        "lost_duration_s": 0.0,
+        "recovery_rate": null,
+        "inference_ms": {
+          "mean": 32.71009784881157,
+          "p95": 39.47517592459917,
+          "max": 49.7977202758193
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.6262850514847546,
+          "p95": 0.8000000000000002,
+          "max": 0.8000000000000003
+        },
+        "simulation_time_s": 49.45,
+        "completion_time_s": 49.45,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 10.751123695521603,
+        "safety_intervention_frames": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true,
+        "collision_count": 0,
+        "collisions": [],
+        "collision_duration_s": 0.0,
+        "avoidance_frames": 230,
+        "avoidance_duration_s": 11.5,
+        "acceleration_mps2": {
+          "mean": 0.05456101875315315,
+          "p95": 0.5085234156842338,
+          "max": 1.8
+        },
+        "vector_acceleration_mps2": {
+          "mean": 0.1767989279319463,
+          "p95": 0.6888775722771334,
+          "max": 1.8064620401209843
+        },
+        "jerk_mps3": {
+          "mean": 0.2674609056247139,
+          "p95": 1.2761787183922415,
+          "max": 22.00003531241473
+        },
+        "steering_rate_rad_s": {
+          "mean": 0.21610298885470558,
+          "p95": 1.0915498393394123,
+          "max": 1.2
+        },
+        "realtime_miss_rate": 0.0,
+        "score": {
+          "version": "4.0",
+          "total": 82.71,
+          "quality": 56.77,
+          "components": {
+            "tracking": {
+              "value": 49.87,
+              "weight": 35
+            },
+            "efficiency": {
+              "value": 39.78,
+              "weight": 20
+            },
+            "smoothness": {
+              "value": 9.04,
+              "weight": 15
+            },
+            "safety": {
+              "value": 100.0,
+              "weight": 20
+            },
+            "realtime": {
+              "value": 100.0,
+              "weight": 10
+            }
+          },
+          "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+        }
+      },
+      "failures": [],
+      "wall_s": 61.73636117018759,
+      "inference_frames": 989,
+      "terminal_pose": {
+        "x_m": 7.822953559024793,
+        "y_m": 5.402755491073452,
+        "yaw_rad": -0.011098436569052073,
+        "speed_mps": 0.3500000956377898,
+        "steering_angle_rad": -0.006857657423263864,
+        "velocity_x_mps": 0.34998130908585107,
+        "velocity_y_mps": -0.003626325552950745,
+        "yaw_rate_rad_s": -0.007448767895393754,
+        "acceleration_mps2": -7.356753061676318e-07
+      },
+      "terminal_debug": {
+        "identity_initialized": true,
+        "prediction_only": true,
+        "missing_s": 2.5000000000000853,
+        "observed_points": 3,
+        "motion_source": "previous_command_model",
+        "motion_model": "inertial_v2",
+        "estimated_speed_mps": 0.3500001324215551,
+        "estimated_lateral_speed_mps": 0.0002531506162088637,
+        "avoidance_active": false,
+        "avoidance_state": "已重新接入原目标路线",
+        "planning_rejections": {
+          "visibility": 0,
+          "corridor": 6,
+          "curvature": 0,
+          "obstacle": 11,
+          "other_route": 5,
+          "peak_curvature": 0.789784779814189
+        },
+        "observed_obstacles": [],
+        "obstacle_source": "rgb_ground_contact_and_command_memory"
+      },
+      "scene_name": "0920挑战·占道与邻线"
+    },
+    {
+      "algorithm": "temporal_mpc_avoidance",
+      "case": "02-block-double",
+      "family": "custom",
+      "seed": 920,
+      "split": "development",
+      "suite": "core",
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "metrics": {
+        "evaluator_version": "4.0",
+        "reason": "episode_timeout",
+        "frames": 1500,
+        "task_frames": 1500,
+        "success": false,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.2,
+        "completion": 0.15912946347749804,
+        "tracking_lateral_error_m": {
+          "mean": 0.07539763979189569,
+          "p95": 0.07352945098194211,
+          "max": 0.23927767410365403
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.9934538812827794,
+          "p95": 1.4943499999999998,
+          "max": 1.499625
+        },
+        "heading_error_rad": {
+          "mean": 0.320086303140228,
+          "p95": 0.3200249998687281,
+          "max": 0.6491747215957244
+        },
+        "illegal_switches": [],
+        "lost_count": 1,
+        "lost_duration_s": 55.999999999998956,
+        "recovery_rate": 0.0,
+        "inference_ms": {
+          "mean": 33.510081405440964,
+          "p95": 42.388749588280916,
+          "max": 58.11511445790529
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.09583290794958983,
+          "p95": 0.3576470588235294,
+          "max": 0.7999996461160377
+        },
+        "simulation_time_s": 75.0,
+        "completion_time_s": null,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 6.042818640984072,
+        "safety_intervention_frames": 1120,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true,
+        "collision_count": 0,
+        "collisions": [],
+        "collision_duration_s": 0.0,
+        "avoidance_frames": 251,
+        "avoidance_duration_s": 12.55,
+        "acceleration_mps2": {
+          "mean": 0.02441234389039381,
+          "p95": 0.006309805051229759,
+          "max": 1.7999999999999998
+        },
+        "vector_acceleration_mps2": {
+          "mean": 0.036573038600278295,
+          "p95": 0.11802819317050162,
+          "max": 1.806459378702189
+        },
+        "jerk_mps3": {
+          "mean": 0.1254046063170598,
+          "p95": 0.009571058652480997,
+          "max": 18.94117647058824
+        },
+        "steering_rate_rad_s": {
+          "mean": 0.0806246649897808,
+          "p95": 0.6202820944702343,
+          "max": 1.2000000000000004
+        },
+        "realtime_miss_rate": 0.0013333333333333333,
+        "score": {
+          "version": "4.0",
+          "total": 5.75,
+          "quality": 47.53,
+          "components": {
+            "tracking": {
+              "value": 69.36,
+              "weight": 35
+            },
+            "efficiency": {
+              "value": 4.71,
+              "weight": 20
+            },
+            "smoothness": {
+              "value": 48.31,
+              "weight": 15
+            },
+            "safety": {
+              "value": 25.33,
+              "weight": 20
+            },
+            "realtime": {
+              "value": 100.0,
+              "weight": 10
+            }
+          },
+          "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+        }
+      },
+      "failures": [],
+      "wall_s": 96.43819110933691,
+      "inference_frames": 1500,
+      "terminal_pose": {
+        "x_m": 5.296271177041827,
+        "y_m": 0.07352945098194211,
+        "yaw_rad": -0.31794161607425675,
+        "speed_mps": 0.0,
+        "steering_angle_rad": 0.0,
+        "velocity_x_mps": 0.0,
+        "velocity_y_mps": -0.0,
+        "yaw_rate_rad_s": 0.0,
+        "acceleration_mps2": 0.0
+      },
+      "terminal_debug": {
+        "identity_initialized": true,
+        "prediction_only": false,
+        "missing_s": 0,
+        "observed_points": 10,
+        "motion_source": "previous_command_model",
+        "motion_model": "inertial_v2",
+        "estimated_speed_mps": 0.0,
+        "estimated_lateral_speed_mps": 0.0,
+        "avoidance_active": true,
+        "avoidance_state": "占道物件后方目标路线尚未确认，制动等待",
+        "planning_rejections": {
+          "visibility": 0,
+          "corridor": 6,
+          "curvature": 4,
+          "obstacle": 6,
+          "other_route": 5,
+          "peak_curvature": 0.9271358222359187
+        },
+        "observed_obstacles": [
+          {
+            "center_m": [
+              1.16245890563815,
+              0.4074664614869602
+            ],
+            "radius_m": 0.3871909823395365,
+            "age_s": 0
+          }
+        ],
+        "obstacle_source": "rgb_ground_contact_and_command_memory"
+      },
+      "scene_name": "0920挑战·连续占道"
+    },
+    {
+      "algorithm": "temporal_mpc_avoidance",
+      "case": "03-user-0920",
+      "family": "custom",
+      "seed": 7,
+      "split": "development",
+      "suite": "core",
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "metrics": {
+        "evaluator_version": "4.0",
+        "reason": "episode_timeout",
+        "frames": 1500,
+        "task_frames": 1500,
+        "success": false,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.2,
+        "completion": 0.49999082591318117,
+        "tracking_lateral_error_m": {
+          "mean": 0.04854874724850352,
+          "p95": 0.07753683510420001,
+          "max": 0.18397283223693867
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.9934491881226652,
+          "p95": 1.4943500000260967,
+          "max": 1.499625000000001
+        },
+        "heading_error_rad": {
+          "mean": 0.13376328754839678,
+          "p95": 0.2635750390065299,
+          "max": 0.2635750390065299
+        },
+        "illegal_switches": [],
+        "lost_count": 3,
+        "lost_duration_s": 51.89999999999919,
+        "recovery_rate": 0.6666666666666666,
+        "inference_ms": {
+          "mean": 31.38328116076688,
+          "p95": 39.535631192848086,
+          "max": 51.82686913758516
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.22994475753996244,
+          "p95": 0.7999999999999999,
+          "max": 0.8000000000000002
+        },
+        "simulation_time_s": 75.0,
+        "completion_time_s": null,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 7.529720868526937,
+        "safety_intervention_frames": 1038,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true,
+        "collision_count": 0,
+        "collisions": [],
+        "collision_duration_s": 0.0,
+        "avoidance_frames": 0,
+        "avoidance_duration_s": 0.0,
+        "acceleration_mps2": {
+          "mean": 0.08102587902850616,
+          "p95": 0.8000000000000002,
+          "max": 1.8000000000000016
+        },
+        "vector_acceleration_mps2": {
+          "mean": 0.12148349946646847,
+          "p95": 0.8000001235728096,
+          "max": 1.8549121315860968
+        },
+        "jerk_mps3": {
+          "mean": 0.3462095448908405,
+          "p95": 2.5634430727022646,
+          "max": 32.087908177799164
+        },
+        "steering_rate_rad_s": {
+          "mean": 0.10046325374952551,
+          "p95": 0.8729907838268203,
+          "max": 1.2000000000000004
+        },
+        "realtime_miss_rate": 0.0013333333333333333,
+        "score": {
+          "version": "4.0",
+          "total": 17.98,
+          "quality": 46.78,
+          "components": {
+            "tracking": {
+              "value": 67.69,
+              "weight": 35
+            },
+            "efficiency": {
+              "value": 14.18,
+              "weight": 20
+            },
+            "smoothness": {
+              "value": 27.25,
+              "weight": 15
+            },
+            "safety": {
+              "value": 30.8,
+              "weight": 20
+            },
+            "realtime": {
+              "value": 100.0,
+              "weight": 10
+            }
+          },
+          "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+        }
+      },
+      "failures": [],
+      "wall_s": 92.1877298830077,
+      "inference_frames": 1500,
+      "terminal_pose": {
+        "x_m": -0.38081717886510597,
+        "y_m": -0.29646317120757837,
+        "yaw_rad": -0.8412277402009223,
+        "speed_mps": 0.0,
+        "steering_angle_rad": 0.0,
+        "velocity_x_mps": 0.0,
+        "velocity_y_mps": -0.0,
+        "yaw_rate_rad_s": 0.0,
+        "acceleration_mps2": 0.0
+      },
+      "terminal_debug": {
+        "identity_initialized": true,
+        "prediction_only": false,
+        "missing_s": 33.65000000000142,
+        "observed_points": 0,
+        "motion_source": "previous_command_model",
+        "motion_model": "inertial_v2",
+        "estimated_speed_mps": 0.0,
+        "estimated_lateral_speed_mps": 0.0,
+        "avoidance_active": false,
+        "avoidance_state": "占道物件后方目标路线尚未确认，制动等待",
+        "planning_rejections": {
+          "visibility": 0,
+          "corridor": 6,
+          "curvature": 9,
+          "obstacle": 9,
+          "other_route": 0,
+          "peak_curvature": 161.3084607942217
+        },
+        "observed_obstacles": [],
+        "obstacle_source": "rgb_ground_contact_and_command_memory"
+      },
+      "scene_name": "0920测试"
+    },
+    {
+      "algorithm": "temporal_mpc_avoidance",
+      "case": "04-user-0920-obstacles",
+      "family": "custom",
+      "seed": 7,
+      "split": "development",
+      "suite": "core",
+      "parameters": {},
+      "checkpoint_sha256": null,
+      "metrics": {
+        "evaluator_version": "4.0",
+        "reason": "acquisition_failed",
+        "frames": 98,
+        "task_frames": 98,
+        "success": false,
+        "acquisition_success": false,
+        "acquisition_time_s": null,
+        "completion": 0.0,
+        "tracking_lateral_error_m": {
+          "mean": null,
+          "p95": null,
+          "max": null
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.9570784080903437,
+          "p95": 1.4745125054594637,
+          "max": 1.499625000000001
+        },
+        "heading_error_rad": {
+          "mean": null,
+          "p95": null,
+          "max": null
+        },
+        "illegal_switches": [],
+        "lost_count": 2,
+        "lost_duration_s": 3.8499999999999943,
+        "recovery_rate": 0.5,
+        "inference_ms": {
+          "mean": 37.9780225588807,
+          "p95": 59.28547843359411,
+          "max": 59.933826327323914
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.13572058453010832,
+          "p95": 0.6897916666666669,
+          "max": 0.7480864197530865
+        },
+        "simulation_time_s": 4.9,
+        "completion_time_s": null,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 0.6601919250954287,
+        "safety_intervention_frames": 77,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true,
+        "collision_count": 0,
+        "collisions": [],
+        "collision_duration_s": 0.0,
+        "avoidance_frames": 0,
+        "avoidance_duration_s": 0.0,
+        "acceleration_mps2": {
+          "mean": 0.30539646175385016,
+          "p95": 1.6708641975308631,
+          "max": 1.8000000000000027
+        },
+        "vector_acceleration_mps2": {
+          "mean": 0.30541806355683115,
+          "p95": 1.67088214344011,
+          "max": 1.8000154755563598
+        },
+        "jerk_mps3": {
+          "mean": 0.9583333333333376,
+          "p95": 6.000000000000004,
+          "max": 23.395061728395305
+        },
+        "steering_rate_rad_s": {
+          "mean": 0.13612204641142858,
+          "p95": 1.2,
+          "max": 1.2
+        },
+        "realtime_miss_rate": 0.08163265306122448,
+        "score": {
+          "version": "4.0",
+          "total": 0.0,
+          "quality": 12.72,
+          "components": {
+            "tracking": {
+              "value": 0.0,
+              "weight": 35
+            },
+            "efficiency": {
+              "value": 0.0,
+              "weight": 20
+            },
+            "smoothness": {
+              "value": 0.0,
+              "weight": 15
+            },
+            "safety": {
+              "value": 21.43,
+              "weight": 20
+            },
+            "realtime": {
+              "value": 84.34,
+              "weight": 10
+            }
+          },
+          "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+        }
+      },
+      "failures": [],
+      "wall_s": 7.203648083843291,
+      "inference_frames": 98,
+      "terminal_pose": {
+        "x_m": -0.8349728203486293,
+        "y_m": 0.0017005119019198988,
+        "yaw_rad": 0.0008004503601144464,
+        "speed_mps": 0.0,
+        "steering_angle_rad": 0.0,
+        "velocity_x_mps": 0.0,
+        "velocity_y_mps": 0.0,
+        "yaw_rate_rad_s": 0.0,
+        "acceleration_mps2": 0.0
+      },
+      "terminal_debug": {
+        "identity_initialized": true,
+        "prediction_only": false,
+        "missing_s": 3.8500000000000036,
+        "observed_points": 0,
+        "motion_source": "previous_command_model",
+        "motion_model": "inertial_v2",
+        "estimated_speed_mps": 0.0,
+        "estimated_lateral_speed_mps": 0.0,
+        "avoidance_active": false,
+        "avoidance_state": "没有满足转弯、障碍物净距和邻线隔离约束的绕行路线，制动",
+        "planning_rejections": {
+          "visibility": 0,
+          "corridor": 6,
+          "curvature": 0,
+          "obstacle": 9,
+          "other_route": 9,
+          "peak_curvature": 0.8103572382714224
+        },
+        "observed_obstacles": [
+          {
+            "center_m": [
+              3.237513298453126,
+              1.4307360501810864
+            ],
+            "radius_m": 0.24503461506526739,
+            "age_s": 0
+          },
+          {
+            "center_m": [
+              2.8287315260837067,
+              0.3770604822428605
+            ],
+            "radius_m": 0.22754660508080338,
+            "age_s": 0
+          }
+        ],
+        "obstacle_source": "rgb_ground_contact_and_command_memory"
+      },
+      "scene_name": "0920测试"
+    }
+  ]
+}

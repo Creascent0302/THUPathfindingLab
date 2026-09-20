@@ -8,17 +8,24 @@ import numpy as np
 
 from pathlab.sdk import Action, AlgorithmOutput
 
-DEFAULT_CHECKPOINT = Path(__file__).parent / "weights" / "driver.pt"
-INERTIAL_CHECKPOINT = DEFAULT_CHECKPOINT.with_name("driver-inertial.pt")
+LEGACY_CHECKPOINT = Path(__file__).parent / "weights" / "driver.pt"
+INERTIAL_CHECKPOINT = LEGACY_CHECKPOINT.with_name("driver-inertial.pt")
+DEFAULT_CHECKPOINT = LEGACY_CHECKPOINT.with_name("driver-complex.pt")
 
 
-def checkpoint_for_limits(limits):
-    """Keep historical kinematic checkpoints reproducible after a model change."""
-    return (
-        INERTIAL_CHECKPOINT
-        if limits.get("motion_model") == "inertial_v2"
-        else DEFAULT_CHECKPOINT
-    )
+def checkpoint_for_limits(limits, *, legacy=False):
+    """The current model is trained on both supported public motion models.
+
+    Historical weights remain available through the explicit checkpoint option.
+    Keep this selection boundary for future models with different capabilities.
+    """
+    if legacy:
+        return (
+            INERTIAL_CHECKPOINT
+            if limits.get("motion_model") == "inertial_v2"
+            else LEGACY_CHECKPOINT
+        )
+    return DEFAULT_CHECKPOINT
 
 
 class RecurrentPolicy:
@@ -57,6 +64,9 @@ class RecurrentPolicy:
             [{"motion_model": "kinematic_v1", "render_version": "2"}],
         )
         self.model_id = data["model_id"]
+        self.input_version = data.get("input_version", "rgb_hint_v1")
+        if self.input_version not in {"rgb_hint_v1", "rgb_marker_v2"}:
+            raise ValueError("不支持的学习模型图像预处理版本")
         self.supported_hints = data.get("supported_hints", ["marker"])
         self.marker_rgb = tuple(data.get("marker_rgb", [34, 160, 94]))
         self.interval = float(data.get("control_interval_s", 0.1))
@@ -96,7 +106,12 @@ class RecurrentPolicy:
             )
             if dt < 0:
                 raise ValueError("时间倒退，请重置时序模型")
-            image = image_input(observation.rgb(), self.hint, self.last_update is None)
+            image = image_input(
+                observation.rgb(),
+                self.hint,
+                self.last_update is None,
+                self.input_version,
+            )
             tensor = (
                 torch.from_numpy(image.transpose(2, 0, 1).copy())
                 .float()
@@ -128,6 +143,7 @@ class RecurrentPolicy:
             ),
             debug={
                 "model_id": self.model_id,
+                "input_version": self.input_version,
                 "checkpoint_sha256": self.checkpoint_sha256,
                 "trained_environments": self.trained_environments,
                 "motion_model": self.limits.get("motion_model", "kinematic_v1"),

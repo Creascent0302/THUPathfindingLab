@@ -66,25 +66,45 @@
   {
     "id": "scanline_pid",
     "name": "扫描线 PD 基线",
-    "version": "1.1",
-    "capabilities": [
-      "action"
-    ],
-    "entrypoint": "algorithms.scanline:ScanlinePID",
-    "description": "图像扫描线关联与带响应补偿的 PD 控制；用于对比完整时序算法。"
-  },
-  {
-    "id": "cnn_gru",
-    "name": "端到端 CNN + GRU",
     "version": "2.0",
     "capabilities": [
       "action"
     ],
+    "entrypoint": "algorithms.scanline:ScanlinePID",
+    "description": "标记初始化、时序身份关联与旋转扫描线；独立曲率前馈 PD 控制，适配近邻道路、回头弯与惯性模型。"
+  },
+  {
+    "id": "cnn_gru",
+    "name": "端到端 CNN + GRU",
+    "version": "3.0",
+    "capabilities": [
+      "action"
+    ],
     "entrypoint": "algorithms.learning.algorithm:RecurrentPolicy",
-    "description": "真实 CPU 训练的图像时序动作模型，按物理版本选取权重；绿色标记初始化，无专家回退。",
+    "description": "复杂路线与起点接入联合训练的 CNN + GRU；显式图像标记提示、时序直接动作，覆盖新旧物理，无专家回退。",
     "runtime_requirements": [
       "torch"
     ],
-    "checkpoint_file": "algorithms/learning/weights/driver-inertial.pt"
+    "checkpoint_file": "algorithms/learning/weights/driver-complex.pt"
+  },
+  {
+    "id": "temporal_pursuit_avoidance",
+    "name": "时序拓扑 + Pure Pursuit + 避障",
+    "version": "2.0",
+    "capabilities": [
+      "action"
+    ],
+    "entrypoint": "algorithms.avoidance:AvoidingPursuit",
+    "description": "独立避障方案 v2：剔除立体物件伪线、弯道侧移观察、保持原路线身份、按当前姿态规划接回；检查转弯约束、障碍物与邻线净距。"
+  },
+  {
+    "id": "temporal_mpc_avoidance",
+    "name": "时序拓扑 + MPC + 避障",
+    "version": "2.0",
+    "capabilities": [
+      "action"
+    ],
+    "entrypoint": "algorithms.avoidance:AvoidingMPC",
+    "description": "独立避障方案 v2：剔除立体物件伪线、弯道侧移观察、保持原路线身份、按当前姿态规划接回；检查转弯约束、障碍物与邻线净距。"
   }
 ]

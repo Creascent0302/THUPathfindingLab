@@ -52,14 +52,31 @@ def test_command_motion_estimate_matches_vehicle_with_lateral_momentum(model):
     assert estimate.speed == 0
 
 
-def test_learning_checkpoint_selection_keeps_historical_model():
-    from algorithms.learning.algorithm import checkpoint_for_limits
+def test_learning_checkpoint_selection_preserves_explicit_legacy_models():
+    from algorithms.learning.algorithm import (
+        INERTIAL_CHECKPOINT,
+        LEGACY_CHECKPOINT,
+        checkpoint_for_limits,
+    )
 
-    assert checkpoint_for_limits({}).name == "driver.pt"
-    assert checkpoint_for_limits({"motion_model": "kinematic_v1"}).name == "driver.pt"
+    assert checkpoint_for_limits({}).name == "driver-complex.pt"
+    assert (
+        checkpoint_for_limits({"motion_model": "kinematic_v1"}).name
+        == "driver-complex.pt"
+    )
     assert (
         checkpoint_for_limits({"motion_model": "inertial_v2"}).name
-        == "driver-inertial.pt"
+        == "driver-complex.pt"
+    )
+    assert LEGACY_CHECKPOINT.name == "driver.pt" and LEGACY_CHECKPOINT.is_file()
+    assert (
+        INERTIAL_CHECKPOINT.name == "driver-inertial.pt"
+        and INERTIAL_CHECKPOINT.is_file()
+    )
+    assert checkpoint_for_limits({}, legacy=True) == LEGACY_CHECKPOINT
+    assert (
+        checkpoint_for_limits({"motion_model": "inertial_v2"}, legacy=True)
+        == INERTIAL_CHECKPOINT
     )
 
 
@@ -99,7 +116,7 @@ def assert_policy_steps_and_continuous_stop(run, count):
     assert all(row["applied"]["requested"]["speed_mps"] == 0 for row in braking)
 
 
-@pytest.mark.parametrize("policy_type", [TemporalPursuit, TemporalMPC])
+@pytest.mark.parametrize("policy_type", [TemporalPursuit, TemporalMPC, ScanlinePID])
 def test_marker_selects_target_instead_of_nearer_distractor(policy_type):
     policy, scene, obs = initialized(policy_type)
     result = policy.step(obs)
@@ -114,8 +131,9 @@ def test_marker_selects_target_instead_of_nearer_distractor(policy_type):
     assert 0 < result.action.speed_mps <= scene.vehicle.max_speed_mps
 
 
-def test_ambiguous_initialization_stops():
-    policy, scene, _ = initialized()
+@pytest.mark.parametrize("policy_type", [TemporalPursuit, ScanlinePID])
+def test_ambiguous_initialization_stops(policy_type):
+    policy, scene, _ = initialized(policy_type)
     scene.appearance.marker_enabled = False
     scene.task_hint = TaskHint(kind="none")
     obs = observation(scene)
@@ -126,8 +144,9 @@ def test_ambiguous_initialization_stops():
     assert result.local_path_m is None
 
 
-def test_occlusion_memory_expires_and_original_target_recovers():
-    policy, scene, obs = initialized(memory_s=0.2)
+@pytest.mark.parametrize("policy_type", [TemporalPursuit, ScanlinePID])
+def test_occlusion_memory_expires_and_original_target_recovers(policy_type):
+    policy, scene, obs = initialized(policy_type, memory_s=0.2)
     policy.step(obs)
     predicted = policy.step(observation(scene, 1, blank=True))
     assert predicted.debug["prediction_only"]
@@ -198,6 +217,7 @@ def test_deployment_modules_do_not_import_private_world_or_training_expert():
     root = Path(__file__).resolve().parents[1]
     sources = [
         root / "algorithms/scanline.py",
+        root / "algorithms/avoidance.py",
         *sorted((root / "algorithms/modular").glob("*.py")),
         root / "algorithms/learning/algorithm.py",
         root / "algorithms/learning/model.py",
@@ -218,7 +238,16 @@ def test_deployment_modules_do_not_import_private_world_or_training_expert():
             )
 
 
-@pytest.mark.parametrize("name", ["temporal_pursuit", "temporal_mpc", "scanline_pid"])
+@pytest.mark.parametrize(
+    "name",
+    [
+        "temporal_pursuit",
+        "temporal_mpc",
+        "scanline_pid",
+        "temporal_pursuit_avoidance",
+        "temporal_mpc_avoidance",
+    ],
+)
 def test_reference_algorithms_run_in_real_worker(execute, name):
     run = execute(RunConfig(algorithm=name, max_steps=8, realtime=False))
     assert not run.failures

@@ -1,5 +1,12 @@
-import type { Dispatch, SetStateAction } from "react";
-import { fmt, reasonLabel, stateLabel, terminal, type Manifest } from "./types";
+import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import {
+  api,
+  fmt,
+  reasonLabel,
+  stateLabel,
+  terminal,
+  type Manifest,
+} from "./types";
 import { ScoreDetails } from "./BenchmarkPanel";
 
 export function ResultsPage({
@@ -19,6 +26,26 @@ export function ResultsPage({
   onDelete: (ids: string[]) => void;
   busy: boolean;
 }) {
+  const [storage, setStorage] = useState<{
+    used_bytes: number;
+    limit_bytes: number;
+  } | null>(null);
+  const [storageError, setStorageError] = useState("");
+  useEffect(() => {
+    const controller = new AbortController();
+    api<{ runs: NonNullable<typeof storage> }>("/storage", {
+      signal: controller.signal,
+    })
+      .then((data) => {
+        setStorage(data.runs);
+        setStorageError("");
+      })
+      .catch((e) => {
+        if (e.name !== "AbortError")
+          setStorageError("容量读取失败，请刷新记录。");
+      });
+    return () => controller.abort();
+  }, [results]);
   const selectedResults = results.filter((r) =>
     selected.includes(r.episode_id),
   );
@@ -61,6 +88,13 @@ export function ResultsPage({
           <button onClick={refresh}>刷新记录</button>
         </div>
       </div>
+      <p className="field-note" aria-label="运行记录存储">
+        {storageError ||
+          (storage
+            ? `运行记录占用 ${(storage.used_bytes / 1024 ** 2).toFixed(1)} MiB / ${storage.limit_bytes / 1024 ** 3} GiB。`
+            : "正在读取运行记录容量…")}
+        删除记录会同时释放帧数据和图像；地图、训练数据、算法报告及算法包不占用此配额。
+      </p>
       <section className="panel table-wrap">
         <table>
           <thead>
@@ -234,6 +268,10 @@ export function ResultsPage({
                   "碰撞次数",
                   (r: Manifest) =>
                     String(r.metrics?.collision_count ?? "不提供"),
+                ],
+                [
+                  "合法绕行时间 / s",
+                  (r: Manifest) => fmt(r.metrics?.avoidance_duration_s, 1),
                 ],
                 [
                   "完成时间 / s",

@@ -1,4 +1,5 @@
 import { VehicleSettings } from "./VehicleSettings";
+import { matchesShape } from "./usePersistentState";
 import {
   api,
   post,
@@ -8,6 +9,7 @@ import {
   type Mode,
   type Preview,
   type Scene,
+  type SavedMap,
 } from "./types";
 
 export type Setup = {
@@ -22,6 +24,7 @@ export type Setup = {
   source: { id: string; frame_count: number } | null;
   preview: Preview;
   customScene: Scene | null;
+  savedMapId: string | null;
   sceneText: string;
   maxSteps: number;
   timeout: number;
@@ -42,6 +45,7 @@ export const initialSetup: Setup = {
   source: null,
   preview: { image: null, scene: null, calibration: null },
   customScene: null,
+  savedMapId: null,
   sceneText: "",
   maxSteps: 4000,
   timeout: 1,
@@ -50,6 +54,50 @@ export const initialSetup: Setup = {
   delay: 0,
   drop: 0,
 };
+
+export const storedSetup = (settings: Setup) => ({
+  ...settings,
+  // Re-render RGB previews on restore; base64 images exhaust browser storage.
+  preview: initialSetup.preview,
+  hintMode: null,
+});
+
+export function restoreSetup(value: unknown): Setup {
+  if (
+    !matchesShape(value, {
+      ...initialSetup,
+      customScene: undefined,
+      savedMapId: undefined,
+      hint: undefined,
+      source: undefined,
+    })
+  )
+    throw new Error("Invalid experiment settings");
+  const settings = value as Setup;
+  if (
+    !["simulation", "image", "sequence"].includes(settings.mode) ||
+    !["action", "path", "perception"].includes(settings.execution) ||
+    (settings.customScene !== null &&
+      !matchesShape(settings.customScene, { name: "", seed: 0 })) ||
+    (settings.source !== null &&
+      !matchesShape(settings.source, { id: "", frame_count: 0 })) ||
+    (settings.hint !== null && !matchesShape(settings.hint, { kind: "" })) ||
+    (settings.family === "custom" && settings.customScene === null)
+  )
+    throw new Error("Invalid experiment settings");
+  return {
+    ...settings,
+    savedMapId:
+      typeof settings.savedMapId === "string" ? settings.savedMapId : null,
+    preview: initialSetup.preview,
+    sceneText:
+      settings.sceneText ||
+      (settings.customScene
+        ? JSON.stringify(settings.customScene, null, 2)
+        : ""),
+    hintMode: null,
+  };
+}
 
 export function SetupPanel({
   settings,
@@ -60,6 +108,8 @@ export function SetupPanel({
   attempt,
   clearView,
   changeMode,
+  savedMaps,
+  selectScene,
 }: {
   settings: Setup;
   updateSettings: (patch: Partial<Setup>) => void;
@@ -69,6 +119,8 @@ export function SetupPanel({
   attempt: (operation: () => Promise<unknown>) => Promise<void>;
   clearView: () => void;
   changeMode: (mode: Mode) => void;
+  savedMaps: SavedMap[];
+  selectScene: (selection: string) => void;
 }) {
   const {
     mode,
@@ -111,23 +163,31 @@ export function SetupPanel({
             场景
             <select
               aria-label="场景"
-              disabled={active}
-              value={family}
-              onChange={(e) => {
-                updateSettings({ family: e.target.value });
-                clearView();
-              }}
+              disabled={active || busy}
+              value={
+                settings.savedMapId ? `map:${settings.savedMapId}` : family
+              }
+              onChange={(e) => selectScene(e.target.value)}
             >
-              {settings.customScene && (
+              {settings.customScene && !settings.savedMapId && (
                 <option value="custom">
                   自定义 · {settings.customScene.name}
                 </option>
               )}
-              {Object.entries(catalog.families).map(([id, title]) => (
-                <option key={id} value={id}>
-                  {title}
-                </option>
-              ))}
+              <optgroup label="课程场景">
+                {Object.entries(catalog.families).map(([id, title]) => (
+                  <option key={id} value={id}>
+                    {title}
+                  </option>
+                ))}
+              </optgroup>
+              <optgroup label="已保存地图">
+                {savedMaps.map((map) => (
+                  <option key={map.id} value={`map:${map.id}`}>
+                    {map.scene.name}
+                  </option>
+                ))}
+              </optgroup>
             </select>
           </label>
           <label>

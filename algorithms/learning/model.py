@@ -8,10 +8,23 @@ from torch import nn
 WIDTH, HEIGHT = 160, 96
 
 
-def image_input(rgb, hint, first=False):
+def marker_plane(rgb):
+    """Expose the public green marker cue without extracting a route or action."""
+    red, green, blue = np.moveaxis(np.asarray(rgb, dtype=np.int16), -1, 0)
+    return (
+        (green * 4 > red * 5)
+        & (green * 5 > blue * 6)
+        & (green - red > 20)
+        & (green > 60)
+    ).astype(np.uint8) * 255
+
+
+def image_input(rgb, hint, first=False, input_version="rgb_hint_v1"):
     image = cv2.resize(rgb, (WIDTH, HEIGHT), interpolation=cv2.INTER_AREA)
     cue = np.zeros((HEIGHT, WIDTH), np.uint8)
-    if first and hint.kind == "point":
+    if input_version == "rgb_marker_v2" and hint.kind == "marker":
+        cue = marker_plane(image)
+    elif first and hint.kind == "point":
         u, v = hint.point_px
         cv2.circle(
             cue,

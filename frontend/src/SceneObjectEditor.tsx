@@ -17,21 +17,46 @@ const presets: Record<
   cylinder: [0.4, 0.4, 0.65, [67, 124, 158]],
 };
 
+export function createSceneObject(
+  kind: SceneObject["kind"],
+  [x_m, y_m]: Point,
+): SceneObject {
+  const [length_m, width_m, height_m, color_rgb] = presets[kind];
+  return {
+    kind,
+    x_m,
+    y_m,
+    yaw_rad: 0,
+    length_m,
+    width_m,
+    height_m,
+    color_rgb,
+    enabled: true,
+    collidable: true,
+  };
+}
+
 export function SceneObjectEditor({
   objects,
   onChange,
   onScatter,
   origin,
   busy,
+  selected,
+  onSelect,
+  kind,
+  onKindChange,
 }: {
   objects: SceneObject[];
   onChange: (objects: SceneObject[]) => void;
   onScatter: (options: ObjectScatter) => void;
   origin: Point;
   busy: boolean;
+  selected: number;
+  onSelect: (index: number) => void;
+  kind: SceneObject["kind"];
+  onKindChange: (kind: SceneObject["kind"]) => void;
 }) {
-  const [selected, setSelected] = useState(0);
-  const [kind, setKind] = useState<SceneObject["kind"]>("cone");
   const [scatter, setScatter] = useState<ObjectScatter>({
     count: 12,
     kinds: ["cone", "box", "barrier", "cylinder"],
@@ -48,23 +73,11 @@ export function SceneObjectEditor({
       ),
     );
   const add = () => {
-    const [length_m, width_m, height_m, color_rgb] = presets[kind];
     onChange([
       ...objects,
-      {
-        kind,
-        x_m: origin[0] + 1,
-        y_m: origin[1] + 1.5,
-        yaw_rad: 0,
-        length_m,
-        width_m,
-        height_m,
-        color_rgb,
-        enabled: true,
-        collidable: true,
-      },
+      createSceneObject(kind, [origin[0] + 1, origin[1] + 1.5]),
     ]);
-    setSelected(objects.length);
+    onSelect(objects.length);
   };
   return (
     <details open className="scene-object-editor">
@@ -72,7 +85,7 @@ export function SceneObjectEditor({
         场景物件 · {objects.filter((item) => item.enabled).length} 个启用
       </summary>
       <p className="field-note">
-        物件具有真实尺寸、投影和遮挡。自动布置避开路线；手动摆放可构造遮挡与碰撞测试。
+        选择类型后点按画布放置，拖动物件调整位置。物件具有真实尺寸、投影和遮挡；自动布置避开路线。
       </p>
       <div className="form-grid">
         <label>
@@ -182,7 +195,7 @@ export function SceneObjectEditor({
           aria-label="添加物件类型"
           value={kind}
           onChange={(event) =>
-            setKind(event.target.value as SceneObject["kind"])
+            onKindChange(event.target.value as SceneObject["kind"])
           }
         >
           {Object.entries(objectNames).map(([value, label]) => (
@@ -202,7 +215,7 @@ export function SceneObjectEditor({
             <select
               aria-label="当前编辑物件"
               value={activeIndex}
-              onChange={(event) => setSelected(Number(event.target.value))}
+              onChange={(event) => onSelect(Number(event.target.value))}
             >
               {objects.map((item, index) => (
                 <option key={index} value={index}>

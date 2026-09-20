@@ -254,6 +254,7 @@ class TargetTracker:
         self.camera = None
         self.initialized = False
         self.end = None
+        self.components = []
 
     def advance(self, translation, yaw):
         rotation = np.array(
@@ -262,7 +263,7 @@ class TargetTracker:
         if self.path is not None:
             self.path = (self.path - translation) @ rotation
             # Drop points safely behind the rear axle, preserving route ordering.
-            near = int(np.argmin(np.linalg.norm(self.path, axis=1)))
+            near = self.nearest(self.path)
             self.path = self.path[max(0, near - 2) :]
         if self.start is not None:
             self.start = (self.start - translation) @ rotation
@@ -276,7 +277,7 @@ class TargetTracker:
                 [],
                 0,
                 "ERROR",
-                "米制视觉算法需要相机标定；可对无标定图像使用扫描线基线",
+                "米制视觉算法需要公开的相机标定",
             )
         if (
             self.camera is None
@@ -291,6 +292,7 @@ class TargetTracker:
         components, marker, ends = self.camera.extract(
             observation.rgb(), observation.task_hint
         )
+        self.components = components
         candidates = [
             self.camera.pixels(p[:: max(1, len(p) // 80)]).tolist()
             for _, p in components[:20]
@@ -423,7 +425,7 @@ class TargetTracker:
             )
         score, pixels, metric, index, direction = matches[0]
         if self.topology:
-            path = trace_component(pixels, metric, index, direction)
+            path = self.trace(pixels, metric, index, direction)
         else:
             # Explicit ablation: row-wise centroids can join unrelated branches.
             cloud = np.concatenate([p for _, p in components])
@@ -448,3 +450,10 @@ class TargetTracker:
             "ACQUIRE" if self.start is not None and self.start[0] > 0.15 else "TRACK"
         )
         return Track(path, candidates, confidence, status, "时序身份与局部连通性已核验")
+
+    def trace(self, pixels, metric, index, direction):
+        return trace_component(pixels, metric, index, direction)
+
+    @staticmethod
+    def nearest(path):
+        return int(np.argmin(np.linalg.norm(path, axis=1)))

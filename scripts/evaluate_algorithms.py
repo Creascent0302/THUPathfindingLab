@@ -26,7 +26,7 @@ import numpy as np
 
 from pathlab.adapters import PurePursuit, execution_action
 from pathlab.evaluation import EVALUATOR_VERSION, THRESHOLDS, Evaluator, summarize
-from pathlab.config import MapDesign
+from pathlab.config import MapDesign, Scene
 from pathlab.map_editor import MapRequest, build_scene
 from pathlab.registry import registry
 from pathlab.scenarios import FAMILIES, generate
@@ -35,7 +35,10 @@ from pathlab.simulation import Renderer, Vehicle
 from pathlab.storage import environment, write_json
 
 
-def evaluation_scene(family, seed, split, suite):
+def evaluation_scene(family, seed, split, suite, scene_file=None):
+    if scene_file:
+        scene = Scene.model_validate_json(Path(scene_file).read_text(encoding="utf-8"))
+        return scene.model_copy(update={"seed": seed, "split": split})
     scene = generate("straight" if suite == "custom" else family, seed, split=split)
     rng = np.random.default_rng(seed)
     if suite == "appearance":
@@ -78,9 +81,20 @@ def evaluation_scene(family, seed, split, suite):
 
 
 def evaluate(job):
-    algorithm, family, seed, steps, resolution, parameters, split, suite, output = job
+    (
+        algorithm,
+        family,
+        seed,
+        steps,
+        resolution,
+        parameters,
+        split,
+        suite,
+        output,
+        *extra,
+    ) = job
     cv2.setNumThreads(1)
-    scene = evaluation_scene(family, seed, split, suite)
+    scene = evaluation_scene(family, seed, split, suite, extra[0] if extra else None)
     if resolution:
         scene.camera.width, scene.camera.height = resolution, round(resolution * 9 / 16)
     simulator, vehicle, evaluator = (
@@ -184,18 +198,30 @@ def evaluate(job):
     summary = summarize(records, evaluator, reason, failures)
     report = {
         "algorithm": algorithm,
+        "case": family,
         "family": scene.family,
         "seed": seed,
         "split": split,
         "suite": suite,
         "scene": scene.model_dump(),
         "parameters": parameters,
+        "checkpoint_sha256": getattr(policy, "checkpoint_sha256", None),
         "metrics": summary,
         "failures": failures,
         "wall_s": time.perf_counter() - start,
         "inference_frames": sum(row.get("inference_ms") is not None for row in records),
         "terminal_task_frame": terminal_task_frame,
         "last_frame": records[-1] if records else None,
+        "trajectory": [
+            {
+                "timestamp_s": r["timestamp_s"],
+                "pose": r["pose"],
+                "evaluation": r["evaluation"],
+                "status": (r.get("output") or {}).get("status"),
+                "safety_braking": "safety_braking" in r.get("interventions", []),
+            }
+            for r in records
+        ],
     }
     if output:
         folder = Path(output) / "episodes"
@@ -307,9 +333,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--algorithms", nargs="+", default=["temporal_pursuit"])
     parser.add_argument(
+        "--scene-files",
+        nargs="+",
+        help="评测保存的完整场景，默认保留原种子；显式 --seeds 可重复改变外观随机种子",
+    )
+    parser.add_argument(
         "--families", nargs="+", default=list(FAMILIES), choices=list(FAMILIES)
     )
-    parser.add_argument("--seeds", nargs="+", type=int, default=[7])
+    parser.add_argument("--seeds", nargs="+", type=int)
     parser.add_argument("--steps", type=int, default=4000)
     parser.add_argument(
         "--resolution", type=int, default=0, help="0 preserves the full 640×360 camera"
@@ -330,10 +361,6 @@ def main():
         args.families = ["custom"]  # One distinct map per seed, never count duplicates.
     folder = Path(args.output)
     folder.mkdir(parents=True, exist_ok=True)
-    if args.split == "test" and any(seed < 1001 for seed in args.seeds):
-        parser.error(
-            "测试集须使用保留种子 >=1001；开发和调参请使用 development / validation"
-        )
     for algorithm in args.algorithms:
         if algorithm not in registry():
             parser.error(f"未知算法：{algorithm}")
@@ -343,8 +370,29 @@ def main():
             )
         if reason := registry()[algorithm].unavailable_reason():
             parser.error(reason)
+    case_seeds = {}
+    if args.scene_files:
+        # Freeze complete input files before any policy runs; a later editor save
+        # must not change the cases halfway through a multi-method evaluation.
+        inputs = folder / "scenes"
+        inputs.mkdir(exist_ok=True)
+        cases = []
+        for index, name in enumerate(args.scene_files):
+            scene = Scene.model_validate_json(Path(name).read_text(encoding="utf-8"))
+            destination = inputs / f"{index:02d}-{Path(name).stem}.json"
+            write_json(destination, scene.model_dump())
+            cases.append((destination.stem, str(destination.resolve())))
+            case_seeds[destination.stem] = args.seeds or [scene.seed]
+    else:
+        cases = [(family, None) for family in args.families]
+        case_seeds = {family: args.seeds or [7] for family, _ in cases}
+    args.seeds = sorted({seed for seeds in case_seeds.values() for seed in seeds})
+    if args.split == "test" and any(seed < 1001 for seed in args.seeds):
+        parser.error(
+            "测试集须使用保留种子 >=1001；开发和调参请使用 development / validation"
+        )
     representative_scene = evaluation_scene(
-        args.families[0], args.seeds[0], args.split, args.suite
+        cases[0][0], case_seeds[cases[0][0]][0], args.split, args.suite, cases[0][1]
     )
     plan = {
         **vars(args),
@@ -352,6 +400,16 @@ def main():
         "environment": environment(),
         "evaluator_version": EVALUATOR_VERSION,
         "thresholds": THRESHOLDS,
+        "scene_sources": [
+            {
+                "case": case,
+                "file": path,
+                "sha256": hashlib.sha256(Path(path).read_bytes()).hexdigest(),
+                "seeds": case_seeds[case],
+            }
+            for case, path in cases
+            if path
+        ],
         "motion_model": representative_scene.vehicle.motion_model,
         "render_version": representative_scene.render_version,
         "code_sha256": {
@@ -385,10 +443,11 @@ def main():
             args.split,
             args.suite,
             args.output,
+            scene_file,
         )
         for a in args.algorithms
-        for f in args.families
-        for s in args.seeds
+        for f, scene_file in cases
+        for s in case_seeds[f]
     ]
     os.environ.update(OMP_NUM_THREADS="1", OPENBLAS_NUM_THREADS="1")
     with ProcessPoolExecutor(max_workers=args.jobs) as pool:

@@ -7,6 +7,7 @@ from types import SimpleNamespace
 import cv2
 import numpy as np
 
+from pathlab.config import Scene
 from pathlab.evaluation import OrderedPath
 from pathlab.scenarios import FAMILIES, generate, validate_scene
 from pathlab.sdk import Action, Observation
@@ -44,6 +45,15 @@ class TrainingExpert:
 
 
 def collect_episode(job):
+    if isinstance(job, dict):
+        scene = Scene.model_validate(job["scene"])
+        return collect_scene(
+            scene,
+            job["folder"],
+            job.get("checkpoint"),
+            job.get("beta", 0.5),
+            job.get("provenance"),
+        )
     family, seed, split, folder, checkpoint, beta = job
     cv2.setNumThreads(1)
     rng = np.random.default_rng(seed + list(FAMILIES).index(family) * 10000)
@@ -67,6 +77,14 @@ def collect_episode(job):
         scene.vehicle.jerk_limit_mps3 = float(rng.uniform(4.5, 7.5))
     if validate_scene(scene):
         scene.camera.pitch_down_rad, scene.camera.height_m = 0.38, 0.48
+    return collect_scene(scene, folder, checkpoint, beta)
+
+
+def collect_scene(scene, folder, checkpoint=None, beta=0.5, provenance=None):
+    """One real rollout; only this offline collector can access the target route."""
+    cv2.setNumThreads(1)
+    family, seed, split = scene.family, scene.seed, scene.split
+    rng = np.random.default_rng(seed)
     renderer, vehicle, expert = (
         Renderer(scene),
         Vehicle(scene.vehicle, scene.initial_pose),
@@ -75,8 +93,12 @@ def collect_episode(job):
     limits = scene.vehicle.model_dump()
     student = None
     if checkpoint:
-        from .algorithm import RecurrentPolicy
+        from .algorithm import RecurrentPolicy, checkpoint_for_limits
 
+        if checkpoint in {"auto", "legacy"}:
+            checkpoint = str(
+                checkpoint_for_limits(limits, legacy=checkpoint == "legacy")
+            )
         student = RecurrentPolicy()
         student.initialize({"checkpoint": checkpoint}, {"vehicle_limits": limits})
     previous = np.zeros(2, np.float32)
@@ -170,6 +192,7 @@ def collect_episode(job):
         "behavior_checkpoint": checkpoint,
         "motion_model": scene.vehicle.motion_model,
         "render_version": scene.render_version,
+        "provenance": provenance,
     }
     print(file.name, len(images), reason, flush=True)
     return item

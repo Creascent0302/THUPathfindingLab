@@ -1,139 +1,182 @@
-"""Image-space baseline: independent row association and filtered PD steering."""
+"""Temporal scanlines with a curvature feed-forward and lateral-error PD control.
 
-import cv2
+The shared visual front end supplies calibration and persistent target identity.
+This baseline extracts its own path with short, rotating cross-sections and uses
+an explicit PD controller; it does not use pursuit or predictive control.
+"""
+
+import math
+
 import numpy as np
 
-from pathlab.sdk import Action, AlgorithmOutput
+from pathlab.sdk import Action
+from .modular.algorithm import VisualDriver
+from .modular.vision import TargetTracker
 
 
-class ScanlinePID:
-    def initialize(self, config, public_context):
-        limits = public_context.get("vehicle_limits") or {}
-        self.inertial = limits.get("motion_model") == "inertial_v2"
-        self.speed = float(config.get("speed_mps", 0.45 if self.inertial else 0.5))
-        self.kp = float(config.get("kp", 0.65))
-        self.kd = float(config.get("kd", 0.035))
-        self.limit = limits.get("max_steering_rad", 0.52)
-        self.response = (
-            limits.get("yaw_response_s", 0.12) + limits.get("lateral_response_s", 0.1)
-            if self.inertial
-            else 0
+def ordered_nearest(path):
+    """Select the first distance basin, before a returning branch can win."""
+    distance = np.linalg.norm(path, axis=1)
+    departures = np.flatnonzero(distance > np.minimum.accumulate(distance) + 0.15)
+    end = int(departures[0]) + 1 if len(departures) else len(path)
+    return int(np.argmin(distance[:end]))
+
+
+def scan_component(metric, index, direction):
+    """Follow ordered normal cross-sections, including bends that turn backward.
+
+    Horizontal image rows merge nearby roads and cannot order a hairpin. Small
+    cross-sections in ground coordinates rotate with the last observed tangent.
+    Each pass stays local to the identity-selected connected component.
+    """
+
+    def walk(heading):
+        current = metric[index].copy()
+        heading = heading / max(float(np.linalg.norm(heading)), 1e-8)
+        path = [current]
+        visited = np.linalg.norm(metric - current, axis=1) < 0.03
+        for _ in range(160):
+            delta = metric - current
+            along = delta @ heading
+            across = delta @ np.array([-heading[1], heading[0]])
+            valid = (
+                (~visited) & (along > 0.02) & (along < 0.115) & (np.abs(across) < 0.075)
+            )
+            if not valid.any():
+                break
+            cost = (along - 0.065) ** 2 + 1.5 * across**2
+            selected = np.argmin(np.where(valid, cost, np.inf))
+            section = (
+                valid
+                & (np.abs(along - along[selected]) < 0.015)
+                & (np.abs(across - across[selected]) < 0.025)
+            )
+            following = metric[section].mean(axis=0)
+            step = following - current
+            distance = float(np.linalg.norm(step))
+            if distance < 0.015:
+                break
+            heading = 0.35 * heading + 0.65 * step / distance
+            heading /= max(float(np.linalg.norm(heading)), 1e-8)
+            current = following
+            path.append(current)
+            visited |= np.linalg.norm(metric - current, axis=1) < 0.03
+        return np.asarray(path)
+
+    forward = walk(direction)
+    backward = walk(-direction)
+    return np.concatenate([backward[:0:-1], forward])
+
+
+class ScanlineTracker(TargetTracker):
+    nearest = staticmethod(ordered_nearest)
+
+    def trace(self, pixels, metric, index, direction):
+        return scan_component(metric, index, direction)
+
+
+class ScanlinePD:
+    def __init__(self, limits, speed=0.65):
+        self.limits = limits
+        self.speed = speed
+        self.previous_error = None
+        self.derivative = 0.0
+        self.kp, self.kd = 0.85, 0.045
+        self.lateral_error = 0.0
+        self.dt = 0.05
+
+    def command(self, path, confidence, motion):
+        nearest = ordered_nearest(path)
+        points = path[nearest:]
+        arc = np.r_[0.0, np.cumsum(np.linalg.norm(np.diff(points, axis=0), axis=1))]
+        response = 0.0
+        if self.limits.get("motion_model") == "inertial_v2":
+            response = self.limits.get("yaw_response_s", 0.18) + self.limits.get(
+                "lateral_response_s", 0.12
+            )
+        # Measure an observed preview error. Extrapolating a distant polynomial
+        # to the rear axle produces a false opposite turn at straight-to-bend
+        # transitions, especially when the near road is outside the image.
+        distance = np.linalg.norm(points, axis=1)
+        preview = 0.65 + (0.12 + response) * motion.speed
+        candidates = np.flatnonzero((distance >= preview) & (points[:, 0] > 0.05))
+        target = points[candidates[0] if len(candidates) else -1]
+        self.lateral_error = float(target[1])
+        error = math.atan2(target[1], max(target[0], 0.15))
+        derivative = (
+            (error - self.previous_error) / max(self.dt, 1e-3)
+            if self.previous_error is not None
+            else 0.0
         )
-        self.max_speed = limits.get("max_speed_mps", 1.5)
+        self.derivative = 0.8 * self.derivative + 0.2 * derivative
+        self.previous_error = error
+        curvature = 0.0
+        if arc[-1] >= 0.5:
+            sample = np.column_stack(
+                [np.interp([0, 0.3, 0.6], arc, points[:, axis]) for axis in range(2)]
+            )
+            ab, bc, ac = (
+                sample[1] - sample[0],
+                sample[2] - sample[1],
+                sample[2] - sample[0],
+            )
+            denominator = float(
+                np.linalg.norm(ab) * np.linalg.norm(bc) * np.linalg.norm(ac)
+            )
+            curvature = float(
+                np.clip(
+                    2 * (ab[0] * bc[1] - ab[1] * bc[0]) / max(denominator, 1e-6), -2, 2
+                )
+            )
+        # The road beyond the marker can lie farther than the requested preview.
+        # Keep acquisition feedback active while that near ground is still unseen.
+        feedback_scale = 2 * self.limits["wheelbase_m"] / max(preview, 0.35)
+        steering = 0.15 * math.atan(
+            self.limits["wheelbase_m"] * curvature
+        ) + feedback_scale * (
+            self.kp * error + (self.kd + 0.25 * response) * self.derivative
+        )
+        speed = min(
+            self.speed, self.limits["max_speed_mps"], 0.68 / max(1.0, abs(curvature))
+        )
+        speed *= float(np.clip(confidence / 0.85, 0.35, 1.0))
+        speed /= 1 + 0.8 * abs(error)
+        return Action(
+            steering_angle_rad=float(
+                np.clip(
+                    steering,
+                    -self.limits["max_steering_rad"],
+                    self.limits["max_steering_rad"],
+                )
+            ),
+            speed_mps=speed,
+        )
+
+
+class ScanlinePID(VisualDriver):
+    tracker_type = ScanlineTracker
+    controller_type = ScanlinePD
+
+    def initialize(self, config, public_context):
+        super().initialize({"speed_mps": 0.65, **config}, public_context)
 
     def reset(self, initial_observation, task_hint):
-        self.column = None
-        self.error = self.derivative = self.steering = 0.0
-        self.last_time = initial_observation.timestamp_s
-        self.missing = 0.0
+        super().reset(initial_observation, task_hint)
+        self.controller.kp = float(self.config.get("kp", 0.85))
+        self.controller.kd = float(self.config.get("kd", 0.045))
 
     def step(self, observation):
-        if observation.timestamp_s < self.last_time:
-            return AlgorithmOutput(
-                status="ERROR", diagnostics=["时间倒退，请重置算法实例"]
-            )
-        rgb = observation.rgb()
-        h, w = rgb.shape[:2]
-        gray = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
-        threshold = max(25, np.percentile(gray, 70) * 0.60)
-        mask = (gray < threshold) & (
-            (rgb.max(axis=2).astype(int) - rgb.min(axis=2)) < 50
+        self.controller.dt = max(
+            observation.dt_s, observation.timestamp_s - self.last_time
         )
-        dt = max(observation.dt_s, observation.timestamp_s - self.last_time)
-        self.last_time = observation.timestamp_s
-        hint = observation.task_hint
-        top_of_marker = None
-        if hint.kind == "marker":
-            hsv = cv2.cvtColor(rgb, cv2.COLOR_RGB2HSV)
-            reference = cv2.cvtColor(np.uint8([[hint.marker_rgb]]), cv2.COLOR_RGB2HSV)[
-                0, 0, 0
-            ]
-            difference = np.abs(hsv[:, :, 0].astype(int) - int(reference))
-            marker_y, marker_x = np.where(
-                (np.minimum(difference, 180 - difference) < 12)
-                & (hsv[:, :, 1] > 90)
-                & (hsv[:, :, 2] > 45)
-            )
-            if len(marker_x) >= 8:
-                top_of_marker = int(np.percentile(marker_y, 10))
-        if self.column is None:
-            if hint.kind == "point":
-                self.column = hint.point_px[0]
-            elif hint.kind == "region":
-                self.column = (hint.region_px[0] + hint.region_px[2]) / 2
-            elif hint.kind == "marker":
-                if top_of_marker is not None:
-                    self.column = float(np.median(marker_x))
-            if self.column is None:
-                return AlgorithmOutput(
-                    status="AMBIGUOUS",
-                    action=Action(steering_angle_rad=0, speed_mps=0),
-                    diagnostics=["扫描线基线需要明确初始化提示"],
-                )
-        centers = []
-        column = self.column
-        bottom = (
-            min(int(h * 0.82), top_of_marker)
-            if top_of_marker is not None
-            else int(h * 0.82)
+        output = super().step(observation)
+        if output.local_path_m is None:
+            self.controller.previous_error = None
+            self.controller.derivative = 0.0
+        output.debug.update(
+            extraction="adaptive_normal_scanlines",
+            controller="curvature_feedforward_pd",
+            lateral_error_m=self.controller.lateral_error,
+            preview_error_rad=self.controller.previous_error,
         )
-        for y in range(bottom, int(h * 0.16), -5):
-            xs = np.flatnonzero(mask[y])
-            if not len(xs):
-                continue
-            groups = np.split(xs, np.flatnonzero(np.diff(xs) > 2) + 1)
-            candidates = [float(g.mean()) for g in groups if len(g) >= 2]
-            if not candidates:
-                continue
-            candidate = min(candidates, key=lambda u: abs(u - column))
-            if abs(candidate - column) > w * 0.22:
-                continue
-            centers.append((candidate, float(y)))
-            column = candidate
-        if len(centers) < 3:
-            self.missing += dt
-            # Keep a finite traversal window for the calibrated camera's near
-            # blind zone. An immediate LOST here strands the car before finish.
-            hold = 1.5
-            predict = self.missing <= hold
-            return AlgorithmOutput(
-                status="TRACK" if predict else "LOST",
-                confidence=max(0.0, 0.4 * (1 - self.missing / hold)),
-                action=Action(
-                    steering_angle_rad=self.steering,
-                    speed_mps=min(self.speed, 0.35 if self.inertial else 0.4)
-                    if predict
-                    else 0,
-                ),
-                diagnostics=["基线有界保持最后动作" if predict else "扫描线丢失，停车"],
-            )
-        self.missing = 0.0
-        near = np.array(centers[: max(2, len(centers) // 3)])
-        self.column = float(near[:, 0].mean())
-        error = (w / 2 - self.column) / (w / 2)
-        self.derivative = 0.75 * self.derivative + 0.25 * (error - self.error) / dt
-        self.error = error
-        # A short lead term compensates the public yaw/tire response delay.
-        projected_error = error + min(self.response, 0.3) * self.derivative
-        target = self.kp * projected_error + self.kd * self.derivative
-        self.steering = float(
-            np.clip(0.4 * target + 0.6 * self.steering, -self.limit, self.limit)
-        )
-        return AlgorithmOutput(
-            status="TRACK",
-            confidence=float(min(0.9, len(centers) / 20)),
-            centerline_px=centers,
-            action=Action(
-                steering_angle_rad=self.steering,
-                speed_mps=min(self.speed, self.max_speed) / (1 + abs(projected_error)),
-            ),
-            debug={
-                "normalized_image_error": error,
-                "rows": len(centers),
-                "response_lead_s": self.response,
-            },
-            diagnostics=["图像扫描线 PD 基线；没有拓扑身份保证"],
-        )
-
-    def close(self):
-        pass
+        return output

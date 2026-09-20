@@ -1,0 +1,14 @@
+{
+  "passed": [
+    "original and avoidance policies are four independently selectable algorithms",
+    "immediate reload restores incomplete line, target, camera and obstacle draft",
+    "switching tabs retains unfinished edits; completed map saves to server",
+    "applied scene survives reload and starts real experiment despite 2 GiB training data",
+    "deleting record removes images, updates visible quota and preserves saved map",
+    "storage write failure and malformed draft show actionable messages without crashing",
+    "fresh browser loads saved map; imported source geometry survives subsequent reload exactly",
+    "duplicate saves use (1)/(2); homepage selects saved map by ID, restores selection and runs exact scene",
+    "deleted library entry disappears; current frozen experiment scene remains usable"
+  ],
+  "browser_errors": []
+}

@@ -21,7 +21,7 @@ from .scenarios import generate, validate_scene
 from .sdk import Action, AlgorithmOutput, Observation, TaskHint, VERSION
 from .simulation import Renderer, Vehicle
 from .sources import read_source
-from .storage import RunStore
+from .storage import RunStore, check_run_storage
 from .worker import WorkerClient, WorkerError
 
 TERMINAL = {"completed", "failed", "cancelled"}
@@ -199,6 +199,7 @@ class Run:
         return obs
 
     def _run(self):
+        final_state = "completed"
         try:
             if self.scene:
                 self.renderer = Renderer(self.scene)
@@ -249,14 +250,13 @@ class Run:
             if self.cancelled.is_set():
                 self.reason = self.reason or "user_cancelled"
                 self._brake("cancelled")
-                self.state = "cancelled"
+                final_state = "cancelled"
             else:
                 self._brake("episode_ended")
-                self.state = "completed"
         except Exception as error:
             if self.cancelled.is_set():
                 self.reason = self.reason or "user_cancelled"
-                self.state = "cancelled"
+                final_state = "cancelled"
             else:
                 kind = error.kind if isinstance(error, WorkerError) else "exception"
                 self.failures.append(
@@ -269,18 +269,21 @@ class Run:
                     }
                 )
                 self.logs.append(f"{kind}: {error}")
-                self.reason, self.state = f"algorithm_{kind}", "failed"
+                self.reason, final_state = f"algorithm_{kind}", "failed"
             self._brake("algorithm_failure")
         finally:
             if self.reason == "braking_failure":
-                self.state = "failed"
+                final_state = "failed"
             if self.worker:
                 self.logs.extend(self.worker.logs)
                 self.worker.close()
             metrics = summarize(
                 self.records, self.evaluator, self.reason, self.failures
             )
-            self.store.finish(self.state, metrics, self.failures)
+            self.store.finish(final_state, metrics, self.failures)
+            # Terminal status authorizes replay/deletion. Publish it only once
+            # the complete result exists and the writer/worker have closed.
+            self.state = final_state
 
     def _step(self):
         obs = self.observation
@@ -510,11 +513,7 @@ class RunManager:
                 raise RunCapacityError("最多同时运行 3 个实验，请先停止已有实验")
             if len(list((self.root / "runs").glob("*/manifest.json"))) >= 200:
                 raise ValueError("已保存 200 次实验，请在运行记录中删除不需要的记录")
-            if (
-                sum(p.stat().st_size for p in self.root.rglob("*") if p.is_file())
-                >= 2 * 1024**3
-            ):
-                raise ValueError("artifacts 已达到 2 GiB，请先归档并清理已有实验")
+            check_run_storage(self.root)
             # Retain few finished objects; disk recordings remain available.
             finished = [
                 key

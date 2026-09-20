@@ -84,9 +84,16 @@ class Pose(Model):
     yaw_rad: float = 0
 
 
+class DistractorDesign(Model):
+    waypoints: list[Point] = Field(default_factory=list, max_length=5000)
+    interpolation: Literal["polyline", "smooth"] = "polyline"
+
+
 class MapDesign(Model):
     waypoints: list[Point] = Field(min_length=2, max_length=60)
     radius_m: float = Field(default=1, ge=0.1, le=10)
+    # None means an old design without editing metadata; preserve its scene lines.
+    distractors: list[DistractorDesign] | None = Field(default=None, max_length=20)
 
 
 class SceneObject(Model):

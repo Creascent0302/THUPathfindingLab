@@ -29,12 +29,13 @@ from .config import RunConfig, Scene
 from .benchmark import BenchmarkManager, BenchmarkRequest, export_benchmark_csv
 from .engine import RunManager, TERMINAL
 from .map_editor import MapRequest, build_scene, geometry_summary
+from .map_library import normalize_names, read_maps, unique_name
 from .registry import ROOT, registry
 from .scenarios import FAMILIES, generate, validate_scene
 from .sdk import Action, Capability, Model, encode_png
 from .simulation import Pose, Renderer
 from .sources import MAX_UPLOAD_BYTES, import_media
-from .storage import export_csv, read_records, write_json
+from .storage import export_csv, read_records, storage_usage, write_json
 from .submissions import MAX_ARCHIVE_BYTES, import_submission, template_zip
 
 
@@ -86,6 +87,8 @@ def create_app(artifact_root: Path | None = None) -> FastAPI:
 
     @asynccontextmanager
     async def lifespan(app):
+        with scene_lock:
+            normalize_names(root)
         for manifest_path in (root / "runs").glob("*/manifest.json"):
             manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
             if manifest["state"] in TERMINAL:
@@ -139,6 +142,10 @@ def create_app(artifact_root: Path | None = None) -> FastAPI:
     def health():
         return {"status": "ok", "protocol_version": "1.0"}
 
+    @app.get("/api/storage")
+    def storage():
+        return storage_usage(root)
+
     @app.get("/api/catalog")
     def catalog():
         return {
@@ -187,10 +194,8 @@ def create_app(artifact_root: Path | None = None) -> FastAPI:
 
     @app.get("/api/maps")
     def saved_maps():
-        return [
-            {"id": path.stem, "scene": json.loads(path.read_text(encoding="utf-8"))}
-            for path in sorted((root / "maps").glob("*.json"))
-        ]
+        with scene_lock:
+            return read_maps(root)
 
     @app.post("/api/maps", status_code=201)
     def save_map(scene: Scene):
@@ -202,6 +207,10 @@ def create_app(artifact_root: Path | None = None) -> FastAPI:
             folder.mkdir(parents=True, exist_ok=True)
             if len(list(folder.glob("*.json"))) >= 100:
                 raise HTTPException(409, "最多保存 100 张地图，请先删除不需要的地图")
+            name = unique_name(
+                scene.name, {item["scene"]["name"] for item in read_maps(root)}
+            )
+            scene = scene.model_copy(update={"name": name})
             identifier = uuid.uuid4().hex
             write_json(folder / f"{identifier}.json", scene.model_dump())
         return {"id": identifier, "scene": scene.model_dump()}

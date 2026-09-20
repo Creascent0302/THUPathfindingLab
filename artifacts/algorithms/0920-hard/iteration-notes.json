@@ -1,0 +1,43 @@
+{
+  "reference_ids": [
+    "c2e55052bb2c48efa9e3e12d10496a88",
+    "c779dd1e510e4cbb8ca946c4d202d98d"
+  ],
+  "rounds": [
+    {
+      "round": 1,
+      "changes": "Separate opt-in RGB obstacle planner; conservative failure on occluded continuation",
+      "reports": [
+        "artifacts/challenge-search/avoidance-round1",
+        "artifacts/challenge-search/avoidance-round1-contact"
+      ]
+    },
+    {
+      "round": 2,
+      "changes": "Bounded lateral visibility probe, original route memory and smooth rejoin candidates",
+      "reports": [
+        "artifacts/challenge-search/avoidance-round2",
+        "artifacts/challenge-search/round2-double"
+      ]
+    },
+    {
+      "round": 3,
+      "changes": "Aligned cone fragments and crop rejection; physical occupancy vs planning margin; neighbor memory; bounded lateral peeking, smooth constrained detours and observed identity-preserving rejoin; matching MPC prediction speed. Neutral-face residual prototype removed after false positives.",
+      "reports": [
+        "artifacts/challenge-search/avoidance-round3",
+        "artifacts/challenge-search/avoidance-round3-memory",
+        "artifacts/challenge-search/round3-final",
+        "artifacts/challenge-search/release-candidate",
+        "artifacts/challenge-search/final-0920"
+      ]
+    }
+  ],
+  "note": "Development cases; failures remain in reports. No claim of unseen real-world safety.",
+  "heldout": {
+    "reports": [
+      "artifacts/challenge-search/heldout-0920",
+      "artifacts/challenge-search/core-avoidance"
+    ],
+    "use": "Evaluated only after freezing final policy; mirror transformations are not independent topology samples."
+  }
+}

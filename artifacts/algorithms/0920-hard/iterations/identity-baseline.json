@@ -1,0 +1,1211 @@
+{
+  "plan": {
+    "algorithms": [
+      "temporal_pursuit",
+      "temporal_mpc"
+    ],
+    "scene_files": [
+      "artifacts/challenge-search/candidates/identity-0.json",
+      "artifacts/challenge-search/candidates/identity-1.json",
+      "artifacts/challenge-search/candidates/identity-4.json",
+      "artifacts/challenge-search/candidates/identity-5.json"
+    ],
+    "families": [
+      "straight",
+      "bend",
+      "s_curve",
+      "sharp",
+      "hairpin",
+      "parallel",
+      "close_lines",
+      "repeated"
+    ],
+    "seeds": [
+      920,
+      921,
+      924,
+      925
+    ],
+    "steps": 1800,
+    "resolution": 0,
+    "jobs": 4,
+    "parameters": {},
+    "suite": "core",
+    "split": "development",
+    "output": "artifacts/challenge-search/identity-baseline",
+    "timing": "in_process_inference",
+    "environment": {
+      "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+      "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.31",
+      "packages": {
+        "numpy": "2.2.6",
+        "opencv-python-headless": "4.11.0.86",
+        "fastapi": "0.115.12",
+        "pydantic": "2.11.5",
+        "uvicorn": "0.34.3"
+      }
+    },
+    "evaluator_version": "3.0",
+    "thresholds": {
+      "acquire_distance_m": 0.2,
+      "acquire_heading_rad": 0.45,
+      "entry_arc_m": 0.5,
+      "identity_neighborhood_m": 0.75,
+      "approach_improvement_m": 0.01,
+      "track_distance_m": 0.24,
+      "track_heading_rad": 0.65,
+      "offtrack_timeout_s": 2.0,
+      "switch_distance_m": 0.14,
+      "switch_margin_m": 0.035,
+      "switch_duration_s": 0.5,
+      "finish_remaining_m": 0.18
+    },
+    "scene_sources": [
+      {
+        "case": "00-identity-0",
+        "file": "/home/liuzonghao/THUPathfindingLab/artifacts/challenge-search/identity-baseline/scenes/00-identity-0.json",
+        "sha256": "5367ec7b8104b97b719c8238414768a13e9d5c6045cf0aacdf0a63a2eaa351d3",
+        "seeds": [
+          920
+        ]
+      },
+      {
+        "case": "01-identity-1",
+        "file": "/home/liuzonghao/THUPathfindingLab/artifacts/challenge-search/identity-baseline/scenes/01-identity-1.json",
+        "sha256": "097a247894c621148d261ead993e928b5e03236e4607838ad612e8601c062381",
+        "seeds": [
+          921
+        ]
+      },
+      {
+        "case": "02-identity-4",
+        "file": "/home/liuzonghao/THUPathfindingLab/artifacts/challenge-search/identity-baseline/scenes/02-identity-4.json",
+        "sha256": "0e4217d2f70d08592981dde78c27e29d088b58933a743318cda3d4c8ea9c2cc5",
+        "seeds": [
+          924
+        ]
+      },
+      {
+        "case": "03-identity-5",
+        "file": "/home/liuzonghao/THUPathfindingLab/artifacts/challenge-search/identity-baseline/scenes/03-identity-5.json",
+        "sha256": "1f6fa454ff7f289907a95703316b6ecfa4d6bea79015350e16078c022ea0474e",
+        "seeds": [
+          925
+        ]
+      }
+    ],
+    "motion_model": "inertial_v2",
+    "render_version": "3",
+    "code_sha256": {
+      "algorithms/__init__.py": "08f5f58aa57f280f42729c8a3222cf7d792b37eb2304963f58bbc39b106241fa",
+      "algorithms/examples.py": "e93c6f81bd78b21e2e1ab709366e4e0b4ed4c895b888a4b2834a4c2100bf3e82",
+      "algorithms/learning/__init__.py": "22013f582d9a48ad8396ee16caac83a6016dcdd327e686ccb6a21cd4be3b588c",
+      "algorithms/learning/algorithm.py": "410283c51d2ce19d29b184658105f68a04992690adb11d687c0cf6179cfade8c",
+      "algorithms/learning/custom_data.py": "c076fd92a3cd9f2630df1f601b25cae23ecf47677e4602bfff199832fd9aef80",
+      "algorithms/learning/data.py": "1dc15872bc64d01aa07e8ca36e29ea06d8db1d72a87bbc044c19c0207d6fa173",
+      "algorithms/learning/model.py": "f56e89e21be96100ab795f0163371d062a4fdee5a43dbcdb380cf5324e03a4f1",
+      "algorithms/learning/train.py": "090cde84cd9294ba6d4c8361e0b2b60c64e1792c3a420b548c67e640d95e03db",
+      "algorithms/modular/__init__.py": "eeccb5f09492121f56d5081dfeaef423b3a5f739860535d2de2b601ad9741a31",
+      "algorithms/modular/algorithm.py": "3e0e8cb570e5f449421ab9086af542435d4c71cf060c6315b539f973586bf612",
+      "algorithms/modular/control.py": "61cdf48cd76c25acb1c2ad9a5bcbdc4d6fc35949146b6cc2405bf492d19632b8",
+      "algorithms/modular/vision.py": "953059bc714311f58d2f2ae935f9c0407dff894e7370f1fe763342a3b31f5dd5",
+      "algorithms/scanline.py": "85bef17907f9d94a505f88c374a31b758cfa5fd952e176a1d01b29b9d1b5122c"
+    },
+    "platform_sha256": {
+      "pathlab/__init__.py": "4c2a0990ea293b33c8bb306a60e7ed457a07e72ed5763c236704efb2d3102702",
+      "pathlab/adapters.py": "6c22b335de3a532f30f348fae9c16af4e1de4026bffaaeacf04c7235360e7532",
+      "pathlab/api.py": "6f9bf8f172b2c694ee34e3cb8ba65f8d6884f190c5d3979b1dff2e9af3fc483d",
+      "pathlab/benchmark.py": "89e389728d2ab9cc673ba5bcb1565db6a8e0a9f511d58f3b3905ea543df9315c",
+      "pathlab/cli.py": "1af52ce9eadf19c211d4ad9ef84589096c807fe9d6cbc86db9ef770a636855e2",
+      "pathlab/config.py": "ed8fab38f4fa59145d9a42f498d4b9bf18f8b37305f220fcdb5810f7c2e19004",
+      "pathlab/dynamics.py": "09d2774b5fdaf15aa375ad12971741963eba22739d6831c89ca247ad98ef8118",
+      "pathlab/engine.py": "6f714cc9f3396c360ef5e475ad5848ef181c3191b9d42121946a5beb3435b0f4",
+      "pathlab/evaluation.py": "b2492f6cbfb075e5ab49638582678dc235ad9205410755a29fc389978c1e4a5b",
+      "pathlab/map_editor.py": "b4d4c6dbbd10bfedc598eb726a6a2c5a3b32ced6f2166eec7c861453bb906cab",
+      "pathlab/map_library.py": "2c1bf5d91305fdad566e90ebd70870869ce4fb44aea1dccf0d7da2b926888fd4",
+      "pathlab/registry.py": "75ca2595ad0488f1f8c2d0153fb39fea3a7d586dfa00ef72d1b568c91939d26c",
+      "pathlab/scenarios.py": "007cefec7dc505081324683a9125ab8b2248b9921545cb573b8f4bf6d1af603e",
+      "pathlab/scene_objects.py": "e331142f9558672a42fdbbc4f66ff53ee58c66542bd56b6fc3fffaa68c5b2962",
+      "pathlab/sdk.py": "ca8956d1a5f5528f8827dd287b8f6227660e30313c07636039fb4f6324223258",
+      "pathlab/simulation.py": "1d9b1780596a68b8041791e222c435af6b1d38ea548f923ea8bd45f635437a5b",
+      "pathlab/sources.py": "acb009b455197cc67fac6868a835f2b5d7d99822dabb2cf69af5add4e6a1d3ee",
+      "pathlab/storage.py": "4ed3fbc064a119dcd087bd0f80d703571d589d324378bf92d0672e54e240010e",
+      "pathlab/submissions.py": "8d18ff773c5bba360135e71cd7f6f8a98296bf174461310c15e240060516de39",
+      "pathlab/worker.py": "a48f3f73d6ae4c9162be80a75fa6c17b3ac88615eb56f06c98160b549947484b"
+    }
+  },
+  "runs": [
+    {
+      "algorithm": "temporal_pursuit",
+      "case": "00-identity-0",
+      "seed": 920,
+      "metrics": {
+        "evaluator_version": "3.0",
+        "reason": "success",
+        "frames": 880,
+        "task_frames": 873,
+        "success": true,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.2,
+        "completion": 0.9948112224509144,
+        "tracking_lateral_error_m": {
+          "mean": 0.03260344533634182,
+          "p95": 0.09072771213839526,
+          "max": 0.18396162847090525
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.993446722120555,
+          "p95": 1.4943500000000483,
+          "max": 1.499625
+        },
+        "heading_error_rad": {
+          "mean": 0.041717303416002854,
+          "p95": 0.11633197928544105,
+          "max": 0.24222391851091185
+        },
+        "illegal_switches": [],
+        "lost_count": 0,
+        "lost_duration_s": 0.0,
+        "recovery_rate": null,
+        "inference_ms": {
+          "mean": 18.027881706583678,
+          "p95": 21.862992644309994,
+          "max": 74.43397305905819
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.7627994039995675,
+          "p95": 0.8000000000000002,
+          "max": 0.8000000000000003
+        },
+        "simulation_time_s": 43.650000000000006,
+        "completion_time_s": 43.650000000000006,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 4.021203630766188,
+        "safety_intervention_frames": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true,
+        "collision_count": 0,
+        "collisions": [],
+        "collision_duration_s": 0.0,
+        "acceleration_mps2": {
+          "mean": 0.03710125933098142,
+          "p95": 0.11130176590092372,
+          "max": 1.8
+        },
+        "vector_acceleration_mps2": {
+          "mean": 0.2291716699357433,
+          "p95": 0.6244552898161154,
+          "max": 1.8000000633698805
+        },
+        "jerk_mps3": {
+          "mean": 0.16716061595704765,
+          "p95": 0.18867492058251883,
+          "max": 22.00004889411269
+        },
+        "steering_rate_rad_s": {
+          "mean": 0.09149496315736491,
+          "p95": 0.32593631605989953,
+          "max": 0.7510825699626478
+        },
+        "realtime_miss_rate": 0.003436426116838488,
+        "score": {
+          "version": "3.0",
+          "total": 88.96,
+          "quality": 72.39,
+          "components": {
+            "tracking": {
+              "value": 62.2,
+              "weight": 35
+            },
+            "efficiency": {
+              "value": 48.49,
+              "weight": 20
+            },
+            "smoothness": {
+              "value": 72.84,
+              "weight": 15
+            },
+            "safety": {
+              "value": 100.0,
+              "weight": 20
+            },
+            "realtime": {
+              "value": 100.0,
+              "weight": 10
+            }
+          },
+          "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+        }
+      },
+      "failures": [],
+      "scene_name": "0920近邻极限0",
+      "terminal_pose": {
+        "x_m": 0.5584954961611659,
+        "y_m": 1.948186739747363,
+        "yaw_rad": -2.8662863851459943,
+        "speed_mps": 0.3500001324215552,
+        "steering_angle_rad": -0.02086190030534468,
+        "velocity_x_mps": -0.33658334592508665,
+        "velocity_y_mps": -0.09597783046610109,
+        "yaw_rate_rad_s": -0.024299194771901306,
+        "acceleration_mps2": -1.0186273479027996e-06
+      },
+      "terminal_debug": {
+        "identity_initialized": true,
+        "prediction_only": true,
+        "missing_s": 2.450000000000081,
+        "observed_points": 2,
+        "motion_source": "previous_command_model",
+        "motion_model": "inertial_v2",
+        "estimated_speed_mps": 0.3500001833529225,
+        "estimated_lateral_speed_mps": 0.0008559583789976375
+      }
+    },
+    {
+      "algorithm": "temporal_pursuit",
+      "case": "01-identity-1",
+      "seed": 921,
+      "metrics": {
+        "evaluator_version": "3.0",
+        "reason": "success",
+        "frames": 880,
+        "task_frames": 873,
+        "success": true,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.2,
+        "completion": 0.9948232685698858,
+        "tracking_lateral_error_m": {
+          "mean": 0.031056259890659833,
+          "p95": 0.09008765401730474,
+          "max": 0.18396070195409522
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.9934466538311887,
+          "p95": 1.4943500000000483,
+          "max": 1.499625
+        },
+        "heading_error_rad": {
+          "mean": 0.04119950171897369,
+          "p95": 0.11681112875396317,
+          "max": 0.24023650125026919
+        },
+        "illegal_switches": [],
+        "lost_count": 0,
+        "lost_duration_s": 0.0,
+        "recovery_rate": null,
+        "inference_ms": {
+          "mean": 26.54316777497837,
+          "p95": 33.34574531763792,
+          "max": 87.97715324908495
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.7628588403381413,
+          "p95": 0.8000000000000002,
+          "max": 0.8000000000000003
+        },
+        "simulation_time_s": 43.650000000000006,
+        "completion_time_s": 43.650000000000006,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 3.910470186465834,
+        "safety_intervention_frames": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true,
+        "collision_count": 0,
+        "collisions": [],
+        "collision_duration_s": 0.0,
+        "acceleration_mps2": {
+          "mean": 0.03695711057100173,
+          "p95": 0.12409939008892118,
+          "max": 1.8
+        },
+        "vector_acceleration_mps2": {
+          "mean": 0.22918696875089467,
+          "p95": 0.6257523099967595,
+          "max": 1.8000000584388323
+        },
+        "jerk_mps3": {
+          "mean": 0.16853479565827204,
+          "p95": 0.1956002854029628,
+          "max": 22.000048894112695
+        },
+        "steering_rate_rad_s": {
+          "mean": 0.08897543086384148,
+          "p95": 0.32593631605989953,
+          "max": 0.7510825699626478
+        },
+        "realtime_miss_rate": 0.003436426116838488,
+        "score": {
+          "version": "3.0",
+          "total": 88.99,
+          "quality": 72.49,
+          "components": {
+            "tracking": {
+              "value": 62.46,
+              "weight": 35
+            },
+            "efficiency": {
+              "value": 48.49,
+              "weight": 20
+            },
+            "smoothness": {
+              "value": 72.84,
+              "weight": 15
+            },
+            "safety": {
+              "value": 100.0,
+              "weight": 20
+            },
+            "realtime": {
+              "value": 100.0,
+              "weight": 10
+            }
+          },
+          "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+        }
+      },
+      "failures": [],
+      "scene_name": "0920近邻极限1",
+      "terminal_pose": {
+        "x_m": 0.5582075299294951,
+        "y_m": 1.9478348935102152,
+        "yaw_rad": -2.864578972647427,
+        "speed_mps": 0.35000013242155514,
+        "steering_angle_rad": -0.020063804545357448,
+        "velocity_x_mps": -0.3364286303075288,
+        "velocity_y_mps": -0.09651875156935187,
+        "yaw_rate_rad_s": -0.023339448030356567,
+        "acceleration_mps2": -1.018627347286009e-06
+      },
+      "terminal_debug": {
+        "identity_initialized": true,
+        "prediction_only": true,
+        "missing_s": 2.450000000000081,
+        "observed_points": 2,
+        "motion_source": "previous_command_model",
+        "motion_model": "inertial_v2",
+        "estimated_speed_mps": 0.3500001833529225,
+        "estimated_lateral_speed_mps": 0.0008210437588395674
+      }
+    },
+    {
+      "algorithm": "temporal_pursuit",
+      "case": "02-identity-4",
+      "seed": 924,
+      "metrics": {
+        "evaluator_version": "3.0",
+        "reason": "success",
+        "frames": 874,
+        "task_frames": 867,
+        "success": true,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.2,
+        "completion": 0.9944054598388749,
+        "tracking_lateral_error_m": {
+          "mean": 0.03078112772984372,
+          "p95": 0.08970208806469177,
+          "max": 0.18396159907815857
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.9934474145152415,
+          "p95": 1.4943500000000483,
+          "max": 1.499625
+        },
+        "heading_error_rad": {
+          "mean": 0.04133115187336586,
+          "p95": 0.1178145894747959,
+          "max": 0.23920878389311362
+        },
+        "illegal_switches": [],
+        "lost_count": 0,
+        "lost_duration_s": 0.0,
+        "recovery_rate": null,
+        "inference_ms": {
+          "mean": 24.36650643552704,
+          "p95": 32.98914274200797,
+          "max": 67.55295302718878
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.7677460260500347,
+          "p95": 0.8000000000000002,
+          "max": 0.8000000000000003
+        },
+        "simulation_time_s": 43.35,
+        "completion_time_s": 43.35,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 3.8067453205128103,
+        "safety_intervention_frames": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true,
+        "collision_count": 0,
+        "collisions": [],
+        "collision_duration_s": 0.0,
+        "acceleration_mps2": {
+          "mean": 0.03722513662514563,
+          "p95": 0.10952893660572581,
+          "max": 1.8
+        },
+        "vector_acceleration_mps2": {
+          "mean": 0.2303109723363573,
+          "p95": 0.6264945420790404,
+          "max": 1.8000000467091173
+        },
+        "jerk_mps3": {
+          "mean": 0.168980259733684,
+          "p95": 0.22610607888818088,
+          "max": 22.001266333502763
+        },
+        "steering_rate_rad_s": {
+          "mean": 0.08721066026375282,
+          "p95": 0.33633576621079886,
+          "max": 0.4998847660104062
+        },
+        "realtime_miss_rate": 0.0034602076124567475,
+        "score": {
+          "version": "3.0",
+          "total": 88.99,
+          "quality": 72.48,
+          "components": {
+            "tracking": {
+              "value": 62.62,
+              "weight": 35
+            },
+            "efficiency": {
+              "value": 48.81,
+              "weight": 20
+            },
+            "smoothness": {
+              "value": 71.97,
+              "weight": 15
+            },
+            "safety": {
+              "value": 100.0,
+              "weight": 20
+            },
+            "realtime": {
+              "value": 100.0,
+              "weight": 10
+            }
+          },
+          "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+        }
+      },
+      "failures": [],
+      "scene_name": "0920近邻极限4",
+      "terminal_pose": {
+        "x_m": 0.5714550561547228,
+        "y_m": 1.9502593271763975,
+        "yaw_rad": -2.860902452913706,
+        "speed_mps": 0.3500034296532365,
+        "steering_angle_rad": -0.019069675179102533,
+        "velocity_x_mps": -0.33610289838594876,
+        "velocity_y_mps": -0.09765880639037462,
+        "yaw_rate_rad_s": -0.020971553748111837,
+        "acceleration_mps2": -2.6381947973441733e-05
+      },
+      "terminal_debug": {
+        "identity_initialized": true,
+        "prediction_only": true,
+        "missing_s": 1.950000000000069,
+        "observed_points": 3,
+        "motion_source": "previous_command_model",
+        "motion_model": "inertial_v2",
+        "estimated_speed_mps": 0.35000474875063525,
+        "estimated_lateral_speed_mps": 0.0007168887678098504
+      }
+    },
+    {
+      "algorithm": "temporal_pursuit",
+      "case": "03-identity-5",
+      "seed": 925,
+      "metrics": {
+        "evaluator_version": "3.0",
+        "reason": "success",
+        "frames": 881,
+        "task_frames": 874,
+        "success": true,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.2,
+        "completion": 0.994777400085508,
+        "tracking_lateral_error_m": {
+          "mean": 0.029746300972512178,
+          "p95": 0.09048699343022726,
+          "max": 0.18399640633879494
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.9934506815145753,
+          "p95": 1.4943499999999998,
+          "max": 1.499625
+        },
+        "heading_error_rad": {
+          "mean": 0.04158183886370375,
+          "p95": 0.12335037552398376,
+          "max": 0.2494127301933391
+        },
+        "illegal_switches": [],
+        "lost_count": 0,
+        "lost_duration_s": 0.0,
+        "recovery_rate": null,
+        "inference_ms": {
+          "mean": 24.140095723967665,
+          "p95": 36.522953724488595,
+          "max": 71.51000015437603
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.7620066107013023,
+          "p95": 0.8000000000000002,
+          "max": 0.8000000000000003
+        },
+        "simulation_time_s": 43.7,
+        "completion_time_s": 43.7,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 3.8993195136573036,
+        "safety_intervention_frames": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true,
+        "collision_count": 0,
+        "collisions": [],
+        "collision_duration_s": 0.0,
+        "acceleration_mps2": {
+          "mean": 0.03605651105651151,
+          "p95": 0.09009109840757487,
+          "max": 1.8
+        },
+        "vector_acceleration_mps2": {
+          "mean": 0.22884854957373077,
+          "p95": 0.6163763533528475,
+          "max": 1.8000000000373673
+        },
+        "jerk_mps3": {
+          "mean": 0.15786093744066437,
+          "p95": 0.07105270451582152,
+          "max": 22.000025503410654
+        },
+        "steering_rate_rad_s": {
+          "mean": 0.08862089803766598,
+          "p95": 0.35364131993467607,
+          "max": 1.2
+        },
+        "realtime_miss_rate": 0.003432494279176201,
+        "score": {
+          "version": "3.0",
+          "total": 88.83,
+          "quality": 72.07,
+          "components": {
+            "tracking": {
+              "value": 62.3,
+              "weight": 35
+            },
+            "efficiency": {
+              "value": 48.43,
+              "weight": 20
+            },
+            "smoothness": {
+              "value": 70.53,
+              "weight": 15
+            },
+            "safety": {
+              "value": 100.0,
+              "weight": 20
+            },
+            "realtime": {
+              "value": 100.0,
+              "weight": 10
+            }
+          },
+          "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+        }
+      },
+      "failures": [],
+      "scene_name": "0920近邻极限5",
+      "terminal_pose": {
+        "x_m": 0.5583143903622939,
+        "y_m": 1.9521435523480477,
+        "yaw_rad": -2.8375043985288473,
+        "speed_mps": 0.35000006907173703,
+        "steering_angle_rad": -0.0005092317675192677,
+        "velocity_x_mps": -0.33393590410201685,
+        "velocity_y_mps": -0.10481822504597814,
+        "yaw_rate_rad_s": -0.0005904523317069322,
+        "acceleration_mps2": -5.31321054745663e-07
+      },
+      "terminal_debug": {
+        "identity_initialized": true,
+        "prediction_only": true,
+        "missing_s": 2.550000000000089,
+        "observed_points": 5,
+        "motion_source": "previous_command_model",
+        "motion_model": "inertial_v2",
+        "estimated_speed_mps": 0.3500000956377899,
+        "estimated_lateral_speed_mps": 2.070896516334256e-05
+      }
+    },
+    {
+      "algorithm": "temporal_mpc",
+      "case": "00-identity-0",
+      "seed": 920,
+      "metrics": {
+        "evaluator_version": "3.0",
+        "reason": "success",
+        "frames": 864,
+        "task_frames": 857,
+        "success": true,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.2,
+        "completion": 0.9947370687553531,
+        "tracking_lateral_error_m": {
+          "mean": 0.0206382841076941,
+          "p95": 0.04719162477704083,
+          "max": 0.18421170322688935
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.9934809105662247,
+          "p95": 1.4943500000260967,
+          "max": 1.499625000000001
+        },
+        "heading_error_rad": {
+          "mean": 0.03608588438404051,
+          "p95": 0.10566519993696183,
+          "max": 0.1943338801138097
+        },
+        "illegal_switches": [],
+        "lost_count": 0,
+        "lost_duration_s": 0.0,
+        "recovery_rate": null,
+        "inference_ms": {
+          "mean": 20.27358387704491,
+          "p95": 26.834113895892962,
+          "max": 54.137563332915306
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.7633454848498817,
+          "p95": 0.8000000000000002,
+          "max": 0.8000000000000003
+        },
+        "simulation_time_s": 42.85,
+        "completion_time_s": 42.85,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 10.093913991381426,
+        "safety_intervention_frames": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true,
+        "collision_count": 0,
+        "collisions": [],
+        "collision_duration_s": 0.0,
+        "acceleration_mps2": {
+          "mean": 0.036732329084589115,
+          "p95": 0.09060659779260481,
+          "max": 1.8
+        },
+        "vector_acceleration_mps2": {
+          "mean": 0.22717053620104966,
+          "p95": 0.6698935067552069,
+          "max": 1.8000000333272803
+        },
+        "jerk_mps3": {
+          "mean": 0.16009282554870768,
+          "p95": 0.051609371529978104,
+          "max": 22.000093737825484
+        },
+        "steering_rate_rad_s": {
+          "mean": 0.2339261643425591,
+          "p95": 1.0870062506045333,
+          "max": 1.2000000000000004
+        },
+        "realtime_miss_rate": 0.0011668611435239206,
+        "score": {
+          "version": "3.0",
+          "total": 87.76,
+          "quality": 69.41,
+          "components": {
+            "tracking": {
+              "value": 80.34,
+              "weight": 35
+            },
+            "efficiency": {
+              "value": 49.39,
+              "weight": 20
+            },
+            "smoothness": {
+              "value": 9.42,
+              "weight": 15
+            },
+            "safety": {
+              "value": 100.0,
+              "weight": 20
+            },
+            "realtime": {
+              "value": 100.0,
+              "weight": 10
+            }
+          },
+          "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+        }
+      },
+      "failures": [],
+      "scene_name": "0920近邻极限0",
+      "terminal_pose": {
+        "x_m": 0.5585580615142308,
+        "y_m": 1.9554829461627807,
+        "yaw_rad": -2.8119502605105477,
+        "speed_mps": 0.3500002538732773,
+        "steering_angle_rad": 0.015282708807749157,
+        "velocity_x_mps": -0.33135738804644516,
+        "velocity_y_mps": -0.11270518665259442,
+        "yaw_rate_rad_s": 0.017646542815875795,
+        "acceleration_mps2": -1.9528713640020675e-06
+      },
+      "terminal_debug": {
+        "identity_initialized": true,
+        "prediction_only": true,
+        "missing_s": 2.350000000000081,
+        "observed_points": 5,
+        "motion_source": "previous_command_model",
+        "motion_model": "inertial_v2",
+        "estimated_speed_mps": 0.3500003515168455,
+        "estimated_lateral_speed_mps": -0.0006159169742619854
+      }
+    },
+    {
+      "algorithm": "temporal_mpc",
+      "case": "01-identity-1",
+      "seed": 921,
+      "metrics": {
+        "evaluator_version": "3.0",
+        "reason": "success",
+        "frames": 864,
+        "task_frames": 857,
+        "success": true,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.2,
+        "completion": 0.9947596476481366,
+        "tracking_lateral_error_m": {
+          "mean": 0.018867666146081746,
+          "p95": 0.04686522679888688,
+          "max": 0.18399235659974514
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.9934552670399401,
+          "p95": 1.4943500000260967,
+          "max": 1.499625000000001
+        },
+        "heading_error_rad": {
+          "mean": 0.0359538366248265,
+          "p95": 0.10995898236064501,
+          "max": 0.19299558613950119
+        },
+        "illegal_switches": [],
+        "lost_count": 0,
+        "lost_duration_s": 0.0,
+        "recovery_rate": null,
+        "inference_ms": {
+          "mean": 19.71658026688714,
+          "p95": 23.509931191802025,
+          "max": 58.39155800640583
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.7633454848498817,
+          "p95": 0.8000000000000002,
+          "max": 0.8000000000000003
+        },
+        "simulation_time_s": 42.85,
+        "completion_time_s": 42.85,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 10.798982027043582,
+        "safety_intervention_frames": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true,
+        "collision_count": 0,
+        "collisions": [],
+        "collision_duration_s": 0.0,
+        "acceleration_mps2": {
+          "mean": 0.036732329084589094,
+          "p95": 0.09060659779260681,
+          "max": 1.7999999999999998
+        },
+        "vector_acceleration_mps2": {
+          "mean": 0.2270511623874276,
+          "p95": 0.6643077359078265,
+          "max": 1.8000000000286738
+        },
+        "jerk_mps3": {
+          "mean": 0.16009282554870793,
+          "p95": 0.05160937153006137,
+          "max": 22.000093737825477
+        },
+        "steering_rate_rad_s": {
+          "mean": 0.25026609564411545,
+          "p95": 1.2,
+          "max": 1.2000000000000004
+        },
+        "realtime_miss_rate": 0.0011668611435239206,
+        "score": {
+          "version": "3.0",
+          "total": 87.22,
+          "quality": 68.04,
+          "components": {
+            "tracking": {
+              "value": 80.47,
+              "weight": 35
+            },
+            "efficiency": {
+              "value": 49.39,
+              "weight": 20
+            },
+            "smoothness": {
+              "value": 0.0,
+              "weight": 15
+            },
+            "safety": {
+              "value": 100.0,
+              "weight": 20
+            },
+            "realtime": {
+              "value": 100.0,
+              "weight": 10
+            }
+          },
+          "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+        }
+      },
+      "failures": [],
+      "scene_name": "0920近邻极限1",
+      "terminal_pose": {
+        "x_m": 0.5589149576647084,
+        "y_m": 1.9521335009980434,
+        "yaw_rad": -2.8211405737221975,
+        "speed_mps": 0.3500002538732773,
+        "steering_angle_rad": -0.00044037640993722113,
+        "velocity_x_mps": -0.33217700428294683,
+        "velocity_y_mps": -0.11026611236896715,
+        "yaw_rate_rad_s": -0.0005163280389397925,
+        "acceleration_mps2": -1.9528713640020675e-06
+      },
+      "terminal_debug": {
+        "identity_initialized": true,
+        "prediction_only": true,
+        "missing_s": 2.350000000000081,
+        "observed_points": 3,
+        "motion_source": "previous_command_model",
+        "motion_model": "inertial_v2",
+        "estimated_speed_mps": 0.3500003515168456,
+        "estimated_lateral_speed_mps": 1.831633481638298e-05
+      }
+    },
+    {
+      "algorithm": "temporal_mpc",
+      "case": "02-identity-4",
+      "seed": 924,
+      "metrics": {
+        "evaluator_version": "3.0",
+        "reason": "success",
+        "frames": 863,
+        "task_frames": 856,
+        "success": true,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.2,
+        "completion": 0.9943819995040801,
+        "tracking_lateral_error_m": {
+          "mean": 0.016373064609331717,
+          "p95": 0.03617799908442586,
+          "max": 0.1839634010234347
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.9934509499781283,
+          "p95": 1.4943500000260967,
+          "max": 1.499625000000001
+        },
+        "heading_error_rad": {
+          "mean": 0.03340949631376259,
+          "p95": 0.10169046188652445,
+          "max": 0.17110568379923663
+        },
+        "illegal_switches": [],
+        "lost_count": 0,
+        "lost_duration_s": 0.0,
+        "recovery_rate": null,
+        "inference_ms": {
+          "mean": 19.72082558536258,
+          "p95": 24.77736840955913,
+          "max": 52.28658951818943
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.7679959207611833,
+          "p95": 0.8000000000000002,
+          "max": 0.8000000000000003
+        },
+        "simulation_time_s": 42.800000000000004,
+        "completion_time_s": 42.800000000000004,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 9.031205374077748,
+        "safety_intervention_frames": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true,
+        "collision_count": 0,
+        "collisions": [],
+        "collision_duration_s": 0.0,
+        "acceleration_mps2": {
+          "mean": 0.03677494199536013,
+          "p95": 0.0906369212858419,
+          "max": 1.8
+        },
+        "vector_acceleration_mps2": {
+          "mean": 0.22983970923963815,
+          "p95": 0.6841641968024953,
+          "max": 1.8000000020824092
+        },
+        "jerk_mps3": {
+          "mean": 0.1602790850532226,
+          "p95": 0.051626637964119475,
+          "max": 22.00175338484995
+        },
+        "steering_rate_rad_s": {
+          "mean": 0.20954072793683873,
+          "p95": 0.8486439231647862,
+          "max": 1.2
+        },
+        "realtime_miss_rate": 0.0011682242990654205,
+        "score": {
+          "version": "3.0",
+          "total": 89.6,
+          "quality": 74.0,
+          "components": {
+            "tracking": {
+              "value": 84.93,
+              "weight": 35
+            },
+            "efficiency": {
+              "value": 49.43,
+              "weight": 20
+            },
+            "smoothness": {
+              "value": 29.28,
+              "weight": 15
+            },
+            "safety": {
+              "value": 100.0,
+              "weight": 20
+            },
+            "realtime": {
+              "value": 100.0,
+              "weight": 10
+            }
+          },
+          "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+        }
+      },
+      "failures": [],
+      "scene_name": "0920近邻极限4",
+      "terminal_pose": {
+        "x_m": 0.5690838606485935,
+        "y_m": 1.9597406292387909,
+        "yaw_rad": -2.8299263589994923,
+        "speed_mps": 0.3500047487506352,
+        "steering_angle_rad": -0.004189173831338594,
+        "velocity_x_mps": -0.33309611007934736,
+        "velocity_y_mps": -0.10747234806219952,
+        "yaw_rate_rad_s": -0.004441515499855386,
+        "acceleration_mps2": -3.652885104029243e-05
+      },
+      "terminal_debug": {
+        "identity_initialized": true,
+        "prediction_only": true,
+        "missing_s": 1.9000000000000647,
+        "observed_points": 3,
+        "motion_source": "previous_command_model",
+        "motion_model": "inertial_v2",
+        "estimated_speed_mps": 0.35000657519318723,
+        "estimated_lateral_speed_mps": 0.00014928231840044982
+      }
+    },
+    {
+      "algorithm": "temporal_mpc",
+      "case": "03-identity-5",
+      "seed": 925,
+      "metrics": {
+        "evaluator_version": "3.0",
+        "reason": "success",
+        "frames": 868,
+        "task_frames": 863,
+        "success": true,
+        "acquisition_success": true,
+        "acquisition_time_s": 2.2,
+        "completion": 0.9943999474079979,
+        "tracking_lateral_error_m": {
+          "mean": 0.019385639924574833,
+          "p95": 0.05941409495520127,
+          "max": 0.18396870212645333
+        },
+        "acquisition_lateral_error_m": {
+          "mean": 0.9934561199937672,
+          "p95": 1.4943499999999998,
+          "max": 1.499625
+        },
+        "heading_error_rad": {
+          "mean": 0.035873540420896785,
+          "p95": 0.12512797647365823,
+          "max": 0.18999216147890197
+        },
+        "illegal_switches": [],
+        "lost_count": 1,
+        "lost_duration_s": 0.05,
+        "recovery_rate": 0.0,
+        "inference_ms": {
+          "mean": 27.545896243316964,
+          "p95": 40.09201051667332,
+          "max": 77.64819357544184
+        },
+        "timeout_count": 0,
+        "timeout_rate": 0.0,
+        "speed_mps": {
+          "mean": 0.7563215999754889,
+          "p95": 0.8000000000000002,
+          "max": 0.8000000000000003
+        },
+        "simulation_time_s": 43.150000000000006,
+        "completion_time_s": 43.150000000000006,
+        "action_saturation_frames": 0,
+        "steering_total_variation_rad": 13.494256605407427,
+        "safety_intervention_frames": 1,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "truth_metrics_available": true,
+        "collision_count": 0,
+        "collisions": [],
+        "collision_duration_s": 0.0,
+        "acceleration_mps2": {
+          "mean": 0.037116983056689104,
+          "p95": 0.20597230008632025,
+          "max": 1.4999999999999991
+        },
+        "vector_acceleration_mps2": {
+          "mean": 0.22501752432500594,
+          "p95": 0.6661992966155077,
+          "max": 1.5000000000000904
+        },
+        "jerk_mps3": {
+          "mean": 0.16404800629901714,
+          "p95": 0.26229665665088436,
+          "max": 6.000000000000138
+        },
+        "steering_rate_rad_s": {
+          "mean": 0.31128619620317016,
+          "p95": 1.2,
+          "max": 1.2000000000000004
+        },
+        "realtime_miss_rate": 0.002317497103128621,
+        "score": {
+          "version": "3.0",
+          "total": 86.45,
+          "quality": 66.12,
+          "components": {
+            "tracking": {
+              "value": 75.24,
+              "weight": 35
+            },
+            "efficiency": {
+              "value": 49.03,
+              "weight": 20
+            },
+            "smoothness": {
+              "value": 0.0,
+              "weight": 15
+            },
+            "safety": {
+              "value": 99.88,
+              "weight": 20
+            },
+            "realtime": {
+              "value": 100.0,
+              "weight": 10
+            }
+          },
+          "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+        }
+      },
+      "failures": [],
+      "scene_name": "0920近邻极限5",
+      "terminal_pose": {
+        "x_m": 0.5679519809084015,
+        "y_m": 1.9613248905971126,
+        "yaw_rad": -2.82186893877311,
+        "speed_mps": 0.2167936353477646,
+        "steering_angle_rad": 0.0,
+        "velocity_x_mps": -0.20584938863834717,
+        "velocity_y_mps": -0.0680110985392696,
+        "yaw_rate_rad_s": 0.009015208464516223,
+        "acceleration_mps2": -0.05978784492548625
+      },
+      "terminal_debug": {
+        "identity_initialized": true,
+        "prediction_only": false,
+        "missing_s": 3.000000000000101,
+        "observed_points": 0,
+        "motion_source": "previous_command_model",
+        "motion_model": "inertial_v2",
+        "estimated_speed_mps": 0.21978302759403803,
+        "estimated_lateral_speed_mps": -6.035586156990814e-05
+      }
+    }
+  ]
+}

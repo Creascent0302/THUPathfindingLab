@@ -1,15 +1,20 @@
 import { useEffect, useMemo, useRef, useState, type PointerEvent } from "react";
 import { api, fmt, post, type Point, type Preview, type Scene } from "./types";
-import { SceneObjectEditor, objectNames } from "./SceneObjectEditor";
+import {
+  SceneObjectEditor,
+  createSceneObject,
+  objectNames,
+} from "./SceneObjectEditor";
+import { DistractorEditor } from "./DistractorEditor";
 import { VehicleSettings } from "./VehicleSettings";
-import type { SceneObject } from "./types";
+import { matchesShape, usePersistentState } from "./usePersistentState";
+import type { SavedMap, SceneObject } from "./types";
 
 type Design = NonNullable<Scene["design"]>;
 type Draft = Pick<
   Scene,
   "name" | "seed" | "vehicle" | "camera" | "appearance"
-> & { design: Design; objects: SceneObject[] };
-type SavedMap = { id: string; scene: Scene };
+> & { design: Design; objects: SceneObject[]; source_scene?: Scene };
 const defaultDesign: Design = {
   waypoints: [
     [0, 0],
@@ -18,9 +23,31 @@ const defaultDesign: Design = {
     [0, 4],
   ],
   radius_m: 1,
+  distractors: [],
 };
+const sceneDesign = (scene: Scene): Design => ({
+  ...(scene.design || defaultDesign),
+  distractors:
+    scene.design?.distractors ??
+    scene.distractors.map((waypoints) => ({
+      waypoints,
+      interpolation: "polyline" as const,
+    })),
+});
 const pointsText = (points: Point[]) =>
   points.map(([x, y]) => `${x},${-y}`).join(" ");
+
+function mapBounds(points: Point[]) {
+  if (!points.length) return [-3, -9, 16, 13];
+  const xs = points.map((p) => p[0]),
+    ys = points.map((p) => -p[1]);
+  return [
+    Math.min(...xs) - 3,
+    Math.min(...ys) - 3,
+    Math.max(8, Math.max(...xs) - Math.min(...xs) + 6),
+    Math.max(6, Math.max(...ys) - Math.min(...ys) + 6),
+  ];
+}
 
 function NumberField({
   label,
@@ -60,41 +87,79 @@ export function MapEditor({
   onApply,
   attempt,
   busy,
+  onMapsChange,
 }: {
   base: Scene;
   onApply: (preview: Preview) => void;
   attempt: (operation: () => Promise<unknown>) => Promise<void>;
   busy: boolean;
+  onMapsChange: (maps: SavedMap[]) => void;
 }) {
-  const [draft, setDraft] = useState<Draft>(() => ({
+  const initialDraft = (): Draft => ({
     name: base.design ? base.name : "我的地图",
     seed: base.seed,
     vehicle: base.vehicle,
     camera: base.camera,
     appearance: base.appearance,
-    design: base.design || defaultDesign,
+    design: base.design ? sceneDesign(base) : defaultDesign,
     objects: base.design ? base.objects || [] : [],
-  }));
+    source_scene: base.design ? base : undefined,
+  });
+  const [draft, setDraft, storageError] = usePersistentState<Draft>(
+    "pathlab.map-draft.v1",
+    initialDraft,
+    (value) => {
+      const shape = {
+        ...initialDraft(),
+        source_scene: undefined,
+        design: {
+          waypoints: [[0, 0]],
+          radius_m: 1,
+          distractors: [{ waypoints: [[0, 0]], interpolation: "polyline" }],
+        },
+        objects: [createSceneObject("cone", [0, 0])],
+      };
+      if (!matchesShape(value, shape)) throw new Error("Invalid map draft");
+      return value as Draft;
+    },
+  );
+  const [mode, setMode] = useState<"target" | "distractor" | "object">(
+    "target",
+  );
+  const [selectedLine, setSelectedLine] = useState(0);
+  const [selectedObject, setSelectedObject] = useState(0);
+  const [objectKind, setObjectKind] = useState<SceneObject["kind"]>("cone");
   const [preview, setPreview] = useState<Preview | null>(null);
   const [validation, setValidation] = useState("");
   const [pending, setPending] = useState(true);
   const [saved, setSaved] = useState<SavedMap[]>([]);
   const [message, setMessage] = useState("");
-  const [view, setView] = useState([-3, -9, 16, 13]);
+  const [view, setView] = useState(() =>
+    mapBounds([
+      ...draft.design.waypoints,
+      ...(draft.design.distractors || []).flatMap((line) => line.waypoints),
+      ...draft.objects.map((obj): Point => [obj.x_m, obj.y_m]),
+    ]),
+  );
   const drag = useRef<number | null>(null);
   const objectDrag = useRef<number | null>(null);
+  const lineDrag = useRef<[number, number] | null>(null);
   const builtDraft = useRef<Draft | null>(null);
   const { design, vehicle, camera, appearance } = draft;
+  const lines = design.distractors || [];
   const vehicleScene = useMemo(() => ({ ...base, ...draft }), [base, draft]);
   const minimum = vehicle.wheelbase_m / Math.tan(vehicle.max_steering_rad);
-  const refresh = () => api<SavedMap[]>("/maps").then(setSaved);
+  const refresh = () =>
+    api<SavedMap[]>("/maps").then((maps) => {
+      setSaved(maps);
+      onMapsChange(maps);
+    });
   useEffect(() => {
     void refresh().catch((e) => setValidation(String(e)));
   }, []);
   useEffect(() => {
     const controller = new AbortController();
     setPending(true);
-    setMessage("");
     const timer = window.setTimeout(() => {
       api<Preview>("/maps/build", {
         method: "POST",
@@ -134,6 +199,27 @@ export function MapEditor({
         ),
       },
     }));
+  const changeLinePoint = (
+    lineIndex: number,
+    pointIndex: number,
+    point: Point,
+  ) =>
+    setDraft((old) => ({
+      ...old,
+      design: {
+        ...old.design,
+        distractors: (old.design.distractors || []).map((line, i) =>
+          i === lineIndex
+            ? {
+                ...line,
+                waypoints: line.waypoints.map((p, j) =>
+                  j === pointIndex ? point : p,
+                ),
+              }
+            : line,
+        ),
+      },
+    }));
   const coordinate = (e: PointerEvent<SVGSVGElement>): Point => {
     const matrix = e.currentTarget.getScreenCTM();
     if (!matrix) return [0, 0];
@@ -145,28 +231,36 @@ export function MapEditor({
     return [snap(p.x), snap(-p.y)];
   };
   const fit = (points: Point[]) => {
-    const xs = points.map((p) => p[0]),
-      ys = points.map((p) => -p[1]);
-    setView([
-      Math.min(...xs) - 3,
-      Math.min(...ys) - 3,
-      Math.max(8, Math.max(...xs) - Math.min(...xs) + 6),
-      Math.max(6, Math.max(...ys) - Math.min(...ys) + 6),
-    ]);
+    setView(mapBounds(points));
   };
-  const load = (scene: Scene) => {
+  const load = async (scene: Scene) => {
     if (!scene.design)
       throw new Error("此 JSON 没有控制点设计，请使用编辑器导出的地图");
+    const normalized = await post<Preview>("/maps/build", {
+      name: scene.name,
+      seed: scene.seed,
+      design: sceneDesign(scene),
+      source_scene: scene,
+      objects: scene.objects || [],
+    });
+    if (!normalized.scene) throw new Error("无法读取地图场景");
     setDraft({
       name: scene.name,
       seed: scene.seed,
-      vehicle: scene.vehicle,
-      camera: scene.camera,
-      appearance: scene.appearance,
-      design: scene.design,
+      vehicle: normalized.scene.vehicle,
+      camera: normalized.scene.camera,
+      appearance: normalized.scene.appearance,
+      design: sceneDesign(scene),
       objects: scene.objects || [],
+      source_scene: scene,
     });
-    fit(scene.design.waypoints);
+    setSelectedLine(0);
+    setSelectedObject(0);
+    fit([
+      ...scene.design.waypoints,
+      ...scene.distractors.flat(),
+      ...(scene.objects || []).map((obj): Point => [obj.x_m, obj.y_m]),
+    ]);
   };
   const valid =
     !!preview?.scene && builtDraft.current === draft && !pending && !validation;
@@ -174,22 +268,78 @@ export function MapEditor({
     <div className="map-editor-layout">
       <section className="panel editor-canvas-panel">
         <div className="panel-title">
-          <h2>绘制路线</h2>
-          <span>点击添加 · 拖动控制点 · 网格 1 m</span>
+          <h2>地图分层编辑</h2>
+          <span>点击放置 · 拖动调整 · 网格 1 m</span>
         </div>
+        <div className="editor-mode-tabs" aria-label="地图编辑模式">
+          {(
+            [
+              ["target", "目标路线"],
+              ["distractor", "干扰线"],
+              ["object", "障碍物"],
+            ] as const
+          ).map(([value, label]) => (
+            <button
+              key={value}
+              aria-pressed={mode === value}
+              onClick={() => setMode(value)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <p className="editor-mode-hint">
+          {mode === "target"
+            ? "正在编辑目标路线：点按追加目标控制点，拖动绿色控制点调整路线。"
+            : mode === "distractor"
+              ? `正在编辑干扰线：${lines[selectedLine] ? `点按追加到干扰线 ${selectedLine + 1}，拖动紫色控制点调整。` : "请先点击右侧“新增干扰线”，再点按画布。"}`
+              : `正在编辑障碍物：点按画布放置${objectNames[objectKind]}，点选或拖动物件调整；右侧可更改类型和尺寸。`}
+        </p>
+        {draft.source_scene?.render_version !== "3" && draft.source_scene && (
+          <p className="editor-upgrade-note">
+            旧地图将保存为场景版本
+            3，使障碍物具有真实投影和遮挡。未修改的路线、车辆、相机和初始位置保持原值；原文件不变。
+          </p>
+        )}
         <div className="editor-actions">
-          <button onClick={() => fit(design.waypoints)}>适配地图</button>
           <button
-            disabled={design.waypoints.length <= 2}
             onClick={() =>
-              editDesign({ waypoints: design.waypoints.slice(0, -1) })
+              fit([
+                ...design.waypoints,
+                ...lines.flatMap((line) => line.waypoints),
+                ...draft.objects.map((obj): Point => [obj.x_m, obj.y_m]),
+              ])
+            }
+          >
+            适配地图
+          </button>
+          <button
+            disabled={
+              mode === "object" ||
+              (mode === "target"
+                ? design.waypoints.length <= 2
+                : !lines[selectedLine]?.waypoints.length)
+            }
+            onClick={() =>
+              mode === "target"
+                ? editDesign({ waypoints: design.waypoints.slice(0, -1) })
+                : editDesign({
+                    distractors: lines.map((line, i) =>
+                      i === selectedLine
+                        ? { ...line, waypoints: line.waypoints.slice(0, -1) }
+                        : line,
+                    ),
+                  })
             }
           >
             撤回末点
           </button>
           <button
             onClick={() => {
-              editDesign(defaultDesign);
+              editDesign({
+                waypoints: defaultDesign.waypoints,
+                radius_m: defaultDesign.radius_m,
+              });
               fit(defaultDesign.waypoints);
             }}
           >
@@ -207,7 +357,7 @@ export function MapEditor({
                   void attempt(async () => {
                     if (file.size > 2 * 1024 ** 2)
                       throw new Error("地图 JSON 超过 2 MiB");
-                    load(JSON.parse(await file.text()) as Scene);
+                    await load(JSON.parse(await file.text()) as Scene);
                   });
                 e.target.value = "";
               }}
@@ -219,11 +369,33 @@ export function MapEditor({
           aria-label="地图控制点画布"
           viewBox={view.join(" ")}
           onPointerDown={(e) => {
-            if (design.waypoints.length < 60)
+            if (mode === "object" && draft.objects.length < 80) {
+              setSelectedObject(draft.objects.length);
+              setDraft({
+                ...draft,
+                objects: [
+                  ...draft.objects,
+                  createSceneObject(objectKind, coordinate(e)),
+                ],
+              });
+            } else if (mode === "distractor" && lines[selectedLine]) {
+              editDesign({
+                distractors: lines.map((line, i) =>
+                  i === selectedLine
+                    ? {
+                        ...line,
+                        waypoints: [...line.waypoints, coordinate(e)],
+                      }
+                    : line,
+                ),
+              });
+            } else if (mode === "target" && design.waypoints.length < 60)
               editDesign({ waypoints: [...design.waypoints, coordinate(e)] });
           }}
           onPointerMove={(e) => {
             if (drag.current !== null) changePoint(drag.current, coordinate(e));
+            if (lineDrag.current !== null)
+              changeLinePoint(...lineDrag.current, coordinate(e));
             if (objectDrag.current !== null) {
               const [x_m, y_m] = coordinate(e);
               setDraft((old) => ({
@@ -237,10 +409,12 @@ export function MapEditor({
           onPointerUp={() => {
             drag.current = null;
             objectDrag.current = null;
+            lineDrag.current = null;
           }}
           onPointerCancel={() => {
             drag.current = null;
             objectDrag.current = null;
+            lineDrag.current = null;
           }}
         >
           <defs>
@@ -280,6 +454,51 @@ export function MapEditor({
               strokeWidth=".09"
             />
           )}
+          {lines.map((line, lineIndex) => (
+            <g key={`line-${lineIndex}`}>
+              <polyline
+                points={pointsText(
+                  preview?.scene?.distractors[lineIndex] || line.waypoints,
+                )}
+                fill="none"
+                stroke={
+                  lineIndex === selectedLine && mode === "distractor"
+                    ? "#9852bf"
+                    : "#665c73"
+                }
+                strokeWidth=".065"
+                pointerEvents="none"
+              />
+              {mode === "distractor" &&
+                line.waypoints.map(
+                  ([x, y], pointIndex) =>
+                    (pointIndex %
+                      Math.max(1, Math.ceil(line.waypoints.length / 80)) ===
+                      0 ||
+                      pointIndex === line.waypoints.length - 1) && (
+                      <circle
+                        key={pointIndex}
+                        cx={x}
+                        cy={-y}
+                        r=".12"
+                        fill={lineIndex === selectedLine ? "#ead9f4" : "#fff"}
+                        stroke="#8b4fac"
+                        strokeWidth=".03"
+                        className="control-point"
+                        aria-label={`干扰线 ${lineIndex + 1} 控制点 ${pointIndex + 1}`}
+                        onPointerDown={(event) => {
+                          event.stopPropagation();
+                          setSelectedLine(lineIndex);
+                          lineDrag.current = [lineIndex, pointIndex];
+                          event.currentTarget.ownerSVGElement?.setPointerCapture(
+                            event.pointerId,
+                          );
+                        }}
+                      />
+                    ),
+                )}
+            </g>
+          ))}
           {preview?.scene && (
             <g
               transform={`translate(${preview.scene.initial_pose.x_m} ${-preview.scene.initial_pose.y_m}) rotate(${(-preview.scene.initial_pose.yaw_rad * 180) / Math.PI})`}
@@ -300,28 +519,29 @@ export function MapEditor({
               />
             </g>
           )}
-          {design.waypoints.map(([x, y], index) => (
-            <g key={index} transform={`translate(${x} ${-y})`}>
-              <circle
-                r=".15"
-                className="control-point"
-                fill={index === 0 ? "#20a87e" : "#fff"}
-                stroke="#247d6d"
-                strokeWidth=".035"
-                aria-label={`控制点 ${index + 1}`}
-                onPointerDown={(e) => {
-                  e.stopPropagation();
-                  drag.current = index;
-                  (
-                    e.currentTarget.ownerSVGElement as SVGSVGElement
-                  ).setPointerCapture(e.pointerId);
-                }}
-              />
-              <text x=".21" y="-.21" fontSize=".25" pointerEvents="none">
-                {index + 1}
-              </text>
-            </g>
-          ))}
+          {mode === "target" &&
+            design.waypoints.map(([x, y], index) => (
+              <g key={index} transform={`translate(${x} ${-y})`}>
+                <circle
+                  r=".15"
+                  className="control-point"
+                  fill={index === 0 ? "#20a87e" : "#fff"}
+                  stroke="#247d6d"
+                  strokeWidth=".035"
+                  aria-label={`控制点 ${index + 1}`}
+                  onPointerDown={(e) => {
+                    e.stopPropagation();
+                    drag.current = index;
+                    (
+                      e.currentTarget.ownerSVGElement as SVGSVGElement
+                    ).setPointerCapture(e.pointerId);
+                  }}
+                />
+                <text x=".21" y="-.21" fontSize=".25" pointerEvents="none">
+                  {index + 1}
+                </text>
+              </g>
+            ))}
           {draft.objects.map(
             (obj, index) =>
               obj.enabled && (
@@ -332,6 +552,8 @@ export function MapEditor({
                   aria-label={`场景物件 ${index + 1} ${objectNames[obj.kind]}`}
                   onPointerDown={(event) => {
                     event.stopPropagation();
+                    setMode("object");
+                    setSelectedObject(index);
                     objectDrag.current = index;
                     event.currentTarget.ownerSVGElement?.setPointerCapture(
                       event.pointerId,
@@ -370,6 +592,7 @@ export function MapEditor({
         <div
           className={"editor-validation " + (validation ? "invalid" : "")}
           role="status"
+          aria-label="地图几何检查"
         >
           {pending
             ? "正在检查几何约束…"
@@ -404,9 +627,12 @@ export function MapEditor({
             disabled={!valid || busy}
             onClick={() =>
               attempt(async () => {
-                await post("/maps", preview!.scene);
+                const saved = await post<SavedMap>("/maps", preview!.scene);
+                setDraft((current) => ({ ...current, name: saved.scene.name }));
                 await refresh();
-                setMessage("地图已保存，下次打开仍可加载。");
+                setMessage(
+                  `已保存为「${saved.scene.name}」，可在主页场景选择中直接加载。`,
+                );
               })
             }
           >
@@ -431,6 +657,14 @@ export function MapEditor({
           </button>
           <small>{message}</small>
         </div>
+        <p
+          className={storageError ? "editor-validation invalid" : "field-note"}
+          role="status"
+          aria-label="地图草稿保存状态"
+        >
+          {storageError ||
+            "草稿自动保存在此浏览器，刷新或切换页面后可继续编辑。点击「保存地图」可保存到服务器，供批量评测或其他浏览器加载。"}
+        </p>
         {preview?.image && (
           <details className="editor-camera" open>
             <summary>起点摄像头预览</summary>
@@ -442,6 +676,42 @@ export function MapEditor({
         )}
       </section>
       <section className="panel padded-panel editor-options">
+        {mode === "distractor" && (
+          <DistractorEditor
+            lines={lines}
+            selected={selectedLine}
+            onSelect={setSelectedLine}
+            onChange={(distractors) => editDesign({ distractors })}
+          />
+        )}
+        {mode === "object" && (
+          <SceneObjectEditor
+            objects={draft.objects}
+            origin={design.waypoints[0]}
+            busy={pending || busy}
+            selected={selectedObject}
+            onSelect={setSelectedObject}
+            kind={objectKind}
+            onKindChange={setObjectKind}
+            onChange={(objects) => setDraft({ ...draft, objects })}
+            onScatter={(scatter) =>
+              void attempt(async () => {
+                const result = await post<Preview>("/maps/build", {
+                  ...draft,
+                  objects: [],
+                  scatter,
+                });
+                const objects = result.scene?.objects || [];
+                setDraft({ ...draft, objects });
+                fit([
+                  ...design.waypoints,
+                  ...lines.flatMap((line) => line.waypoints),
+                  ...objects.map((obj): Point => [obj.x_m, obj.y_m]),
+                ]);
+              })
+            }
+          />
+        )}
         <label>
           地图名称
           <input
@@ -670,22 +940,6 @@ export function MapEditor({
             物件投影阴影
           </label>
         </details>
-        <SceneObjectEditor
-          objects={draft.objects}
-          origin={design.waypoints[0]}
-          busy={pending || busy}
-          onChange={(objects) => setDraft({ ...draft, objects })}
-          onScatter={(scatter) =>
-            void attempt(async () => {
-              const result = await post<Preview>("/maps/build", {
-                ...draft,
-                objects: [],
-                scatter,
-              });
-              setDraft({ ...draft, objects: result.scene?.objects || [] });
-            })
-          }
-        />
         <VehicleSettings
           scene={vehicleScene}
           disabled={busy}
@@ -739,7 +993,13 @@ export function MapEditor({
           <summary>已保存地图 · {saved.length}</summary>
           {saved.map((map) => (
             <div className="saved-map" key={map.id}>
-              <span>{map.scene.name}</span>
+              <span>
+                {map.scene.name}
+                <small>
+                  #{map.id.slice(0, 8)} ·{" "}
+                  {map.scene.design?.waypoints.length ?? 0} 个控制点
+                </small>
+              </span>
               <button onClick={() => attempt(async () => load(map.scene))}>
                 加载
               </button>

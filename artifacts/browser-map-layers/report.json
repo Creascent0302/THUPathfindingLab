@@ -1,0 +1,12 @@
+{
+  "passed": [
+    "real legacy map upgrades rendering without moving car or target geometry",
+    "click places selected solid, drag moves it, RGB camera shows actual object",
+    "two independent line layers, smooth mode and pointer control preserve target",
+    "point and line deletion affect only selected distractor",
+    "save / reload / export / import preserve all map layers",
+    "three editing modes remain usable without horizontal overflow on mobile",
+    "applied map reaches real experiment with solids and distractors intact"
+  ],
+  "browser_errors": []
+}

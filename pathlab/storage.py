@@ -14,6 +14,46 @@ import sys
 from .evaluation import EVALUATOR_VERSION, SCORE_VERSION, THRESHOLDS, comparison_key
 from .sdk import VERSION
 
+RUN_STORAGE_LIMIT_BYTES = 2 * 1024**3
+SUBMISSION_STORAGE_LIMIT_BYTES = 2 * 1024**3
+
+
+def directory_bytes(directory: Path) -> int:
+    """Count regular files without following links; tolerate concurrent deletion."""
+    total = 0
+    for parent, _, names in os.walk(directory):
+        for name in names:
+            path = Path(parent) / name
+            try:
+                if not path.is_symlink() and path.is_file():
+                    total += path.stat().st_size
+            except FileNotFoundError:
+                continue
+    return total
+
+
+def check_run_storage(root: Path):
+    used = directory_bytes(root / "runs")
+    if used >= RUN_STORAGE_LIMIT_BYTES:
+        raise ValueError(
+            f"运行记录已占用 {used / 1024**3:.2f} GiB，达到 2 GiB 配额。"
+            "请在「运行记录与对比」删除不需要的记录及图像；"
+            "地图、训练数据和算法报告不计入此配额。"
+        )
+
+
+def storage_usage(root: Path) -> dict:
+    return {
+        "runs": {
+            "used_bytes": directory_bytes(root / "runs"),
+            "limit_bytes": RUN_STORAGE_LIMIT_BYTES,
+        },
+        "submissions": {
+            "used_bytes": directory_bytes(root / "submissions"),
+            "limit_bytes": SUBMISSION_STORAGE_LIMIT_BYTES,
+        },
+    }
+
 
 def write_json(path: Path, data):
     temporary = path.with_suffix(path.suffix + ".tmp")

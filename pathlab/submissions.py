@@ -14,7 +14,7 @@ import zipfile
 
 from .registry import PluginSpec, ROOT
 from .sdk import Capability
-from .storage import write_json
+from .storage import SUBMISSION_STORAGE_LIMIT_BYTES, directory_bytes, write_json
 
 MAX_ARCHIVE_BYTES = 32 * 1024**2
 MAX_EXPANDED_BYTES = 128 * 1024**2
@@ -37,11 +37,7 @@ def import_submission(
     parent.mkdir(parents=True, exist_ok=True)
     if len(list(parent.glob("*/plugin.json"))) >= 100:
         raise ValueError("最多保存 100 个算法包，请先由管理员归档")
-    if (
-        sum(path.stat().st_size for path in root.rglob("*") if path.is_file())
-        >= 2 * 1024**3
-    ):
-        raise ValueError("artifacts 已达到 2 GiB，请先归档并清理")
+    used_bytes = directory_bytes(parent)
     staging = Path(tempfile.mkdtemp(prefix=".upload-", dir=parent))
     identifier = "upload_" + uuid.uuid4().hex
     destination = parent / identifier
@@ -71,6 +67,11 @@ def import_submission(
                 total += member.file_size
                 if total > MAX_EXPANDED_BYTES:
                     raise ValueError("ZIP 解压后超过 128 MiB")
+                if used_bytes + total >= SUBMISSION_STORAGE_LIMIT_BYTES:
+                    raise ValueError(
+                        "算法包将达到独立的 2 GiB 配额，请由管理员归档并清理 "
+                        "artifacts/submissions。删除运行记录不会释放算法包空间。"
+                    )
                 if member.is_dir():
                     continue
                 if member.file_size > MAX_ARCHIVE_BYTES:

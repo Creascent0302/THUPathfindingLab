@@ -13,11 +13,18 @@ from torch import nn
 from torch.utils.data import DataLoader, Dataset
 
 from pathlab.storage import write_json
-from .model import RecurrentDriver
+from .model import RecurrentDriver, marker_plane
 
 
 class Sequences(Dataset):
-    def __init__(self, folders, split, length=12, acquisition_weight=1):
+    def __init__(
+        self,
+        folders,
+        split,
+        length=12,
+        acquisition_weight=1,
+        input_version="rgb_hint_v1",
+    ):
         self.episodes, self.windows, self.length, self.split = [], [], length, split
         self.acquisition_weight = acquisition_weight
         self.environments = set()
@@ -72,6 +79,8 @@ class Sequences(Dataset):
                     or episode["visible"].shape != (count,)
                 ):
                     raise ValueError(f"数据形状与模型不匹配：{item['file']}")
+                if input_version == "rgb_marker_v2":
+                    episode["images"][..., 3] = marker_plane(episode["images"][..., :3])
                 index = len(self.episodes)
                 self.episodes.append(episode)
                 self.windows.extend(
@@ -99,18 +108,22 @@ class Sequences(Dataset):
         image = (
             torch.from_numpy(data["images"].transpose(0, 3, 1, 2).copy()).float() / 255
         )
+        weights = np.where(
+            np.arange(start, start + self.length) < 35,
+            self.acquisition_weight,
+            1,
+        ).astype(np.float32)
+        # A cropped sequence needs warm-up; a real episode's first action does
+        # not. Previously those first two commands were never supervised, so a
+        # perfectly visible start marker could trigger LOST at reset.
+        if start:
+            weights[:2] = 0
         return (
             image,
             torch.from_numpy(data["context"]),
             torch.from_numpy(data["actions"]),
             torch.from_numpy(data["visible"]),
-            torch.from_numpy(
-                np.where(
-                    np.arange(start, start + self.length) < 35,
-                    self.acquisition_weight,
-                    1,
-                ).astype(np.float32)
-            ),
+            torch.from_numpy(weights),
         )
 
 
@@ -120,10 +133,18 @@ def fit(args):
     np.random.seed(args.seed)
     random.seed(args.seed)
     training = Sequences(
-        args.data, "development", args.sequence_length, args.acquisition_weight
+        args.data,
+        "development",
+        args.sequence_length,
+        args.acquisition_weight,
+        args.input_version,
     )
     validation = Sequences(
-        args.data, "validation", args.sequence_length, args.acquisition_weight
+        args.data,
+        "validation",
+        args.sequence_length,
+        args.acquisition_weight,
+        args.input_version,
     )
     loaders = [
         DataLoader(data, batch_size=args.batch_size, shuffle=i == 0, num_workers=0)
@@ -177,21 +198,24 @@ def fit(args):
             for images, context, labels, visible, phase_weight in loader:
                 with torch.set_grad_enabled(split == "train"):
                     actions, logits, _ = model(images, context)
-                    # Two burn-in frames initialize the recurrent state without loss.
-                    actions, labels, logits, visible = (
-                        actions[:, 2:],
-                        labels[:, 2:],
-                        logits[:, 2:],
-                        visible[:, 2:],
+                    valid = (phase_weight > 0).float()
+                    denominator = valid.sum().clamp_min(1)
+                    auxiliary_weights = (
+                        phase_weight if args.acquisition_targets == "all" else valid
                     )
-                    weights = (1 + 3 * labels[:, :, 0].abs()) * phase_weight[:, 2:]
+                    weights = (1 + 3 * labels[:, :, 0].abs()) * phase_weight
                     steering = (
                         (actions[:, :, 0] - labels[:, :, 0]) ** 2 * weights
-                    ).mean()
-                    speed = ((actions[:, :, 1] - labels[:, :, 1]) ** 2).mean()
-                    visibility = nn.functional.binary_cross_entropy_with_logits(
-                        logits, visible
-                    )
+                    ).sum() / denominator
+                    speed = (
+                        ((actions[:, :, 1] - labels[:, :, 1]) ** 2) * auxiliary_weights
+                    ).sum() / denominator
+                    visibility = (
+                        nn.functional.binary_cross_entropy_with_logits(
+                            logits, visible, reduction="none"
+                        )
+                        * auxiliary_weights
+                    ).sum() / denominator
                     loss = 5 * steering + 2 * speed + 0.15 * visibility
                     if split == "train":
                         optimizer.zero_grad(set_to_none=True)
@@ -222,23 +246,30 @@ def fit(args):
         scheduler.step()
         summary["elapsed_s"] = time.perf_counter() - start
         history.append(summary)
+        checkpoint = {
+            "format_version": 1,
+            "architecture": "cnn_gru_v1",
+            "input_version": args.input_version,
+            "model_id": f"cpu-bc-seed{args.seed}-epoch{epoch + 1}",
+            "trained_environments": plan["trained_environments"],
+            "resume_sha256": plan["resume_sha256"],
+            "control_interval_s": 0.1,
+            "supported_hints": ["marker"],
+            "marker_rgb": [34, 160, 94],
+            "model": model.state_dict(),
+            "epoch": epoch + 1,
+            "validation": summary["validation"],
+        }
+        if getattr(args, "save_every", 0) and (epoch + 1) % args.save_every == 0:
+            torch.save(
+                checkpoint,
+                destination.with_name(f"{destination.stem}-epoch{epoch + 1}.pt"),
+            )
         if summary["validation"]["loss"] < best:
             best = summary["validation"]["loss"]
             temporary = destination.with_suffix(".pt.tmp")
             torch.save(
-                {
-                    "format_version": 1,
-                    "architecture": "cnn_gru_v1",
-                    "model_id": f"cpu-bc-seed{args.seed}-epoch{epoch + 1}",
-                    "trained_environments": plan["trained_environments"],
-                    "resume_sha256": plan["resume_sha256"],
-                    "control_interval_s": 0.1,
-                    "supported_hints": ["marker"],
-                    "marker_rgb": [34, 160, 94],
-                    "model": model.state_dict(),
-                    "epoch": epoch + 1,
-                    "validation": summary["validation"],
-                },
+                checkpoint,
                 temporary,
             )
             temporary.replace(destination)
@@ -266,6 +297,8 @@ def average_checkpoints(args):
     checkpoints = [
         torch.load(p, map_location="cpu", weights_only=True) for p in args.checkpoints
     ]
+    for checkpoint in checkpoints:
+        checkpoint.setdefault("input_version", "rgb_hint_v1")
     weights = np.asarray(
         args.weights if args.weights is not None else [1] * len(checkpoints),
         dtype=float,
@@ -286,6 +319,7 @@ def average_checkpoints(args):
             "control_interval_s",
             "supported_hints",
             "marker_rgb",
+            "input_version",
         )
     }
     for checkpoint in checkpoints:
@@ -342,7 +376,9 @@ def main():
     collect.add_argument("--beta", type=float, default=0.2)
     train = commands.add_parser("fit")
     train.add_argument("--data", nargs="+", default=["artifacts/learning/data"])
-    train.add_argument("--output", default="algorithms/learning/weights/driver.pt")
+    train.add_argument(
+        "--output", default="algorithms/learning/weights/driver-complex.pt"
+    )
     train.add_argument("--epochs", type=int, default=20)
     train.add_argument("--batch-size", type=int, default=32)
     train.add_argument("--sequence-length", type=int, default=12)
@@ -351,10 +387,27 @@ def main():
     train.add_argument("--seed", type=int, default=42)
     train.add_argument("--resume")
     train.add_argument(
+        "--input-version",
+        choices=["rgb_hint_v1", "rgb_marker_v2"],
+        default="rgb_hint_v1",
+    )
+    train.add_argument(
+        "--acquisition-targets",
+        choices=["steering", "all"],
+        default="all",
+        help="起步阶段加权监督哪些输出；steering 用于复现第一阶段实验",
+    )
+    train.add_argument(
+        "--save-every",
+        type=int,
+        default=0,
+        help="每隔 N 轮保留开发验证快照；0 表示只保留最低验证损失模型",
+    )
+    train.add_argument(
         "--acquisition-weight",
         type=float,
         default=1,
-        help="前 3.5 s 接入阶段的转向损失权重，验证阶段使用相同权重",
+        help="前 3.5 s 接入阶段的损失权重，作用输出由 acquisition-targets 指定",
     )
     average = commands.add_parser(
         "average", help="平均同架构、同初始化微调模型的参数，推理仍为单个网络"
@@ -387,9 +440,11 @@ def main():
             or args.sequence_length < 4
             or args.lr <= 0
             or args.acquisition_weight < 1
+            or not np.isfinite([args.lr, args.acquisition_weight]).all()
+            or args.save_every < 0
         ):
             parser.error(
-                "epochs、batch-size、threads、lr 须为正数，sequence-length 至少为 4"
+                "epochs、batch-size、threads、lr 须为正数；sequence-length 至少为4，acquisition-weight至少为1，save-every非负，数值须有限"
             )
         fit(args)
 

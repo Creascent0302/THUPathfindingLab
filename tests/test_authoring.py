@@ -11,7 +11,13 @@ import pytest
 from fastapi.testclient import TestClient
 
 from pathlab.api import create_app
-from pathlab.config import MapDesign, Scene, VehicleConfig
+from pathlab.config import (
+    DistractorDesign,
+    MapDesign,
+    Scene,
+    SceneObject,
+    VehicleConfig,
+)
 from pathlab.map_editor import MapRequest, build_scene, geometry_summary, rounded_path
 from pathlab.registry import registry
 from pathlab.scenarios import generate, validate_scene
@@ -248,3 +254,134 @@ def test_repeated_has_more_turns_and_texture_is_versioned():
     raw = json.loads(legacy.model_dump_json())
     raw.pop("render_version")
     assert Scene.model_validate(raw).render_version == "1"
+
+
+def test_independent_distractors_are_sampled_without_vehicle_radius_constraint():
+    scene = build_scene(
+        MapRequest(
+            design=MapDesign(
+                waypoints=[(0, 0), (7, 0)],
+                distractors=[
+                    DistractorDesign(waypoints=[(0, 0.5), (3, 0.5), (3.02, 0.8)]),
+                    DistractorDesign(
+                        waypoints=[(4, -1), (5, -1.8), (6, -1)], interpolation="smooth"
+                    ),
+                ],
+            )
+        )
+    )
+    assert validate_scene(scene) == []
+    assert len(scene.distractors) == 2
+    assert scene.distractors[0][0] == (0, 0.5)
+    assert scene.distractors[0][-1] == (3.02, 0.8)
+    assert scene.distractors[1][0] == (4, -1)
+    assert scene.distractors[1][-1] == (6, -1)
+    for path in scene.distractors:
+        assert np.linalg.norm(np.diff(path, axis=0), axis=1).max() <= 0.12 + 1e-9
+    assert geometry_summary(scene)["distractor_count"] == 2
+
+
+def test_old_scene_upgrade_preserves_exact_geometry_pose_and_visual_layers():
+    old = build_scene(MapRequest(design=MapDesign(waypoints=[(0, 0), (7, 0)])))
+    old.render_version = "2"
+    old.vehicle.motion_model = "kinematic_v1"
+    old.initial_pose.y_m = 0.12
+    old.distractors = [
+        (
+            np.array([[x, 0.7 + 0.02 * math.sin(x)] for x in np.linspace(0, 7, 300)])
+        ).tolist()
+    ]
+    old.objects = [SceneObject(x_m=0.5, y_m=0.8)]
+    request = MapRequest(
+        name="升级副本",
+        design=old.design,
+        source_scene=old,
+        vehicle=old.vehicle,
+        camera=old.camera,
+        appearance=old.appearance,
+    )
+    upgraded = build_scene(request)
+    assert upgraded.render_version == "3"
+    for field in (
+        "target_path",
+        "distractors",
+        "objects",
+        "vehicle",
+        "camera",
+        "initial_pose",
+        "task_hint",
+    ):
+        assert getattr(upgraded, field) == getattr(old, field)
+    assert old.render_version == "2"
+    # Importers expose the original dense points as editable polyline controls.
+    # Even a legacy line sampled at 20 cm keeps its exact stored coordinates.
+    old.distractors = [[(x, 0.7) for x in np.linspace(0, 7, 36)]]
+    request.design = request.design.model_copy(
+        update={"distractors": [DistractorDesign(waypoints=old.distractors[0])]}
+    )
+    assert build_scene(request).distractors == old.distractors
+    request.design = request.design.model_copy(update={"distractors": []})
+    assert build_scene(request).distractors == []
+
+
+def test_import_old_json_inherits_missing_vehicle_defaults_from_legacy_scene():
+    old = build_scene(MapRequest(design=MapDesign(waypoints=[(0, 0), (7, 0)])))
+    raw = old.model_dump()
+    raw["render_version"] = "2"
+    raw["vehicle"].pop("motion_model")
+    raw["vehicle"]["braking_mps2"] = 0.6
+    request = MapRequest.model_validate(
+        {
+            "design": raw["design"],
+            "source_scene": raw,
+            "vehicle": raw["vehicle"],
+        }
+    )
+    updated = build_scene(request)
+    assert updated.vehicle.motion_model == "kinematic_v1"
+    assert updated.vehicle.braking_mps2 == 0.6
+
+
+@pytest.mark.parametrize("points", [[], [(0, 1)], [(0, 1), (0, 1)]])
+def test_incomplete_or_duplicate_distractor_is_not_silently_saved(points):
+    with pytest.raises(ValueError, match="干扰线"):
+        build_scene(
+            MapRequest(
+                design=MapDesign(
+                    waypoints=[(0, 0), (7, 0)],
+                    distractors=[DistractorDesign(waypoints=points)],
+                )
+            )
+        )
+
+
+def test_editor_layers_roundtrip_save_reload_and_real_run(client):
+    payload = {
+        "design": {
+            "waypoints": [[0, 0], [7, 0]],
+            "radius_m": 1,
+            "distractors": [
+                {"waypoints": [[0, 0.6], [5, 0.6]], "interpolation": "polyline"}
+            ],
+        },
+        "objects": [{"kind": "box", "x_m": 0.6, "y_m": -0.5}],
+    }
+    response = client.post("/api/maps/build", json=payload)
+    assert response.status_code == 200, response.text
+    built = response.json()
+    scene = built["scene"]
+    assert client.post("/api/maps", json=scene).status_code == 201
+    loaded = client.get("/api/maps").json()[0]["scene"]
+    assert loaded == scene
+    payload.update({"source_scene": loaded, "design": loaded["design"]})
+    rebuilt = client.post("/api/maps/build", json=payload).json()
+    assert rebuilt["scene"]["distractors"] == scene["distractors"]
+    assert rebuilt["scene"]["target_path"] == scene["target_path"]
+    assert rebuilt["scene"]["objects"] == scene["objects"]
+    run_id = run_complete(
+        client,
+        {"algorithm": "stop", "scene": loaded, "max_steps": 1, "realtime": False},
+    )
+    assert (
+        client.get(f"/api/results/{run_id}/frames/0").json()["image"] == built["image"]
+    )

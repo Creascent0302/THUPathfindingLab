@@ -1,11 +1,19 @@
-import { useEffect, useState, useReducer } from "react";
+import { useEffect, useState } from "react";
 import { CameraPanel, Charts, MapPanel } from "./Panels";
 import { useLiveStream, useManualDrive } from "./useRunControls";
 import { ResultsPage } from "./Pages";
 import { BenchmarkPanel } from "./BenchmarkPanel";
 import { MapEditor } from "./MapEditor";
 import { SubmissionPanel } from "./SubmissionPanel";
-import { SetupPanel, initialSetup, type Setup } from "./SetupPanel";
+import {
+  SetupPanel,
+  initialSetup,
+  restoreSetup,
+  storedSetup,
+  type Setup,
+} from "./SetupPanel";
+import { usePersistentState } from "./usePersistentState";
+import "./evaluation-status.css";
 import {
   api,
   fmt,
@@ -15,26 +23,137 @@ import {
   terminal,
   type Algorithm,
   type Config,
+  type Evaluation,
   type Manifest,
   type Mode,
   type Preview,
   type Snapshot,
+  type SavedMap,
 } from "./types";
 
 const emptyPreview: Preview = { image: null, scene: null, calibration: null };
+type Tab = "lab" | "results" | "benchmarks" | "editor" | "submissions";
+
+function RouteAssessment({
+  evaluation,
+  hasTruth,
+}: {
+  evaluation: Evaluation | null;
+  hasTruth: boolean;
+}) {
+  const acquired = evaluation?.phase === "tracking";
+  const wrongBranch = evaluation?.route_identity === "wrong_branch";
+  const reason = evaluation?.reason;
+  const identity = evaluation?.route_identity;
+  const tone =
+    reason && reason !== "success"
+      ? "failed"
+      : evaluation && (!acquired || identity === "unconfirmed" || wrongBranch)
+        ? "pending"
+        : evaluation
+          ? "confirmed"
+          : "idle";
+  const title = reason
+    ? reasonLabel[reason] || reason
+    : !evaluation
+      ? hasTruth
+        ? "等待首帧评测"
+        : "无路径真值评测"
+      : !acquired
+        ? "尚未合法接入起点"
+        : wrongBranch
+          ? "已接入 · 疑似跟随错误道路"
+          : identity === "avoiding"
+            ? "已接入 · 障碍物附近合法绕行"
+            : identity === "unconfirmed"
+              ? "已接入 · 当前偏离有序参考段"
+              : identity === "confirmed"
+                ? "已合法接入 · 有序跟踪"
+                : "已接入（记录当时判定）";
+  const alternative = wrongBranch ? evaluation?.other_route : null;
+  return (
+    <section className={`route-assessment ${tone}`} aria-label="当前帧路径评测">
+      <div className="route-assessment-heading">
+        <span>当前帧路径评测</span>
+        <strong>{title}</strong>
+        <small>算法自报 TRACK 不等于合法沿线行驶。</small>
+      </div>
+      {evaluation && (
+        <div className="route-assessment-evidence">
+          <span>
+            有序参考距离 <b>{fmt(evaluation.lateral_error_m)} m</b>
+          </span>
+          <span>
+            有效弧长 <b>{fmt(evaluation.progress_m)} m</b>
+          </span>
+          {evaluation.reference_window_m && (
+            <span>
+              当前参考段{" "}
+              <b>
+                {evaluation.reference_window_m.map((arc) => fmt(arc)).join("–")}{" "}
+                m
+              </b>
+            </span>
+          )}
+          {!acquired && evaluation.entry_distance_m != null && (
+            <span>
+              距起点 <b>{fmt(evaluation.entry_distance_m)} m</b>
+            </span>
+          )}
+          {alternative && (
+            <span className="route-alternative">
+              邻近
+              {alternative.kind === "target_nonlocal"
+                ? `目标路线其他段（弧长 ${fmt(alternative.arc_m)} m）`
+                : `干扰线 ${(alternative.index ?? 0) + 1}`}
+              ：距离 {fmt(alternative.distance_m)} m，错线证据持续{" "}
+              {fmt(evaluation.wrong_route_duration_s)} s
+            </span>
+          )}
+          {identity === undefined && (
+            <span>该历史帧未保存道路身份明细，按原始评测显示。</span>
+          )}
+        </div>
+      )}
+    </section>
+  );
+}
 
 export default function App() {
   const [catalog, setCatalog] = useState<{
     algorithms: Algorithm[];
     families: Record<string, string>;
   }>({ algorithms: [], families: {} });
-  const [tab, setTab] = useState<
-    "lab" | "results" | "benchmarks" | "editor" | "submissions"
-  >("lab");
-  const [settings, updateSettings] = useReducer(
-    (state: Setup, patch: Partial<Setup>) => ({ ...state, ...patch }),
-    initialSetup,
+  const [tab, setTab, tabStorageError] = usePersistentState<Tab>(
+    "pathlab.tab.v1",
+    () => "lab",
+    (value) => {
+      if (
+        typeof value !== "string" ||
+        !["lab", "results", "benchmarks", "editor", "submissions"].includes(
+          value,
+        )
+      )
+        throw new Error("Invalid tab");
+      return value as Tab;
+    },
   );
+  const [settings, setSettings, setupStorageError] = usePersistentState<Setup>(
+    "pathlab.setup.v1",
+    () => initialSetup,
+    restoreSetup,
+    storedSetup,
+  );
+  const updateSettings = (patch: Partial<Setup>) =>
+    setSettings((state) => ({
+      ...state,
+      ...patch,
+      ...(patch.savedMapId === undefined &&
+      (patch.customScene !== undefined || patch.family !== undefined)
+        ? { savedMapId: null }
+        : {}),
+    }));
+  const [savedMaps, setSavedMaps] = useState<SavedMap[]>([]);
   const {
     mode,
     family,
@@ -68,6 +187,13 @@ export default function App() {
   const displayAlgorithm = snapshot?.config.algorithm ?? algorithm;
   const active = !!liveId && !terminal(snapshot?.state);
   const frame = snapshot?.frame || null;
+  const algorithmStatus =
+    frame?.output?.status ??
+    (frame
+      ? frame.interventions.includes("safety_braking")
+        ? "安全制动"
+        : "无新算法输出"
+      : "UNINITIALIZED");
   const currentHint = snapshot
     ? snapshot.config.task_hint
     : hint || preview.scene?.task_hint || null;
@@ -101,6 +227,29 @@ export default function App() {
       .catch((e) => setError(String(e)));
   }, []);
   useEffect(() => {
+    const controller = new AbortController();
+    const refresh = () =>
+      api<SavedMap[]>("/maps", { signal: controller.signal })
+        .then((maps) => {
+          setSavedMaps(maps);
+          setSettings((current) =>
+            current.savedMapId &&
+            !maps.some((map) => map.id === current.savedMapId)
+              ? { ...current, savedMapId: null }
+              : current,
+          );
+        })
+        .catch((e) => {
+          if (e.name !== "AbortError") setError(String(e));
+        });
+    void refresh();
+    window.addEventListener("focus", refresh);
+    return () => {
+      controller.abort();
+      window.removeEventListener("focus", refresh);
+    };
+  }, [tab]);
+  useEffect(() => {
     if (mode !== "simulation" || family === "custom") return;
     const controller = new AbortController();
     const timer = window.setTimeout(
@@ -124,6 +273,30 @@ export default function App() {
       controller.abort();
     };
   }, [family, seed, mode]);
+  useEffect(() => {
+    const controller = new AbortController();
+    const request =
+      mode === "simulation"
+        ? family === "custom" && customScene
+          ? api<Preview>("/preview", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(customScene),
+              signal: controller.signal,
+            })
+          : null
+        : source
+          ? api<Preview>(`/sources/${source.id}/preview`, {
+              signal: controller.signal,
+            })
+          : null;
+    request
+      ?.then((data) => updateSettings({ preview: data }))
+      .catch((e) => {
+        if (e.name !== "AbortError") setError(String(e));
+      });
+    return () => controller.abort();
+  }, [mode, family, customScene, source]);
   useEffect(() => {
     if (tab === "results")
       api<Manifest[]>("/results")
@@ -176,14 +349,6 @@ export default function App() {
     updateSettings({
       execution: value === "simulation" ? "action" : "perception",
     });
-    if (value === "simulation" && customScene)
-      post<Preview>("/preview", customScene)
-        .then((data) => updateSettings({ preview: data }))
-        .catch((e) => setError(String(e)));
-    if (value !== "simulation" && source)
-      api<Preview>(`/sources/${source.id}/preview`)
-        .then((data) => updateSettings({ preview: data }))
-        .catch((e) => setError(String(e)));
   };
   const stopCurrent = async () => {
     if (liveId && active)
@@ -294,6 +459,36 @@ export default function App() {
         </nav>
         {tab === "lab" && (
           <SetupPanel
+            savedMaps={savedMaps}
+            selectScene={(selection) => {
+              if (!selection.startsWith("map:")) {
+                clearView();
+                updateSettings({
+                  family: selection,
+                  customScene: null,
+                  preview: emptyPreview,
+                  hint: null,
+                });
+                return;
+              }
+              const map = savedMaps.find(
+                (item) => item.id === selection.slice(4),
+              );
+              if (!map) return;
+              void attempt(async () => {
+                const data = await post<Preview>("/preview", map.scene);
+                clearView();
+                updateSettings({
+                  family: "custom",
+                  savedMapId: map.id,
+                  customScene: data.scene,
+                  preview: data,
+                  sceneText: JSON.stringify(data.scene, null, 2),
+                  seed: map.scene.seed,
+                  hint: null,
+                });
+              });
+            }}
             settings={settings}
             updateSettings={updateSettings}
             catalog={catalog}
@@ -343,6 +538,11 @@ export default function App() {
             <span className="version-badge">视觉寻迹 · 仿真与测评</span>
           </div>
         </header>
+        {(setupStorageError || tabStorageError) && (
+          <div className="error-banner" role="alert">
+            {setupStorageError || tabStorageError}
+          </div>
+        )}
         {error && (
           <div className="error-banner" role="alert">
             <strong>操作未完成</strong> {error}
@@ -432,14 +632,15 @@ export default function App() {
                   "notice " + (snapshot.state === "failed" ? "danger" : "")
                 }
               >
-                本次结果：{reasonLabel[snapshot.reason] || snapshot.reason}。
+                {replayId ? "该次运行最终结果" : "本次结果"}：
+                {reasonLabel[snapshot.reason] || snapshot.reason}。
                 {snapshot.metrics?.success === false &&
                   "未达到完整寻迹成功条件。"}
               </div>
             )}
             <div className="metrics-strip">
               {[
-                ["算法状态", frame?.output?.status || "UNINITIALIZED", ""],
+                ["算法自报状态", algorithmStatus, ""],
                 ["置信度", fmt(frame?.output?.confidence), ""],
                 ["实际速度", fmt(frame?.applied?.actual.speed_mps), "m/s"],
                 [
@@ -456,7 +657,14 @@ export default function App() {
                   "%",
                 ],
               ].map(([label, value, unit]) => (
-                <div key={label}>
+                <div
+                  key={label}
+                  title={
+                    label === "算法自报状态" && frame && !frame.output
+                      ? "本帧没有新的算法输出，显示平台执行阶段。"
+                      : undefined
+                  }
+                >
                   <span>{label}</span>
                   <strong>
                     {value}
@@ -465,6 +673,10 @@ export default function App() {
                 </div>
               ))}
             </div>
+            <RouteAssessment
+              evaluation={frame?.evaluation ?? null}
+              hasTruth={(snapshot?.config.mode ?? mode) === "simulation"}
+            />
             <div className="camera-grid">
               <CameraPanel
                 image={snapshot?.image || preview.image}
@@ -735,6 +947,7 @@ export default function App() {
         {tab === "editor" &&
           (preview.scene ? (
             <MapEditor
+              onMapsChange={setSavedMaps}
               base={customScene || preview.scene}
               busy={busy}
               attempt={attempt}

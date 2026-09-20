@@ -1153,3 +1153,40 @@ td button {
   height: 2.4rem;
   padding: 0.2rem;
 }
+
+/* Layer modes keep drawing actions explicit on desktop and touch screens. */
+.editor-mode-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 0 16px;
+}
+.editor-mode-tabs button {
+  flex: 1;
+  padding: 10px 8px;
+  font-weight: 650;
+}
+.editor-mode-tabs button[aria-pressed="true"] {
+  background: #176d60;
+  color: #fff;
+  border-color: #176d60;
+}
+.editor-mode-hint,
+.editor-upgrade-note {
+  margin: 10px 16px;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.editor-upgrade-note {
+  color: #7a5520;
+  padding: 10px;
+  background: #fff5de;
+  border-radius: 6px;
+}
+.distractor-editor {
+  border-bottom: 1px solid #d8e2dd;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+}
+.distractor-editor h3 {
+  margin-top: 0;
+}

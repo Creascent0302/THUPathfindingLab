@@ -138,16 +138,16 @@ def main():
                         )
                         expect(apply).to_be_enabled(timeout=15000)
                         page.get_by_label("圆角半径", exact=True).fill("0.2")
-                        expect(page.get_by_role("status")).to_contain_text(
-                            "圆角半径至少"
-                        )
+                        expect(
+                            page.get_by_role("status", name="地图几何检查")
+                        ).to_contain_text("圆角半径至少")
                         expect(apply).to_be_disabled()
                         page.get_by_label("圆角半径", exact=True).fill("1")
                         expect(apply).to_be_enabled()
                         page.get_by_label("编辑轴距", exact=True).fill("1")
-                        expect(page.get_by_role("status")).to_contain_text(
-                            "圆角半径至少"
-                        )
+                        expect(
+                            page.get_by_role("status", name="地图几何检查")
+                        ).to_contain_text("圆角半径至少")
                         page.get_by_label("编辑轴距", exact=True).fill("0.32")
                         expect(apply).to_be_enabled()
                         checks.append(
@@ -216,9 +216,7 @@ def main():
                         apply.click()
                         checks.append("saved map reload / import / apply")
 
-                        page.get_by_role(
-                            "button", name="算法提交", exact=False
-                        ).click()
+                        page.get_by_role("button", name="算法提交", exact=False).click()
                         template = http.get("/api/submissions/template").content
                         page.get_by_label("算法压缩包", exact=True).set_input_files(
                             {
@@ -306,9 +304,7 @@ def main():
                             "bulk deletion clears recordings and active replay"
                         )
 
-                        page.get_by_role(
-                            "button", name="算法提交", exact=False
-                        ).click()
+                        page.get_by_role("button", name="算法提交", exact=False).click()
                         bad = io.BytesIO()
                         with zipfile.ZipFile(bad, "w") as zipped:
                             zipped.writestr("../escape.py", "pass")

@@ -1,4 +1,5 @@
 import time
+import threading
 
 import pytest
 
@@ -18,6 +19,39 @@ FAULT = PluginSpec(
     capabilities=["action"],
     entrypoint="tests.faults:Fault",
 )
+
+
+def test_terminal_status_is_published_only_after_result_is_saved(tmp_path, monkeypatch):
+    run = Run(
+        RunConfig(algorithm="manual", max_steps=1, realtime=False),
+        tmp_path,
+        headless=True,
+    )
+    saving, release = threading.Event(), threading.Event()
+    finish = run.store.finish
+
+    def delayed_finish(*args):
+        saving.set()
+        if not release.wait(5):
+            raise AssertionError("test did not release result writer")
+        finish(*args)
+
+    monkeypatch.setattr(run.store, "finish", delayed_finish)
+    run.start()
+    try:
+        run.control("resume")
+        assert saving.wait(5)
+        assert run.state == "running"
+        assert run.store.manifest["metrics"] is None
+        release.set()
+        run.thread.join(5)
+        assert run.state == "completed"
+        assert run.store.manifest["metrics"]["reason"] == "episode_timeout"
+        assert run.store.rows.closed
+    finally:
+        release.set()
+        run.control("stop")
+        run.thread.join(5)
 
 
 def test_finishing_then_coasting_into_obstacle_is_not_success(execute):

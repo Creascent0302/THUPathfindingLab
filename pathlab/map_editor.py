@@ -5,11 +5,12 @@ from __future__ import annotations
 import math
 
 import numpy as np
-from pydantic import Field
+from pydantic import Field, model_validator
 
 from .config import (
     Appearance,
     CameraConfig,
+    DistractorDesign,
     MapDesign,
     ObjectScatter,
     Pose,
@@ -31,8 +32,22 @@ class MapRequest(Model):
         default_factory=lambda: CameraConfig(pitch_down_rad=0.38)
     )
     appearance: Appearance = Field(default_factory=Appearance)
-    objects: list[SceneObject] = Field(default_factory=list, max_length=80)
+    objects: list[SceneObject] | None = Field(default=None, max_length=80)
     scatter: ObjectScatter | None = None
+    source_scene: Scene | None = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def inherit_source_settings(cls, value):
+        if isinstance(value, dict) and value.get("source_scene") is not None:
+            source = Scene.model_validate(value["source_scene"])
+            value = dict(value)
+            for field in ("vehicle", "camera", "appearance"):
+                inherited = getattr(source, field).model_dump()
+                supplied = value.get(field)
+                if supplied is None or isinstance(supplied, dict):
+                    value[field] = {**inherited, **(supplied or {})}
+        return value
 
 
 def rounded_path(design: MapDesign, vehicle: VehicleConfig) -> list[list[float]]:
@@ -90,35 +105,99 @@ def rounded_path(design: MapDesign, vehicle: VehicleConfig) -> list[list[float]]
     return np.asarray(result).tolist()
 
 
+def distractor_path(design: DistractorDesign) -> list[list[float]]:
+    """Sample independent visual lines, with optional corner cutting smoothing."""
+    points = np.asarray(design.waypoints, dtype=float)
+    if len(points) < 2:
+        raise ValueError("每条干扰线至少需要 2 个控制点；请继续点按画布或删除空线")
+    if not np.isfinite(points).all() or np.max(np.abs(points)) > 40:
+        raise ValueError("干扰线控制点须在 ±40 m 范围内")
+    if np.any(np.linalg.norm(np.diff(points, axis=0), axis=1) < 1e-6):
+        raise ValueError("干扰线不能有重合的相邻控制点")
+    if design.interpolation == "smooth":
+        for _ in range(3):
+            corners = np.stack(
+                (
+                    0.75 * points[:-1] + 0.25 * points[1:],
+                    0.25 * points[:-1] + 0.75 * points[1:],
+                ),
+                axis=1,
+            ).reshape(-1, 2)
+            points = np.vstack((points[0], corners, points[-1]))
+    result = [points[0].tolist()]
+    for start, end in zip(points[:-1], points[1:]):
+        count = math.ceil(float(np.linalg.norm(end - start)) / 0.12)
+        result.extend(np.linspace(start, end, count + 1)[1:].tolist())
+        if len(result) > 5000:
+            raise ValueError("干扰线过长或控制点过多，采样后不能超过 5000 点")
+    return result
+
+
 def build_scene(request: MapRequest) -> Scene:
-    path = rounded_path(request.design, request.vehicle)
+    source = request.source_scene
+    same_route = (
+        source is not None
+        and source.design is not None
+        and (
+            source.design.waypoints == request.design.waypoints
+            and source.design.radius_m == request.design.radius_m
+        )
+    )
+    path = (
+        source.target_path
+        if same_route
+        else rounded_path(request.design, request.vehicle)
+    )
     tangent = np.array(path[1]) - path[0]
     tangent /= np.linalg.norm(tangent)
     start = np.array(path[0]) - tangent * 1.5
-    scene = Scene(
+    distractors = (
+        [
+            line.waypoints
+            if source
+            and line.interpolation == "polyline"
+            and line.waypoints in source.distractors
+            else distractor_path(line)
+            for line in request.design.distractors
+        ]
+        if request.design.distractors is not None
+        else source.distractors
+        if source
+        else []
+    )
+    metadata = source.model_dump() if source else {}
+    metadata.update(
         render_version="3",
         name=request.name,
         family="custom",
         seed=request.seed,
         target_path=path,
-        initial_pose=Pose(
+        distractors=distractors,
+        initial_pose=source.initial_pose
+        if same_route
+        else Pose(
             x_m=start[0], y_m=start[1], yaw_rad=math.atan2(tangent[1], tangent[0])
         ),
         vehicle=request.vehicle,
         camera=request.camera,
         appearance=request.appearance,
         design=request.design,
-        objects=request.objects,
+        objects=request.objects
+        if request.objects is not None
+        else source.objects
+        if source
+        else [],
     )
+    scene = Scene.model_validate(metadata)
     if request.scatter:
         generated = scatter_objects(scene, request.scatter)
         if len(scene.objects) + len(generated) > 80:
             raise ValueError("显式物件与自动布置物件总数不能超过 80")
         scene.objects.extend(generated)
     if any(obj.enabled for obj in scene.objects):
-        scene.notes.append(
-            "物件按真实尺寸遮挡画面。手动放在线路或起点标记上的物件可构成遮挡/碰撞压力场景；路径几何通过不代表有无障碍通路。"
-        )
+        note = "物件按真实尺寸遮挡画面。手动放在线路或起点标记上的物件可构成遮挡/碰撞压力场景；路径几何通过不代表有无障碍通路。"
+        if note not in scene.notes:
+            scene.notes.append(note)
     errors = validate_scene(scene)
     # Exclude nearby points along the same arc; check distinct stretches against
     # the body width so crossing or overlapping routes cannot pass this editor.
@@ -155,4 +234,5 @@ def geometry_summary(scene: Scene) -> dict:
         / math.tan(scene.vehicle.max_steering_rad),
         "minimum_path_radius_m": 1 / maximum if maximum > 1e-8 else None,
         "object_count": sum(obj.enabled for obj in scene.objects),
+        "distractor_count": len(scene.distractors),
     }

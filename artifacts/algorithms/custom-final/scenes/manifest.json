@@ -1,0 +1,129 @@
+{
+  "format_version": 1,
+  "created_utc": "2026-09-19T08:28:27.921782+00:00",
+  "purpose": "Independent pre-frozen complex-geometry holdout; no policy evaluated before freezing",
+  "split": "test",
+  "kinds": [
+    "coil",
+    "parallel_curve"
+  ],
+  "seeds": [
+    6001,
+    6002
+  ],
+  "motion_models": [
+    "kinematic_v1",
+    "inertial_v2"
+  ],
+  "generator": {
+    "module": "algorithms.learning.custom_data",
+    "function": "custom_scene",
+    "file": "algorithms/learning/custom_data.py",
+    "sha256": "7cad8db5b09d26f2aecab1a039fb8a14141fb8fd0f839b60294c7b78d0704184",
+    "function_source_sha256": "91a501fa5e1d6add0310d5af14c2582ff28a1b02093e194a5aaf71e967fcef64",
+    "dependencies_sha256": {
+      "pathlab/map_editor.py": "b4d4c6dbbd10bfedc598eb726a6a2c5a3b32ced6f2166eec7c861453bb906cab",
+      "pathlab/config.py": "ed8fab38f4fa59145d9a42f498d4b9bf18f8b37305f220fcdb5810f7c2e19004",
+      "pathlab/scenarios.py": "007cefec7dc505081324683a9125ab8b2248b9921545cb573b8f4bf6d1af603e",
+      "pathlab/scene_objects.py": "e331142f9558672a42fdbbc4f66ff53ee58c66542bd56b6fc3fffaa68c5b2962"
+    }
+  },
+  "scenes": [
+    {
+      "file": "coil-6001-kinematic_v1.json",
+      "sha256": "f4aa196466faeb23e00f0443998d89cd11684f1a533b8b9e64a68c9a9be11c45",
+      "kind": "coil",
+      "seed": 6001,
+      "motion_model": "kinematic_v1",
+      "render_version": "2",
+      "camera_resolution": [
+        640,
+        360
+      ]
+    },
+    {
+      "file": "coil-6001-inertial_v2.json",
+      "sha256": "7a2482d2a11bcd985c929bb1f67cc090dab7430620e0da3ad5440cfa592a8a0c",
+      "kind": "coil",
+      "seed": 6001,
+      "motion_model": "inertial_v2",
+      "render_version": "3",
+      "camera_resolution": [
+        640,
+        360
+      ]
+    },
+    {
+      "file": "coil-6002-kinematic_v1.json",
+      "sha256": "f246105fdee0c67c6e6f376cfdfb37ffc008eb29837d7e8aa4fb25d55c09ca27",
+      "kind": "coil",
+      "seed": 6002,
+      "motion_model": "kinematic_v1",
+      "render_version": "2",
+      "camera_resolution": [
+        640,
+        360
+      ]
+    },
+    {
+      "file": "coil-6002-inertial_v2.json",
+      "sha256": "d38c419641e89b8650f1b093c25fc0e0514afba62376a665d45f04f2876778bb",
+      "kind": "coil",
+      "seed": 6002,
+      "motion_model": "inertial_v2",
+      "render_version": "3",
+      "camera_resolution": [
+        640,
+        360
+      ]
+    },
+    {
+      "file": "parallel_curve-6001-kinematic_v1.json",
+      "sha256": "62e522ba871f9aef38104f245f1f938b171a8918598baa40bc784cdb75c81053",
+      "kind": "parallel_curve",
+      "seed": 6001,
+      "motion_model": "kinematic_v1",
+      "render_version": "2",
+      "camera_resolution": [
+        640,
+        360
+      ]
+    },
+    {
+      "file": "parallel_curve-6001-inertial_v2.json",
+      "sha256": "e811ac520edec0ac838dde8843f14ba9fec74306b8681b368b83874c3a6e046c",
+      "kind": "parallel_curve",
+      "seed": 6001,
+      "motion_model": "inertial_v2",
+      "render_version": "3",
+      "camera_resolution": [
+        640,
+        360
+      ]
+    },
+    {
+      "file": "parallel_curve-6002-kinematic_v1.json",
+      "sha256": "a1902c8c29bb56e8fe2e86201249200df7b5b7545b82f115c69073cdf20524f8",
+      "kind": "parallel_curve",
+      "seed": 6002,
+      "motion_model": "kinematic_v1",
+      "render_version": "2",
+      "camera_resolution": [
+        640,
+        360
+      ]
+    },
+    {
+      "file": "parallel_curve-6002-inertial_v2.json",
+      "sha256": "8c3e989b9a2469d4e5acaaab6a599c201fd8be1333d02b1a549d4afcbf90d68f",
+      "kind": "parallel_curve",
+      "seed": 6002,
+      "motion_model": "inertial_v2",
+      "render_version": "3",
+      "camera_resolution": [
+        640,
+        360
+      ]
+    }
+  ]
+}

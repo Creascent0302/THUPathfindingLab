@@ -1,0 +1,106 @@
+{
+  "policy": "Earliest marker-input checkpoint with 20/20 independent validation successes and 2/2 user development regressions; frozen before holdout evaluation.",
+  "source": "artifacts/learning/complex-marker-epoch2.pt",
+  "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+  "independent_validation": "artifacts/learning/complex-marker-validation-epoch2/report.json",
+  "user_regressions": "artifacts/custom-map-regression/user-cnn-candidate/report.json",
+  "validation_trials": 20,
+  "validation_successes": 20,
+  "user_trials": 2,
+  "user_successes": 2,
+  "excluded_from_selection": "holdout seeds 6001 and 6002",
+  "prior_candidates": {
+    "bc-epoch1": "14/20",
+    "bc-epoch4": "17/20",
+    "bc-epoch6": "16/20",
+    "marker-epoch1": "18/20"
+  },
+  "training_plan": {
+    "command": "fit",
+    "data": [
+      "artifacts/learning/data",
+      "artifacts/learning/inertial-data",
+      "artifacts/learning/complex-data",
+      "artifacts/learning/complex-dagger-old",
+      "artifacts/learning/acquisition-complex-data"
+    ],
+    "output": "artifacts/learning/complex-marker.pt",
+    "epochs": 6,
+    "batch_size": 24,
+    "sequence_length": 24,
+    "threads": 4,
+    "lr": 0.00012,
+    "seed": 42,
+    "resume": "artifacts/learning/complex-bc-epoch2.pt",
+    "input_version": "rgb_marker_v2",
+    "save_every": 2,
+    "acquisition_weight": 4.0,
+    "torch_version": "2.7.1+cpu",
+    "parameters": 401259,
+    "training_frames": 53048,
+    "validation_frames": 13966,
+    "training_episodes": 200,
+    "validation_episodes": 52,
+    "device": "cpu",
+    "trained_environments": [
+      {
+        "motion_model": "inertial_v2",
+        "render_version": "3"
+      },
+      {
+        "motion_model": "kinematic_v1",
+        "render_version": "2"
+      }
+    ],
+    "resume_sha256": "95af9a0cefd914ccdea98fdfc07ef13d6c5384a1c0de587a5de8022a100d6ff1",
+    "data_manifests_sha256": {
+      "artifacts/learning/data": "f4f5e0e0dd133fd252e18bb1f85a4524b73fb860c8bf12029ad693223728c225",
+      "artifacts/learning/inertial-data": "16653d93028ac43206408782c2cc8198f3cd95cf31d3e812d4e397e1afeb5dfb",
+      "artifacts/learning/complex-data": "647f851164537fc1e42349d7659eccb3645a64036a5c197e9b8587d5cffb5f14",
+      "artifacts/learning/complex-dagger-old": "a7320d75d8b4b2737bc2f1a5b8ac507fbb8d98dca9e9550860f00b795d7bf7d7",
+      "artifacts/learning/acquisition-complex-data": "ed956e0278aef15cc603646e44b761c47ea11cfdc3ce17586e1d483872d94142"
+    },
+    "source_sha256": {
+      "__init__.py": "22013f582d9a48ad8396ee16caac83a6016dcdd327e686ccb6a21cd4be3b588c",
+      "algorithm.py": "3452e7d360ad5f5fdf04fe8021b8b0779bfda4f18afcadb9bc1567889b0bacf9",
+      "custom_data.py": "35768195b4cbc2349fa3c20cd3a8c69431e05a1579420ade3d5f3cfe66a4b9a4",
+      "data.py": "bfddf15bdb0b93e60833872247dd8662af963aecb335dbbeb4a41e9e662d8dc5",
+      "model.py": "f56e89e21be96100ab795f0163371d062a4fdee5a43dbcdb380cf5324e03a4f1",
+      "train.py": "6bcd8207fb96907ff602664a38d998f4d17e8eb3ae961b0bd17c04c1345050e6"
+    }
+  },
+  "training_epochs_through_selected": [
+    {
+      "epoch": 1,
+      "train": {
+        "loss": 0.033940548633319745,
+        "steering_normalized_mae": 0.029970800957602003,
+        "speed_mae": 0.010750888476985089,
+        "visibility_brier": 0.0011134857851939687
+      },
+      "validation": {
+        "loss": 0.06739045687771718,
+        "steering_normalized_mae": 0.039782773122328134,
+        "speed_mae": 0.015338397977890772,
+        "visibility_brier": 0.0010784088471376089
+      },
+      "elapsed_s": 207.36254571843892
+    },
+    {
+      "epoch": 2,
+      "train": {
+        "loss": 0.024571857944238877,
+        "steering_normalized_mae": 0.028582212447688198,
+        "speed_mae": 0.010164135570327441,
+        "visibility_brier": 0.0006894102780411165
+      },
+      "validation": {
+        "loss": 0.061853969782385804,
+        "steering_normalized_mae": 0.03034342567718357,
+        "speed_mae": 0.009998872093514565,
+        "visibility_brier": 0.0009715509239249471
+      },
+      "elapsed_s": 406.8180876458064
+    }
+  ]
+}

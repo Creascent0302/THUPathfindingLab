@@ -1,0 +1,54 @@
+.route-assessment {
+  margin: 0 0 18px;
+  padding: 15px 20px;
+  border: 1px solid #dbe3e0;
+  border-left: 4px solid #90a09b;
+  border-radius: 8px;
+  background: #f8faf9;
+  color: #334640;
+}
+.route-assessment.pending {
+  border-left-color: #bf8736;
+  background: #fffaf0;
+}
+.route-assessment.failed {
+  border-left-color: #bd5543;
+  background: #fff5f2;
+}
+.route-assessment.confirmed {
+  border-left-color: #23816b;
+}
+.route-assessment-heading,
+.route-assessment-evidence {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+}
+.route-assessment-heading > span {
+  font-size: 12px;
+  color: #5a6c65;
+}
+.route-assessment-heading strong {
+  font-size: 15px;
+}
+.route-assessment-heading small {
+  color: #687b72;
+  font-size: 12px;
+}
+.route-assessment-evidence {
+  margin-top: 9px;
+  color: #596c63;
+  font-size: 12px;
+}
+.route-assessment-evidence b {
+  color: #314c40;
+  font-weight: 500;
+}
+.route-alternative {
+  width: 100%;
+  color: #94602b;
+}
+.metrics-strip > div:first-child strong {
+  color: #334640;
+}

@@ -1,0 +1,13 @@
+{
+  "checks": [
+    "live TRACK remains separate from unacquired route",
+    "actual legal acquisition updates independent assessment",
+    "replay shows frame acquisition separately from final result",
+    "physical wrong-line replay exposes ordered-reference evidence",
+    "coasting frame does not pretend the algorithm was reset",
+    "acquisition failure uses explicit Chinese assessment reason",
+    "legacy replay preserves recorded evaluation without inventing identity",
+    "assessment remains readable without horizontal overflow on narrow screen"
+  ],
+  "errors": []
+}

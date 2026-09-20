@@ -140,3 +140,23 @@ python run.py benchmark --algorithms stop constant --seeds 101 102 --steps 400
 ```
 
 原始记录与截图位于 `artifacts/browser-authoring/`；旧流程截图位于 `artifacts/browser/`。前端 TypeScript 检查、Prettier 和生产构建通过，Python Ruff 检查通过。未额外测试 Windows / macOS；上传接口不具备恶意代码沙箱或多用户认证。
+
+## 容量与刷新恢复回归（2026-09-20）
+
+实验准入仅统计 `artifacts/runs`，算法 ZIP 使用独立配额。训练数据和算法报告超过 2 GiB 不再阻止实验；运行记录页面显示实际占用，删除后重新统计。地图草稿、实验配置和所在页面保存到浏览器；未完成或几何不合法的编辑也能恢复。应用后的自定义场景在刷新后重新生成相机预览，持久化内容不包含图像或活动运行句柄。服务器地图仍通过「保存地图」单独保存。
+
+- 后端相关回归 **77 项通过**：`test_storage_quota.py`、`test_authoring.py`、`test_runtime.py`、`test_api.py`、`test_benchmarks.py`。容量测试用稀疏文件覆盖超限拒绝、删除释放、训练文件隔离、算法包独立限额和解压后大小检查。
+- 真实 Chromium **26 组通过，页面异常 0**：新增 `browser_persistence.py` 6 组、地图分层编辑 7 组、编辑与上传 13 组。覆盖立即刷新未完成的干扰线、切页保留草稿、应用后刷新再实际运行、删除记录和图像后占用归零、浏览器存储失败与损坏草稿提示，以及新浏览器加载服务器地图。
+- TypeScript、Prettier、生产构建和相关 Python Ruff 检查通过。新浏览器记录见 `artifacts/browser-persistence/report.json`。以上均使用临时实验数据目录；原有两张地图可正常读取，今天保存的 16 点地图保留 3 个障碍物和 1 条干扰线。
+
+## 地图库与独立避障方案回归（2026-09-20）
+
+地图名称自动去重、修复已有重名且保持文件 ID；保存的地图自动加入主页场景选择。新增 5 张基于 0920 的挑战地图，以及两个独立注册的避障算法，原有四种沿线算法仍独立保留。
+
+- 全量 Python 测试 **199 项通过**，覆盖并发保存、重启、重复安装不覆盖用户地图、车体碰撞、合法绕行与错误道路区分、图像交通锥条纹误报、道路记忆及真实 Worker。Starlette 有一条依赖弃用提示，未出现测试失败。
+- `browser_persistence.py` **9 组通过，页面异常 0**：包含四个独立算法选项、重名 `(1)/(2)`、主页加载精确地图、刷新保留、删除后的选择处理及容量隔离。报告在 `artifacts/browser-persistence/report.json`。
+- TypeScript 与前端生产构建、相关 Ruff 和 `git diff --check` 通过。
+- 冻结代码后的两个镜像障碍图 × 两种避障方法 **4/4 成功**；直线、回头弯、同线多段可见 × 两种避障方法 **6/6 成功**。镜像图有相关拓扑，不解释为十个独立新地图或真实道路泛化保证。
+- 两种避障方法还通过了「占道与邻线」的完整真实 JSONL Worker 回合，均无碰撞或非法换线，终止惯性制动正常；最终 manifest 保存在 `artifacts/algorithms/0920-hard/protocol/`。
+
+配对开发集保留成功与未解决案例，过程、限制及原始指标见 [0920 挑战记录](0920-challenges.md)。新成绩采用评分器 4.0，不与历史 3.0 总分混排。

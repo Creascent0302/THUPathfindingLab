@@ -82,6 +82,7 @@ def main():
                         page.get_by_label("地图名称", exact=True).fill(
                             "惯性与物件验收图"
                         )
+                        page.get_by_role("button", name="障碍物", exact=True).click()
                         page.get_by_label("自动物件数量", exact=True).fill("3")
                         page.get_by_role(
                             "button", name="重新自动布置", exact=True

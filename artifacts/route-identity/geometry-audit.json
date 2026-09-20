@@ -1,0 +1,590 @@
+{
+  "kind": "private evaluator oracle geometry sweep; not algorithm performance",
+  "cases": [
+    {
+      "name": "直线",
+      "family": "straight",
+      "seed": 7,
+      "offset_m": -0.06,
+      "reason": "success",
+      "completion": 0.9868958086876122,
+      "last_row": null
+    },
+    {
+      "name": "直线",
+      "family": "straight",
+      "seed": 7,
+      "offset_m": 0,
+      "reason": "success",
+      "completion": 0.9868958086876122,
+      "last_row": null
+    },
+    {
+      "name": "直线",
+      "family": "straight",
+      "seed": 7,
+      "offset_m": 0.06,
+      "reason": "success",
+      "completion": 0.9868958086876122,
+      "last_row": null
+    },
+    {
+      "name": "直线",
+      "family": "straight",
+      "seed": 201,
+      "offset_m": -0.06,
+      "reason": "success",
+      "completion": 0.9839038166408902,
+      "last_row": null
+    },
+    {
+      "name": "直线",
+      "family": "straight",
+      "seed": 201,
+      "offset_m": 0,
+      "reason": "success",
+      "completion": 0.9839038166408902,
+      "last_row": null
+    },
+    {
+      "name": "直线",
+      "family": "straight",
+      "seed": 201,
+      "offset_m": 0.06,
+      "reason": "success",
+      "completion": 0.9839038166408902,
+      "last_row": null
+    },
+    {
+      "name": "单弯",
+      "family": "bend",
+      "seed": 7,
+      "offset_m": -0.06,
+      "reason": "success",
+      "completion": 0.9846973264800556,
+      "last_row": null
+    },
+    {
+      "name": "单弯",
+      "family": "bend",
+      "seed": 7,
+      "offset_m": 0,
+      "reason": "success",
+      "completion": 0.9846973264800556,
+      "last_row": null
+    },
+    {
+      "name": "单弯",
+      "family": "bend",
+      "seed": 7,
+      "offset_m": 0.06,
+      "reason": "success",
+      "completion": 0.9846973264800556,
+      "last_row": null
+    },
+    {
+      "name": "单弯",
+      "family": "bend",
+      "seed": 201,
+      "offset_m": -0.06,
+      "reason": "success",
+      "completion": 0.9829363522613841,
+      "last_row": null
+    },
+    {
+      "name": "单弯",
+      "family": "bend",
+      "seed": 201,
+      "offset_m": 0,
+      "reason": "success",
+      "completion": 0.9829363522613841,
+      "last_row": null
+    },
+    {
+      "name": "单弯",
+      "family": "bend",
+      "seed": 201,
+      "offset_m": 0.06,
+      "reason": "success",
+      "completion": 0.9829363522613841,
+      "last_row": null
+    },
+    {
+      "name": "S 形连续弯",
+      "family": "s_curve",
+      "seed": 7,
+      "offset_m": -0.06,
+      "reason": "success",
+      "completion": 0.9830864239482757,
+      "last_row": null
+    },
+    {
+      "name": "S 形连续弯",
+      "family": "s_curve",
+      "seed": 7,
+      "offset_m": 0,
+      "reason": "success",
+      "completion": 0.9830864239482757,
+      "last_row": null
+    },
+    {
+      "name": "S 形连续弯",
+      "family": "s_curve",
+      "seed": 7,
+      "offset_m": 0.06,
+      "reason": "success",
+      "completion": 0.9830864239482757,
+      "last_row": null
+    },
+    {
+      "name": "S 形连续弯",
+      "family": "s_curve",
+      "seed": 201,
+      "offset_m": -0.06,
+      "reason": "success",
+      "completion": 0.9842840824329987,
+      "last_row": null
+    },
+    {
+      "name": "S 形连续弯",
+      "family": "s_curve",
+      "seed": 201,
+      "offset_m": 0,
+      "reason": "success",
+      "completion": 0.9842840824329987,
+      "last_row": null
+    },
+    {
+      "name": "S 形连续弯",
+      "family": "s_curve",
+      "seed": 201,
+      "offset_m": 0.06,
+      "reason": "success",
+      "completion": 0.9842840824329987,
+      "last_row": null
+    },
+    {
+      "name": "大角度转弯",
+      "family": "sharp",
+      "seed": 7,
+      "offset_m": -0.06,
+      "reason": "success",
+      "completion": 0.9853187724089301,
+      "last_row": null
+    },
+    {
+      "name": "大角度转弯",
+      "family": "sharp",
+      "seed": 7,
+      "offset_m": 0,
+      "reason": "success",
+      "completion": 0.9853187724089301,
+      "last_row": null
+    },
+    {
+      "name": "大角度转弯",
+      "family": "sharp",
+      "seed": 7,
+      "offset_m": 0.06,
+      "reason": "success",
+      "completion": 0.9853187724089301,
+      "last_row": null
+    },
+    {
+      "name": "大角度转弯",
+      "family": "sharp",
+      "seed": 201,
+      "offset_m": -0.06,
+      "reason": "success",
+      "completion": 0.9853069708751715,
+      "last_row": null
+    },
+    {
+      "name": "大角度转弯",
+      "family": "sharp",
+      "seed": 201,
+      "offset_m": 0,
+      "reason": "success",
+      "completion": 0.9853069708751715,
+      "last_row": null
+    },
+    {
+      "name": "大角度转弯",
+      "family": "sharp",
+      "seed": 201,
+      "offset_m": 0.06,
+      "reason": "success",
+      "completion": 0.9853069708751715,
+      "last_row": null
+    },
+    {
+      "name": "可通行回头弯",
+      "family": "hairpin",
+      "seed": 7,
+      "offset_m": -0.06,
+      "reason": "success",
+      "completion": 0.98616394180527,
+      "last_row": null
+    },
+    {
+      "name": "可通行回头弯",
+      "family": "hairpin",
+      "seed": 7,
+      "offset_m": 0,
+      "reason": "success",
+      "completion": 0.98616394180527,
+      "last_row": null
+    },
+    {
+      "name": "可通行回头弯",
+      "family": "hairpin",
+      "seed": 7,
+      "offset_m": 0.06,
+      "reason": "success",
+      "completion": 0.98616394180527,
+      "last_row": null
+    },
+    {
+      "name": "可通行回头弯",
+      "family": "hairpin",
+      "seed": 201,
+      "offset_m": -0.06,
+      "reason": "success",
+      "completion": 0.9856398645798093,
+      "last_row": null
+    },
+    {
+      "name": "可通行回头弯",
+      "family": "hairpin",
+      "seed": 201,
+      "offset_m": 0,
+      "reason": "success",
+      "completion": 0.9856398645798093,
+      "last_row": null
+    },
+    {
+      "name": "可通行回头弯",
+      "family": "hairpin",
+      "seed": 201,
+      "offset_m": 0.06,
+      "reason": "success",
+      "completion": 0.9856398645798093,
+      "last_row": null
+    },
+    {
+      "name": "平行干扰线",
+      "family": "parallel",
+      "seed": 7,
+      "offset_m": -0.06,
+      "reason": "success",
+      "completion": 0.9868958086876122,
+      "last_row": null
+    },
+    {
+      "name": "平行干扰线",
+      "family": "parallel",
+      "seed": 7,
+      "offset_m": 0,
+      "reason": "success",
+      "completion": 0.9868958086876122,
+      "last_row": null
+    },
+    {
+      "name": "平行干扰线",
+      "family": "parallel",
+      "seed": 7,
+      "offset_m": 0.06,
+      "reason": "success",
+      "completion": 0.9868958086876122,
+      "last_row": null
+    },
+    {
+      "name": "平行干扰线",
+      "family": "parallel",
+      "seed": 201,
+      "offset_m": -0.06,
+      "reason": "success",
+      "completion": 0.9839038166408902,
+      "last_row": null
+    },
+    {
+      "name": "平行干扰线",
+      "family": "parallel",
+      "seed": 201,
+      "offset_m": 0,
+      "reason": "success",
+      "completion": 0.9839038166408902,
+      "last_row": null
+    },
+    {
+      "name": "平行干扰线",
+      "family": "parallel",
+      "seed": 201,
+      "offset_m": 0.06,
+      "reason": "success",
+      "completion": 0.9839038166408902,
+      "last_row": null
+    },
+    {
+      "name": "近距离断开线",
+      "family": "close_lines",
+      "seed": 7,
+      "offset_m": -0.06,
+      "reason": "success",
+      "completion": 0.9868958086876122,
+      "last_row": null
+    },
+    {
+      "name": "近距离断开线",
+      "family": "close_lines",
+      "seed": 7,
+      "offset_m": 0,
+      "reason": "success",
+      "completion": 0.9868958086876122,
+      "last_row": null
+    },
+    {
+      "name": "近距离断开线",
+      "family": "close_lines",
+      "seed": 7,
+      "offset_m": 0.06,
+      "reason": "success",
+      "completion": 0.9868958086876122,
+      "last_row": null
+    },
+    {
+      "name": "近距离断开线",
+      "family": "close_lines",
+      "seed": 201,
+      "offset_m": -0.06,
+      "reason": "success",
+      "completion": 0.9839038166408902,
+      "last_row": null
+    },
+    {
+      "name": "近距离断开线",
+      "family": "close_lines",
+      "seed": 201,
+      "offset_m": 0,
+      "reason": "success",
+      "completion": 0.9839038166408902,
+      "last_row": null
+    },
+    {
+      "name": "近距离断开线",
+      "family": "close_lines",
+      "seed": 201,
+      "offset_m": 0.06,
+      "reason": "success",
+      "completion": 0.9839038166408902,
+      "last_row": null
+    },
+    {
+      "name": "同线多段可见",
+      "family": "repeated",
+      "seed": 7,
+      "offset_m": -0.06,
+      "reason": "success",
+      "completion": 0.9968487005843615,
+      "last_row": null
+    },
+    {
+      "name": "同线多段可见",
+      "family": "repeated",
+      "seed": 7,
+      "offset_m": 0,
+      "reason": "success",
+      "completion": 0.9968487005843615,
+      "last_row": null
+    },
+    {
+      "name": "同线多段可见",
+      "family": "repeated",
+      "seed": 7,
+      "offset_m": 0.06,
+      "reason": "success",
+      "completion": 0.9968487005843615,
+      "last_row": null
+    },
+    {
+      "name": "同线多段可见",
+      "family": "repeated",
+      "seed": 201,
+      "offset_m": -0.06,
+      "reason": "success",
+      "completion": 0.9971161842051065,
+      "last_row": null
+    },
+    {
+      "name": "同线多段可见",
+      "family": "repeated",
+      "seed": 201,
+      "offset_m": 0,
+      "reason": "success",
+      "completion": 0.9971161842051065,
+      "last_row": null
+    },
+    {
+      "name": "同线多段可见",
+      "family": "repeated",
+      "seed": 201,
+      "offset_m": 0.06,
+      "reason": "success",
+      "completion": 0.9971161842051065,
+      "last_row": null
+    },
+    {
+      "name": "我的地图",
+      "family": "custom",
+      "seed": 7,
+      "offset_m": -0.06,
+      "reason": "success",
+      "completion": 0.9956382816799302,
+      "last_row": null
+    },
+    {
+      "name": "我的地图",
+      "family": "custom",
+      "seed": 7,
+      "offset_m": 0,
+      "reason": "success",
+      "completion": 0.9956382816799302,
+      "last_row": null
+    },
+    {
+      "name": "我的地图",
+      "family": "custom",
+      "seed": 7,
+      "offset_m": 0.06,
+      "reason": "success",
+      "completion": 0.9956382816799302,
+      "last_row": null
+    },
+    {
+      "name": "geometry-only-radius-0.57--1",
+      "family": "s_curve",
+      "seed": 7,
+      "offset_m": 0,
+      "reason": "success",
+      "completion": 0.983227889728746,
+      "last_row": null
+    },
+    {
+      "name": "geometry-only-radius-0.57-1",
+      "family": "s_curve",
+      "seed": 7,
+      "offset_m": 0,
+      "reason": "success",
+      "completion": 0.983227889728746,
+      "last_row": null
+    },
+    {
+      "name": "geometry-only-radius-0.8--1",
+      "family": "s_curve",
+      "seed": 7,
+      "offset_m": -0.18,
+      "reason": "success",
+      "completion": 0.9849422237444839,
+      "last_row": null
+    },
+    {
+      "name": "geometry-only-radius-0.8--1",
+      "family": "s_curve",
+      "seed": 7,
+      "offset_m": 0,
+      "reason": "success",
+      "completion": 0.9849422237444839,
+      "last_row": null
+    },
+    {
+      "name": "geometry-only-radius-0.8--1",
+      "family": "s_curve",
+      "seed": 7,
+      "offset_m": 0.18,
+      "reason": "success",
+      "completion": 0.9849422237444839,
+      "last_row": null
+    },
+    {
+      "name": "geometry-only-radius-0.8-1",
+      "family": "s_curve",
+      "seed": 7,
+      "offset_m": -0.18,
+      "reason": "success",
+      "completion": 0.9849422237444839,
+      "last_row": null
+    },
+    {
+      "name": "geometry-only-radius-0.8-1",
+      "family": "s_curve",
+      "seed": 7,
+      "offset_m": 0,
+      "reason": "success",
+      "completion": 0.9849422237444839,
+      "last_row": null
+    },
+    {
+      "name": "geometry-only-radius-0.8-1",
+      "family": "s_curve",
+      "seed": 7,
+      "offset_m": 0.18,
+      "reason": "success",
+      "completion": 0.9849422237444839,
+      "last_row": null
+    },
+    {
+      "name": "geometry-only-radius-1.2--1",
+      "family": "s_curve",
+      "seed": 7,
+      "offset_m": -0.18,
+      "reason": "success",
+      "completion": 0.9882211999696103,
+      "last_row": null
+    },
+    {
+      "name": "geometry-only-radius-1.2--1",
+      "family": "s_curve",
+      "seed": 7,
+      "offset_m": 0,
+      "reason": "success",
+      "completion": 0.9882211999696103,
+      "last_row": null
+    },
+    {
+      "name": "geometry-only-radius-1.2--1",
+      "family": "s_curve",
+      "seed": 7,
+      "offset_m": 0.18,
+      "reason": "success",
+      "completion": 0.9882211999696103,
+      "last_row": null
+    },
+    {
+      "name": "geometry-only-radius-1.2-1",
+      "family": "s_curve",
+      "seed": 7,
+      "offset_m": -0.18,
+      "reason": "success",
+      "completion": 0.9882211999696103,
+      "last_row": null
+    },
+    {
+      "name": "geometry-only-radius-1.2-1",
+      "family": "s_curve",
+      "seed": 7,
+      "offset_m": 0,
+      "reason": "success",
+      "completion": 0.9882211999696103,
+      "last_row": null
+    },
+    {
+      "name": "geometry-only-radius-1.2-1",
+      "family": "s_curve",
+      "seed": 7,
+      "offset_m": 0.18,
+      "reason": "success",
+      "completion": 0.9882211999696103,
+      "last_row": null
+    }
+  ]
+}

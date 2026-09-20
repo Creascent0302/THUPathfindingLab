@@ -1,0 +1,60 @@
+INFO:     Started server process [24034]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:35817 (Press CTRL+C to quit)
+INFO:     127.0.0.1:55982 - "GET /api/health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55984 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55984 - "GET /assets/index-DD5QnKit.js HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55992 - "GET /assets/index-BmnG6lJl.css HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55984 - "GET /assets/noto-sans-sc-latin-400-normal-UQSolNTk.woff2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55992 - "GET /assets/noto-sans-sc-118-400-normal-Bf5gpyrH.woff2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56006 - "GET /assets/noto-sans-sc-116-400-normal-B_Wd_gXa.woff2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56024 - "GET /assets/noto-sans-sc-119-400-normal-DCagajcJ.woff2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56010 - "GET /assets/noto-sans-sc-115-400-normal-CKdRqeLz.woff2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56012 - "GET /assets/noto-sans-sc-113-400-normal-Z12WbzPu.woff2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55984 - "GET /assets/noto-sans-sc-117-400-normal-D4Z7ozSr.woff2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55992 - "GET /assets/noto-sans-sc-109-400-normal-Du9NxtNU.woff2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56012 - "GET /assets/noto-sans-sc-114-400-normal-DKcxp1Yv.woff2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56024 - "GET /assets/noto-sans-sc-101-400-normal-CVNMn3td.woff2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55984 - "GET /assets/noto-sans-sc-108-400-normal-C7peeQIz.woff2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55992 - "GET /assets/noto-sans-sc-112-400-normal-BiV1KEcG.woff2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56006 - "GET /assets/noto-sans-sc-111-400-normal-DCEEqRFF.woff2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56010 - "GET /assets/noto-sans-sc-88-400-normal-CK6Lp2xC.woff2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56024 - "GET /assets/noto-sans-sc-105-400-normal-BvlxeT_S.woff2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56012 - "GET /assets/noto-sans-sc-110-400-normal-BTg_AWbK.woff2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55984 - "GET /assets/noto-sans-sc-103-400-normal-HAr22FT0.woff2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56006 - "GET /api/catalog HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55984 - "GET /api/scenes/straight?seed=7 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55984 - "GET /api/maps HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55984 - "GET /assets/noto-sans-sc-107-400-normal-CUpTW4g1.woff2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55984 - "POST /api/maps/build HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56024 - "POST /api/maps/build HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56024 - "GET /assets/noto-sans-sc-102-400-normal-Bqc_zqin.woff2 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56024 - "POST /api/maps/build HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56024 - "POST /api/maps/build HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56024 - "POST /api/maps/build HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56024 - "POST /api/maps/build HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56024 - "POST /api/maps/build HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56024 - "POST /api/maps/build HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56024 - "POST /api/maps/build HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47238 - "GET /api/maps HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56024 - "POST /api/maps HTTP/1.1" 201 Created
+INFO:     127.0.0.1:56024 - "GET /api/maps HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47238 - "GET /api/maps HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47238 - "GET /api/maps HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56024 - "POST /api/maps/build HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56024 - "POST /api/maps/build HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56024 - "POST /api/maps/build HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56024 - "POST /api/maps/build HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58300 - "POST /api/runs HTTP/1.1" 201 Created
+INFO:     127.0.0.1:47238 - "GET /api/results HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58300 - "POST /api/runs/01b6071a55a444a58e2c90bc0d827e12/control HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47238 - "GET /api/results HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58310 - "WebSocket /api/runs/01b6071a55a444a58e2c90bc0d827e12/stream" [accepted]
+INFO:     connection open
+INFO:     127.0.0.1:47238 - "GET /api/results/01b6071a55a444a58e2c90bc0d827e12 HTTP/1.1" 200 OK
+INFO:     connection closed
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [24034]

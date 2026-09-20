@@ -1,0 +1,60 @@
+"""Opt-in avoidance variants. The original temporal algorithms remain line followers."""
+
+from pathlab.sdk import Action
+from .modular.algorithm import VisualDriver
+from .modular.control import Predictive
+from .modular.obstacles import AvoidanceTracker, DetourPlanner
+
+
+class AvoidingPursuit(VisualDriver):
+    tracker_type = AvoidanceTracker
+
+    def reset(self, observation, hint):
+        super().reset(observation, hint)
+        self.tracker.planner = DetourPlanner(self.limits)
+
+    def step(self, observation):
+        output = super().step(observation)
+        tracker = self.tracker
+        path, avoiding = tracker.planner.command_path(
+            output.local_path_m,
+            tracker.components,
+            tracker.obstacles.items,
+            observation.dt_s,
+        )
+        if avoiding:
+            action = (
+                self.controller.command(path, 0.8, self.motion)
+                if path is not None
+                else Action(steering_angle_rad=0, speed_mps=0)
+            )
+            action.speed_mps = min(
+                action.speed_mps, 0.25 if tracker.planner.peeking else 0.38
+            )
+            output.confidence = 0.7 if path is not None else 0
+            output.action = self.last_action = action
+            output.status = "TRACK" if path is not None else "LOST"
+            output.local_path_m = path.tolist() if path is not None else None
+            output.centerline_px = (
+                tracker.camera.pixels(path).tolist() if path is not None else None
+            )
+            output.diagnostics = [tracker.planner.reason]
+        output.debug.update(
+            avoidance_active=avoiding,
+            avoidance_state=tracker.planner.reason,
+            planning_rejections=tracker.planner.rejections,
+            observed_obstacles=[
+                {
+                    "center_m": item.center.tolist(),
+                    "radius_m": item.radius,
+                    "age_s": item.age,
+                }
+                for item in tracker.obstacles.items
+            ],
+            obstacle_source="rgb_ground_contact_and_command_memory",
+        )
+        return output
+
+
+class AvoidingMPC(AvoidingPursuit):
+    controller_type = Predictive
