@@ -385,3 +385,6 @@ def test_editor_layers_roundtrip_save_reload_and_real_run(client):
     assert (
         client.get(f"/api/results/{run_id}/frames/0").json()["image"] == built["image"]
     )
+
+
+pytestmark = pytest.mark.usefixtures("test_plugins")

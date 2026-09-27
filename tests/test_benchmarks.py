@@ -394,3 +394,6 @@ def test_worker_failure_is_preserved_and_cancel_stops_pending_jobs(
         assert not any(
             run.thread.is_alive() for run in client.app.state.manager.runs.values()
         )
+
+
+pytestmark = pytest.mark.usefixtures("test_plugins")

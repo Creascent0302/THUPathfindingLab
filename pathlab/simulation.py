@@ -8,7 +8,8 @@ import cv2
 import numpy as np
 
 from .config import CameraConfig, Pose, Scene, VehicleConfig
-from .sdk import Action, Calibration, Model
+from .config import Model
+from .sdk import Action, Calibration
 from .dynamics import integrate_motion, signed_speed
 from .scene_objects import ObjectRenderer, object_footprint
 

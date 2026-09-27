@@ -143,25 +143,3 @@ def test_reverse_is_signed_limited_and_stops_before_changing_direction(model):
     assert stopped[-1].speed_mps == 0
     disabled = Vehicle(VehicleConfig(motion_model=model, reverse_allowed=False), Pose())
     assert drive(disabled, 0, -1, 100)[-1].x_m == 0
-
-
-@pytest.mark.parametrize("model", ["kinematic_v1", "inertial_v2"])
-def test_reverse_model_and_command_odometry_match_simulation(model):
-    from algorithms.modular.control import MotionEstimate
-
-    c = VehicleConfig(motion_model=model)
-    vehicle, prediction = Vehicle(c, Pose()), MotionEstimate(c.model_dump())
-    pose = np.zeros(3)
-    for speed in [0.7] * 60 + [-0.35] * 90 + [0] * 40 + [0.5] * 50:
-        action = Action(steering_angle_rad=0.35, speed_mps=speed)
-        vehicle.advance(action, 0.05)
-        translation, yaw = prediction.advance(action, 0.05, 0.05)
-        cosine, sine = math.cos(pose[2]), math.sin(pose[2])
-        pose[:2] += translation @ np.array([[cosine, sine], [-sine, cosine]])
-        pose[2] += yaw
-        np.testing.assert_allclose(
-            pose,
-            [vehicle.state.x_m, vehicle.state.y_m, vehicle.state.yaw_rad],
-            atol=1e-10,
-        )
-        assert prediction.signed_speed == pytest.approx(vehicle.state.speed_mps)

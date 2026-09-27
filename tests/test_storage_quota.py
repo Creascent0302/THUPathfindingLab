@@ -88,3 +88,6 @@ def test_directory_usage_ignores_links_and_missing_directories(tmp_path):
     (records / "frames.jsonl").write_bytes(b"{}\n")
     assert directory_bytes(records) == 3
     assert directory_bytes(tmp_path / "missing") == 0
+
+
+pytestmark = pytest.mark.usefixtures("test_plugins")

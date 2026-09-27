@@ -27,8 +27,6 @@ export type Algorithm = {
   version: string;
   description: string;
   capabilities: Capability[];
-  available?: boolean;
-  unavailable_reason?: string | null;
 };
 export type Calibration = {
   width: number;

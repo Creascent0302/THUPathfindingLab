@@ -20,7 +20,7 @@ from .config import (
 )
 from .scene_objects import scatter_objects
 from .scenarios import validate_scene
-from .sdk import Model
+from .config import Model
 
 
 class MapRequest(Model):

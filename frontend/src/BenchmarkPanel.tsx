@@ -58,10 +58,7 @@ export function BenchmarkPanel({
   families: Record<string, string>;
   onReplay: (run: Manifest) => void;
 }) {
-  const [methods, setMethods] = useState<string[]>([
-    "temporal_pursuit",
-    "temporal_mpc",
-  ]);
+  const [methods, setMethods] = useState<string[]>([]);
   const [selectedFamilies, setFamilies] = useState<string[]>([
     "straight",
     "bend",
@@ -85,7 +82,7 @@ export function BenchmarkPanel({
     (a) => a.id !== "manual" && a.capabilities.includes(execution),
   );
   const usableMethods = methods.filter((id) =>
-    offered.some((a) => a.id === id && a.available !== false),
+    offered.some((a) => a.id === id),
   );
   const seedValues = seeds.trim()
     ? seeds
@@ -226,23 +223,21 @@ export function BenchmarkPanel({
             </label>
             <fieldset className="eval-choices">
               <legend>对比方法</legend>
+              {!offered.length && (
+                <p className="field-note">
+                  请先在「算法提交」上传对应输出类型的代码。
+                </p>
+              )}
               {offered.map((algorithm) => (
-                <label
-                  key={algorithm.id}
-                  title={algorithm.unavailable_reason || algorithm.description}
-                >
+                <label key={algorithm.id} title={algorithm.description}>
                   <input
                     type="checkbox"
                     checked={methods.includes(algorithm.id)}
-                    disabled={algorithm.available === false}
                     onChange={() => setMethods(toggle(methods, algorithm.id))}
                   />
                   <span>
                     {algorithm.name}
-                    <small>
-                      v{algorithm.version}
-                      {algorithm.available === false ? " · 不可用" : ""}
-                    </small>
+                    <small>v{algorithm.version}</small>
                   </span>
                 </label>
               ))}
@@ -320,7 +315,8 @@ export function BenchmarkPanel({
             <details className="eval-advanced">
               <summary>各方法参数（可选）</summary>
               <p className="field-note">
-                按算法 ID 设置参数，如 {`{"temporal_mpc":{"speed_mps":0.7}}`}
+                按算法 ID 设置参数，如{" "}
+                {`{"upload_你的提交ID":{"speed_mps":0.7}}`}
                 。默认使用已注册算法设置。
               </p>
               <textarea

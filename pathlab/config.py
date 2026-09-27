@@ -5,9 +5,14 @@ from __future__ import annotations
 import json
 from typing import Annotated, Literal
 
-from pydantic import Field, model_validator
+from pydantic import ConfigDict, Field, model_validator
 
-from .sdk import Model, Point, TaskHint
+from .sdk import Model as SDKModel, Point, TaskHint
+
+
+class Model(SDKModel):
+    # Compiled methods have Cython function types, not types.FunctionType.
+    model_config = ConfigDict(ignored_types=(type(lambda: None),))
 
 
 class VehicleConfig(Model):

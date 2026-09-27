@@ -43,7 +43,7 @@ Python 中用 `observation.rgb()` 得到 `H×W×3 np.uint8`；颜色通道不是
 
 像素原点是图像左上角，X 向右，Y 向下。点必须在图像内，区域为 `[left, top, right, bottom]`。人工提示只确定目标位置；没有观察到箭头时，不能把 `unspecified` 理解为已知行进方向。多线不可区分且没有足够提示时，学生算法应返回 `AMBIGUOUS`。
 
-点击或框选在首帧预览中完成，并保存到运行配置；同组算法比较必须使用完全相同的提示。当前示例探针只检查输入和候选，不实现目标连续性推断。
+点击或框选在首帧预览中完成，并保存到运行配置；同组算法比较必须使用完全相同的提示。目标连续性需要学生自行判断。
 
 ## 三类输出
 
@@ -71,19 +71,7 @@ Python 中用 `observation.rgb()` 得到 `H×W×3 np.uint8`；颜色通道不是
 
 ## 独立进程 / 其他语言
 
-`algorithms.json` 可注册命令数组（不经过 shell）：
-
-```json
-{
-  "id":"external_stop",
-  "name":"独立进程示例",
-  "version":"1.0",
-  "capabilities":["action"],
-  "command":["{python}","-m","student_template.stdio"]
-}
-```
-
-`{python}` 替换为当前平台虚拟环境的解释器。也可以注册显式可执行文件或另一个 Python 环境的绝对路径；本地插件默认工作目录为项目根目录。前端上传的算法由平台自动登记，工作目录为上传包中 `algorithm.py` 所在目录；学生无需编辑注册表。
+学生通过 ZIP 提交 `StudentAlgorithm`，工作目录为 `algorithm.py` 所在目录，无需编辑注册表。以下协议供理解平台进程边界；发行包默认只提供 Python 类上传接口。
 
 标准输入/输出为 UTF-8 **JSON Lines**，每条消息以一个 LF 结束，最大 8 MiB。不得在 stdout 输出日志（改写 stderr）。请求串行发送，响应必须匹配 id 和版本；不允许 pickle 或任意对象反序列化。
 
@@ -122,7 +110,7 @@ step 响应示例：
 
 ## 调试建议
 
-先用 `image_probe` 检查实际颜色和候选，再接入自己的实现。优先在单帧/序列中验证感知输出，确认状态重置，然后进入闭环。照片没有有效标定时不要输出伪造的米制路径。
+在自己的代码中输出调试数值，检查实际输入颜色与坐标。优先在单帧/序列中验证感知输出，确认状态重置，然后进入闭环。照片没有有效标定时不要输出伪造的米制路径。
 
 RGB/BGR、形状和生命周期示例见 `tests/test_simulation.py`；故障与外部语言协议测试见 `tests/test_runtime.py`。测试用的故障插件没有加入生产注册表。
 
@@ -130,4 +118,4 @@ RGB/BGR、形状和生命周期示例见 `tests/test_simulation.py`；故障与�
 
 `GET /api/submissions/template` 下载模板；`POST /api/submissions` 接收 multipart 字段 `file`、`name` 与 `capability`（action / path / perception）。ZIP 的根目录或唯一的一层子目录需包含 `algorithm.py`，其中定义 `StudentAlgorithm`；生命周期与上文相同。可一并打包辅助 Python 模块、资源和权重。
 
-平台静态解析 Python 语法，不在 HTTP 服务中导入提交代码。ZIP 上限 32 MiB，解压合计 128 MiB，单文件 32 MiB，最多 512 个条目；拒绝路径穿越、绝对路径、符号链接、加密文件及重复路径。第三方依赖由教师统一配置，ZIP 中的 requirements / setup 文件不触发安装。每次提交单独保存，SHA-256 随运行配置记录。上传本身不执行算法，选用后在独立进程中运行。进程具有教师账户的系统权限，不能代替恶意代码容器沙箱。
+平台静态解析 Python 语法，不在 HTTP 服务中导入提交代码。ZIP 上限 32 MiB，解压合计 128 MiB，单文件 32 MiB，最多 512 个条目；拒绝路径穿越、绝对路径、符号链接、加密文件及重复路径。第三方依赖由教师统一配置，ZIP 中的 requirements / setup 文件不触发安装。每次提交单独保存，SHA-256 随运行配置记录。上传本身不执行算法，选用后在独立进程中运行。进程具有启动程序账户的系统权限，不能代替恶意代码容器沙箱。

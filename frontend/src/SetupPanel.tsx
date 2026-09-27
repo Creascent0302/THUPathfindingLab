@@ -258,26 +258,13 @@ export function SetupPanel({
           {catalog.algorithms
             .filter((a) => mode === "simulation" || a.id !== "manual")
             .map((a) => (
-              <option
-                key={a.id}
-                value={a.id}
-                disabled={a.available === false}
-                title={a.unavailable_reason || undefined}
-              >
+              <option key={a.id} value={a.id}>
                 {a.name}
-                {a.available === false ? "（不可用）" : ""}
               </option>
             ))}
         </select>
       </label>
       <p className="field-note">{plugin?.description}</p>
-      {catalog.algorithms
-        .filter((a) => a.available === false)
-        .map((a) => (
-          <p className="field-note" key={a.id}>
-            {a.name}：{a.unavailable_reason}
-          </p>
-        ))}
       <label>
         执行依据
         <select

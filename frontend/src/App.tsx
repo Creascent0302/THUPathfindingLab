@@ -226,26 +226,17 @@ export default function App() {
     }
   };
   useEffect(() => {
-    const controller = new AbortController();
-    api<{ id: string | null }>("/workspace/active-run", {
-      signal: controller.signal,
-    })
-      .then(({ id }) => {
-        if (id) {
-          setLiveId(id);
-          setTab("lab");
-        }
-      })
-      .catch((error) => {
-        if (error.name !== "AbortError") setError(String(error));
-      });
-    return () => controller.abort();
-  }, [setTab]);
-  useEffect(() => {
     api<typeof catalog>("/catalog")
-      .then(setCatalog)
+      .then((next) => {
+        setCatalog(next);
+        setSettings((current) =>
+          next.algorithms.some((item) => item.id === current.algorithm)
+            ? current
+            : { ...current, algorithm: "manual", execution: "action" },
+        );
+      })
       .catch((e) => setError(String(e)));
-  }, []);
+  }, [setSettings]);
   useEffect(() => {
     const controller = new AbortController();
     const refresh = () =>

@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import base64
 import math
-import os
 from collections import deque
 from pathlib import Path
 import threading
@@ -48,7 +47,7 @@ class Run:
         if config.algorithm != "manual":
             self.spec = spec or registry(artifact_root=root).get(config.algorithm)
             if self.spec is None:
-                raise ValueError("算法尚未注册，请先上传算法 ZIP 或配置本地插件")
+                raise ValueError("算法尚未注册，请先上传算法 ZIP")
             if config.execution not in self.spec.capabilities:
                 raise ValueError("所选算法不支持这个执行模式")
         elif config.mode != "simulation" or config.execution != "action":
@@ -505,8 +504,7 @@ class RunManager:
     def __init__(self, root: Path):
         self.root = root
         self.root.mkdir(parents=True, exist_ok=True)
-        self.ephemeral = os.environ.get("PATHLAB_EPHEMERAL") == "1"
-        self.max_active = 1 if self.ephemeral else 3
+        self.max_active = 3
         self.runs: dict[str, Run] = {}
         self.lock = threading.Lock()
 
@@ -521,8 +519,6 @@ class RunManager:
                 raise RunCapacityError(
                     f"最多同时运行 {self.max_active} 个实验，请先停止已有实验"
                 )
-            if self.ephemeral:
-                config = config.model_copy(update={"record_images": False})
             if len(list((self.root / "runs").glob("*/manifest.json"))) >= 200:
                 raise ValueError("已保存 200 次实验，请在运行记录中删除不需要的记录")
             check_run_storage(self.root)

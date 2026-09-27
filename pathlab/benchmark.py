@@ -20,7 +20,8 @@ from .engine import RunManager, TERMINAL
 from .evaluation import EVALUATOR_VERSION, SCORE_VERSION, SCORE_WEIGHTS
 from .registry import ROOT, PluginSpec, registry
 from .scenarios import FAMILIES, generate, validate_scene
-from .sdk import Capability, Model
+from .config import Model
+from .sdk import Capability
 from .storage import write_json
 
 FINAL_ITEMS = {"completed", "failed", "cancelled"}
@@ -106,15 +107,13 @@ def test_set_key(cases: list[dict], versions: dict, request: BenchmarkRequest) -
 
 def implementation_hash(spec: PluginSpec) -> str:
     """Detect changed code/weights while a queued batch waits to execute."""
-    paths = list((ROOT / "algorithms").rglob("*.py"))
+    paths: list[Path] = []
     if spec.working_directory:
         paths += [
             p
             for p in Path(spec.working_directory).rglob("*")
             if p.is_file() and "__pycache__" not in p.parts
         ]
-    if spec.checkpoint_file:
-        paths.append(ROOT / spec.checkpoint_file)
     digest = hashlib.sha256(json.dumps(spec.model_dump(), sort_keys=True).encode())
     for path in sorted(set(paths)):
         digest.update(str(path).encode())
@@ -246,8 +245,6 @@ class BenchmarkManager:
             spec = specs.get(method.algorithm)
             if spec is None or method.execution not in spec.capabilities:
                 raise ValueError("算法未注册或不支持此执行模式")
-            if reason := spec.unavailable_reason():
-                raise ValueError(reason)
             methods.append(
                 {
                     "id": str(index),
@@ -303,7 +300,8 @@ class BenchmarkManager:
                 )
             versions = {
                 path.name: hashlib.sha256(path.read_bytes()).hexdigest()
-                for path in sorted((ROOT / "pathlab").glob("*.py"))
+                for path in sorted((ROOT / "pathlab").iterdir())
+                if path.is_file() and path.suffix in {".py", ".so", ".pyd"}
             }
             batch = {
                 "id": uuid.uuid4().hex,

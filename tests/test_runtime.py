@@ -265,3 +265,6 @@ def test_external_plugin_and_algorithm_removal(execute, tmp_path):
     path = tmp_path / "algorithms.json"
     path.write_text("[]")
     assert registry(path) == {}
+
+
+pytestmark = pytest.mark.usefixtures("test_plugins")

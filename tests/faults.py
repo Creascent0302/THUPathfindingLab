@@ -5,8 +5,53 @@ import os
 import sys
 import time
 
-from algorithms.examples import Stop
 from pathlab.sdk import Action, AlgorithmOutput
+
+
+class Stop:
+    """Test transport/lifecycle only; no recognition or path planning."""
+
+    def initialize(self, config, public_context):
+        self.config = config
+
+    def reset(self, initial_observation, task_hint):
+        self.frames = 0
+
+    def step(self, observation):
+        self.frames += 1
+        return AlgorithmOutput(
+            status="UNINITIALIZED",
+            action=Action(steering_angle_rad=0, speed_mps=0),
+            debug={"frames_seen": self.frames},
+        )
+
+    def close(self):
+        pass
+
+
+class Constant(Stop):
+    def step(self, observation):
+        self.frames += 1
+        return AlgorithmOutput(
+            status="ACQUIRE",
+            action=Action(
+                steering_angle_rad=self.config.get("steering_angle_rad", 0),
+                speed_mps=self.config.get("speed_mps", 0.45),
+            ),
+            debug={"frames_seen": self.frames},
+        )
+
+
+class ImageProbe(Stop):
+    def step(self, observation):
+        self.frames += 1
+        return AlgorithmOutput(
+            status="UNINITIALIZED",
+            debug={
+                "frames_seen": self.frames,
+                "mean_rgb": observation.rgb().mean(axis=(0, 1)).tolist(),
+            },
+        )
 
 
 class Fault(Stop):

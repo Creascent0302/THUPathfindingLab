@@ -231,3 +231,6 @@ def test_running_cli_job_is_not_marked_stale(tmp_path):
     )
     with TestClient(create_app(tmp_path)) as client:
         assert client.get("/api/results").json()[0]["state"] == "running"
+
+
+pytestmark = pytest.mark.usefixtures("test_plugins")
