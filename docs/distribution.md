@@ -2,7 +2,7 @@
 
 ## 交付结构
 
-`student/local-lab` 是教师维护的框架分支，没有现成视觉寻迹或避障方法，也没有训练模型或部署网关。学生拿到 `release/PathLab-<系统>-<架构>.zip`，解压启动即可，不需要 Python、Node.js 或服务器。
+`student/local-lab` 是教师维护的框架分支，没有现成视觉寻迹或避障方法，也没有训练模型或部署网关。学生拿到匹配系统与架构的 `release/PathLab-<系统>-<架构>.zip`，解压启动即可，不需要安装 Python、Node.js 或服务器。课程学生使用 Linux / macOS；Windows 同学通过 WSL 2 或 Ubuntu 虚拟机使用 Linux 版。当前已验收的发行包只有 Linux x86_64。
 
 发行包包含原生后端、Python 运行时、NumPy/OpenCV、构建后的网页、公开 SDK、空白算法模板和学生说明。`artifacts/` 在首次启动时创建，不从教师工作区复制。源码与生成的 C 文件留在教师 `.cache/student-build/` 中，不放入发行包。
 

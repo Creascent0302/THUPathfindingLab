@@ -25,7 +25,13 @@ def template_zip() -> bytes:
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as archive:
         archive.write(ROOT / "student_template" / "algorithm.py", "algorithm.py")
-        archive.write(ROOT / "docs" / "student-guide.md", "学生算法开发指南.md")
+        for name in (
+            "student-local.md",
+            "student-guide.md",
+            "protocol.md",
+            "evaluation.md",
+        ):
+            archive.write(ROOT / "docs" / name, name)
     return buffer.getvalue()
 
 

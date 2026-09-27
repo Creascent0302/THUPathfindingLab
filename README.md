@@ -6,6 +6,8 @@
 
 ## 本地启动
 
+学生使用 Linux 或 macOS；Windows 同学先配置 WSL 2 或 Ubuntu 虚拟机。不同系统、发行包与框架目录的完整步骤见 [学生使用手册](docs/student-local.md)。算法练习以输出局部引导线为主，见 [接口、直行示例与巡线原理](docs/student-guide.md)。
+
 源码版首次配置（Python 3.10～3.13）：
 
 ```bash

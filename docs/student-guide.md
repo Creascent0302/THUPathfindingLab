@@ -1,164 +1,230 @@
-# 学生算法开发指南
+# 学生算法接口与基本巡线教程
 
-你只需要实现一个 Python 类。平台每帧提供前方摄像头图像，你返回转向角和目标速度，平台负责让小车运动。
+本实验要实现的是：从前向摄像头图像中识别**要跟随的引导线**，按从近到远的顺序输出它在车辆前方的位置，让平台驱动车辆沿线前进。这里的“车道线”指地面上应跟随的目标线，不要求同时识别左右两条道路边界。
 
-```text
-摄像头图像 → 识别目标线 → 计算转向和速度 → 小车运动 → 下一帧图像
-```
+首次安装见 [学生使用手册](student-local.md)。本篇先介绍输入输出，再用一个直行接口示例打通流程，最后讲解如何自己实现基于图像的巡线方法。
 
-## 1. 怎么提交
+## 1. 车辆怎样运动
 
-1. 在网页「算法提交」中下载代码模板。
-2. 修改 `algorithm.py` 中的 `StudentAlgorithm` 类。
-3. 将 `algorithm.py` 放在 ZIP 根目录；辅助代码、权重等一起打包。
-4. 上传时选择「车辆动作」，点击「上传并选用」，然后选择地图运行。
+平台模拟四轮小车，采用等效前轮转向的自行车模型。车辆坐标系原点位于**后轴中心**，`x` 向前、`y` 向左；长度使用米，时间使用秒，角度使用弧度。
 
-不需要提交平台配置文件。平台已提供 Python、NumPy、OpenCV 和 `pathlab.sdk`，其他依赖请与教师确认，上传包不会自动安装依赖。ZIP 最大 32 MiB，解压后最大 128 MiB，单文件最大 32 MiB。不要打包虚拟环境或实验记录。
+| 参数 / 动作 | 含义 |
+|---|---|
+| `wheelbase_m` | 轴距，默认 0.32 m |
+| `max_steering_rad` | 前轮转角绝对值上限，默认 0.52 rad，约 30° |
+| `max_speed_mps` | 前进速度上限，默认 1.5 m/s |
+| `steering_angle_rad` | 正值左转、负值右转、0 回正 |
+| `speed_mps` | 正值前进、负值倒车、0 请求制动 |
 
-## 2. 需要实现的四个方法
+默认运动模型有惯性：速度和转角逐渐变化，制动不会瞬间停下，正反向切换先刹停再换向。转向受轴距、转角和横向加速度等约束，不能原地旋转。上述默认值可以由场景修改，代码必须以本次公开的车辆参数为准。
 
-| 方法 | 调用时机 | 你需要做什么 |
+本教程使用**局部路径模式**。你负责输出前方引导线的米制坐标，平台已有的路径执行器负责计算目标转角和速度，再由车辆模型执行；无需先实现控制器。这个执行器只跟踪你给的路径，不会替你识别目标线或避障，默认也不支持沿路径倒车。
+
+## 2. 平台怎样调用算法
+
+把代码写在 `algorithm.py` 的 `StudentAlgorithm` 类中，提供四个方法：
+
+| 方法 | 调用时机 | 用途 |
 |---|---|---|
-| `initialize(config, public_context)` | 实例创建后调用一次 | 读取参数、加载模型 |
-| `reset(initial_observation, task_hint)` | 实验开始时 | 清空历史状态，确定初始目标 |
-| `step(observation)` | 每收到一帧图像 | 返回一个 `AlgorithmOutput` |
-| `close()` | 实验结束时尝试调用 | 释放资源，没有资源可写 `pass` |
+| `initialize(config, public_context)` | 每次实验创建实例后 | 读取算法参数和车辆限制 |
+| `reset(initial_observation, task_hint)` | 实验开始时 | 确定初始目标，清空历史状态 |
+| `step(observation)` | 每收到一帧图像 | 识别引导线并返回 `AlgorithmOutput` |
+| `close()` | 实验结束时尝试调用 | 释放资源，无资源可写 `pass` |
 
-调用顺序：`initialize → reset → step → step → … → close`。首帧会同时用于 `reset` 和第一次 `step`。用 `self` 保存历史状态；不要在 `step` 中写无限循环、等待键盘或打开图像窗口。
+调用顺序是 `initialize → reset → step → step → … → close`。首帧同时用于 `reset` 和第一次 `step`。`step` 每次只处理当前观测，不能在里面一直等待图像、键盘或开无限循环；跨帧信息放在 `self` 中。
 
-`config` 是算法参数字典，可能为空，请设置默认值。仿真中的 `public_context["vehicle_limits"]` 提供车辆参数，常用字段为：
+### 能获得哪些输入
 
-| 字段 | 含义 |
-|---|---|
-| `max_steering_rad` | 转角绝对值上限，rad |
-| `max_speed_mps` | 前进速度上限，m/s |
-| `max_reverse_speed_mps` / `reverse_allowed` | 倒车速度上限 / 是否允许倒车 |
-| `wheelbase_m` | 轴距，m |
-| `acceleration_mps2` / `braking_mps2` | 加速 / 制动能力，m/s² |
+| 所需信息 | 从哪里读取 | 用法或注意点 |
+|---|---|---|
+| 前向图像 | `observation.rgb()` | `H×W×3` 的 NumPy 数组，`uint8`，通道为 RGB |
+| 图像尺寸 | `observation.width`、`height` | 不要写死 640×360 |
+| 帧号和时间 | `frame_id`、`timestamp_s`、`dt_s` | 掉帧时帧号可能跳变，实际时间间隔用相邻时间戳之差 |
+| 相机内参 | `observation.calibration.intrinsic` | 3×3 矩阵，可用于相机几何计算 |
+| 地面投影 | `observation.calibration.ground_to_image` | 3×3 矩阵，把车辆地面坐标投影到图像；逆矩阵用于还原地面点 |
+| 目标初始化提示 | `reset` 的 `task_hint`，或 `observation.task_hint` | 指定首帧应该接入哪条线，见下文 |
+| 车辆参数 | `public_context.get("vehicle_limits")` | 在 `initialize` 中保存；含轴距、转角、速度、制动和倒车限制 |
+| 算法参数 | `initialize` 的 `config` | 来自工作台填写的参数字典，可能为空，使用 `config.get(...)` 给默认值 |
 
-这些是模型参数，不是实时车速或位姿。图片、视频实验中的 `vehicle_limits` 可能为 `None`。
+`calibration` 在图片、视频输入中可能为 `None`，`vehicle_limits` 也可能不存在。必须先检查再访问。图像若需要转灰度，使用 `cv2.COLOR_RGB2GRAY`，不是 `COLOR_BGR2GRAY`。
 
-## 3. 输入：每帧能读到什么
+`task_hint.kind` 常见四种：`marker` 用 `marker_rgb` 指定起点标记颜色，`direction="arrow"` 表示图像中有方向箭头；`point` 用 `point_px=(u,v)` 指定首帧目标点；`region` 用 `region_px=(left,top,right,bottom)` 指定首帧区域；`none` 表示没有提示。点和区域只对应首帧，不能当成后续每帧固定不变的目标坐标。
 
-最常用的是 `observation.rgb()`：
+**公开输入不含完整地图、目标线真值、真实车辆位置、实际车速或障碍物坐标。** 需要的道路位置从图像中估计；车辆参数是模型限制，不是实时遥测。网页中的场景俯视图、真实轨迹和评测值供人调试，不能当作算法输入。
 
-```python
-rgb = observation.rgb()  # NumPy 数组，形状 (高度, 宽度, 3)
-gray = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
-```
+### 输出的“线”有两种坐标
 
-图像类型是 `uint8`，像素值为 0～255，通道顺序为 **RGB，不是 OpenCV 常用的 BGR**。不需要自己解码图像。
+| 输出字段 | 坐标含义 | 平台如何使用 |
+|---|---|---|
+| `centerline_px` | `[(u,v), ...]`，图像左上角为原点，u 向右、v 向下，单位像素 | 在算法画面叠加显示，不会自动控制车辆 |
+| `local_path_m` | `[(x,y), ...]`，后轴中心为原点，x 向前、y 向左，单位米 | 局部路径模式下，驱动平台路径执行器 |
 
-| 输入 | 含义 |
-|---|---|
-| `observation.width` / `height` | 图像宽、高，不要写死分辨率 |
-| `observation.frame_id` | 帧号，从 0 开始，掉帧时可能跳号 |
-| `observation.timestamp_s` | 当前观测时间，单位 s |
-| `observation.dt_s` | 基础帧间隔；计算实际间隔优先用相邻时间戳之差 |
-| `observation.task_hint` | 目标初始化提示，见下文 |
-| `observation.calibration` | 相机标定，可能为 `None`；简单像素控制可以暂不使用 |
+例如，`[(0.4,0.0),(0.8,0.1),(1.2,0.25)]` 表示路径逐渐向左弯，**不是图像像素坐标**。通常同时返回两种线：像素线便于检查识别位置，米制路径用于行驶。
 
-`task_hint.kind` 决定提示类型：
+`local_path_m` 至少两个点，按本次车体坐标中的**行驶顺序，从近到远**排列，局部点离后轴中心不超过 30 m。首次实验只输出前方一小段可靠路线，例如 0.4～1.5 m，长度应随可见范围调整；不要为了凑长度虚构远处路线。平台默认前视距离约 0.65 m；路径明显过短时控制效果可能变差。
 
-- `marker`：按 `marker_rgb` 提供的 RGB 颜色识别起点；`direction="arrow"` 时需要从图像识别箭头方向。
-- `point`：`point_px=(u,v)` 指出首帧中的目标点。
-- `region`：`region_px=(left,top,right,bottom)` 指出首帧中的目标区域。
-- `none`：没有额外定位提示。
+`status="TRACK"` 表示可以沿路径行驶；获取或对齐阶段也可以返回 `ACQUIRE` / `ALIGN` 并提供有效路径。没有可靠线时返回 `LOST`，多条线无法确定目标时返回 `AMBIGUOUS`；这些状态会请求制动，可以不提供路径。`FINISHED` 是算法主动结束信号，不等于平台评测成功。
 
-提示在实验中保持不变，点和框只对应首帧。确定目标后，要自己持续跟踪原路线，不能每帧都选择最近的线。
+`confidence` 可省略。路径模式未提供时，执行器采用保守系数 0.35；提供时须在 0～1，并会影响速度，不能为了“让车走快一点”随意填 1。`debug` 可记录标量或少量列表，`diagnostics` 可记录文字。返回普通 Python 数值和列表，NumPy 数组用 `.tolist()`，不能包含 NaN / Inf；单帧输出最多 64 KiB，不要塞整张图像。
 
-**算法不会收到地图真值、真实车辆位置、实际车速或障碍物坐标，需要根据图像和历史信息作出判断。**
+若以后要自己控制速度、转角或倒车，可改选“车辆动作”，输出 `action=Action(steering_angle_rad=..., speed_mps=...)`。本篇后续练习只需实现局部路径输出。只观察识别效果时，也可以选“图像感知结果”，此模式不驱动车辆。
 
-## 4. 输出：怎样控制小车
+## 3. 可运行的接口示例：输出车前直线
 
-在 `step` 中返回：
+下面代码完整展示输入读取、图像处理入口、路径输出与像素叠加。**这是一条人为设定的车前直线，不是从图像识别出来的结果，也不是完整巡线答案。** 它只会让车辆沿当前朝向前进，不能修正偏离、转弯或避障。
 
-```python
-return AlgorithmOutput(
-    status="TRACK",
-    action=Action(steering_angle_rad=0.2, speed_mps=0.3),
-)
-```
+先选择无障碍的直线场景，用它验证接口；内置直线场景的初始横向偏差和朝向有随机扰动，因此它未必能通过该场景。要观察严格沿线直行，可在场景设置中将初始横向位置和朝向调至与直线对齐。验收重点是“有输入、画出线、车辆前进”，不是得分。
 
-这表示请求以 0.3 m/s 前进，并将前轮向左转 0.2 rad。
-
-| 动作字段 | 单位和正负方向 |
-|---|---|
-| `steering_angle_rad` | 弧度；正数左转，负数右转，0 回正 |
-| `speed_mps` | m/s；正数前进，负数倒车，0 请求制动 |
-
-输出应限制在本次车辆参数允许的范围内。车辆有惯性，速度设为 0 不会瞬间停下，转角也不会瞬间到位；正反向切换会先制动再换向。
-
-常用状态：
-
-| `status` | 含义和平台处理 |
-|---|---|
-| `TRACK` | 正常跟踪，执行动作 |
-| `ACQUIRE` / `ALIGN` | 获取目标 / 对齐阶段，也允许执行动作 |
-| `UNINITIALIZED` | 尚未确定目标，停车 |
-| `LOST` / `AMBIGUOUS` | 丢线 / 无法区分目标，停车 |
-| `FINISHED` | 算法认为结束，停车；是否成功由平台评测判断 |
-| `ERROR` | 算法出错，结束运行并制动 |
-
-调试时可以额外返回 `centerline_px=[(u,v), ...]` 展示识别的线，`confidence` 表示 0～1 的置信度，`debug={...}` 记录数值，`diagnostics=["说明"]` 记录文字。这些字段可以不填；动作模式下，仅返回中心线不会驱动车辆。
-
-## 5. 最小代码模板
-
-下面的模板默认停车。将标注处替换成自己的视觉识别和控制逻辑，找到可靠目标后设置 `status="TRACK"` 并给出速度和转角。
+将下面内容保存为 `algorithm.py`：
 
 ```python
 import cv2
+import numpy as np
 
-from pathlab.sdk import Action, AlgorithmOutput
+from pathlab.sdk import AlgorithmOutput
 
 
 class StudentAlgorithm:
     def initialize(self, config, public_context):
-        self.limits = public_context.get("vehicle_limits")
-        if self.limits is None:
-            raise ValueError("请在仿真模式运行这个动作控制模板")
-        self.cruise_speed = float(config.get("cruise_speed_mps", 0.3))
+        self.vehicle = public_context.get("vehicle_limits")
 
     def reset(self, initial_observation, task_hint):
         self.hint = task_hint
-        # 在这里清空滤波、目标跟踪等历史状态。
+        self.last_time = None
 
     def step(self, observation):
-        rgb = observation.rgb()
+        rgb = observation.rgb()  # 输入：uint8 RGB 图像
         gray = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
+        dt = (observation.dt_s if self.last_time is None
+              else observation.timestamp_s - self.last_time)
+        self.last_time = observation.timestamp_s
 
-        # 在这里实现：识别原目标线 → 计算位置/方向误差 → 决定动作。
-        # 例如目标在画面左侧时，可请求正转角；弯道应降低速度。
-        # 找不到目标时保持停车，不要继续盲目前进。
-        status = "UNINITIALIZED"
-        steering = 0.0
-        speed = 0.0
+        calibration = observation.calibration
+        if calibration is None or self.vehicle is None:
+            return AlgorithmOutput(
+                status="LOST", diagnostics=["请在有标定的仿真场景运行示例"]
+            )
 
-        max_steering = self.limits["max_steering_rad"]
-        reverse_limit = (
-            self.limits["max_reverse_speed_mps"]
-            if self.limits["reverse_allowed"] else 0.0
-        )
-        steering = max(-max_steering, min(max_steering, steering))
-        speed = max(-reverse_limit, min(self.limits["max_speed_mps"], speed))
+        # 演示路径：当前车辆前方 0.4～1.6 m 的直线，y=0。
+        # 实际作业需将这里替换为“从图像识别目标线并转换为米制坐标”。
+        path = np.array([(x, 0.0) for x in (0.4, 0.7, 1.0, 1.3, 1.6)])
+
+        # 将演示路径投影回原图，便于在算法画面检查坐标。
+        homography = np.asarray(calibration.ground_to_image, dtype=float)
+        ground = np.column_stack((path, np.ones(len(path))))
+        projected = ground @ homography.T
+        projected = projected[projected[:, 2] > 1e-6]
+        pixels = projected[:, :2] / projected[:, 2:3]
+        visible = ((pixels[:, 0] >= 0) & (pixels[:, 0] < observation.width)
+                   & (pixels[:, 1] >= 0) & (pixels[:, 1] < observation.height))
+
         return AlgorithmOutput(
-            status=status,
-            action=Action(steering_angle_rad=steering, speed_mps=speed),
-            debug={"gray_mean": float(gray.mean())},
+            status="TRACK",
+            local_path_m=path.tolist(),       # 输出给路径执行器
+            centerline_px=pixels[visible].tolist(),  # 输出给画面叠加
+            debug={
+                "frame_id": observation.frame_id,
+                "dt_s": float(dt),
+                "gray_mean": float(gray.mean()),
+                "wheelbase_m": self.vehicle["wheelbase_m"],
+                "hint_kind": self.hint.kind,
+            },
         )
 
     def close(self):
         pass
 ```
 
-建议先在简单直线上以低速调试，再测试弯道、邻近道路和障碍物。看回放时同时检查识别的线、输出动作和实际运动，逐步定位问题。
+在该文件所在目录执行 `zip my_algorithm.zip algorithm.py`，上传时选“车辆坐标系局部路径”。返回的 `local_path_m` 已足以让平台控制车辆，不需要再返回 `Action`，也不需要自己调用任何车辆移动函数。
 
-## 6. 几条数据规范
+运行后检查三个地方：算法画面出现投影线；`debug` 中帧号和时间在变化；实际车辆有逐渐加速的前进运动。若选择“图像感知结果”，只会观察输出，不会运动。示例没有把图像用于识别；下一节就是要自己补上的部分。
 
-- **图像坐标** `(u,v)`：原点在左上角，u 向右、v 向下，单位像素。缩放或裁剪图像后，返回的像素点要换回原图坐标。
-- **车辆坐标** `(x,y)`：原点在后轴中心，x 向前、y 向左，单位米；角度使用弧度。像素误差不能直接当成米制误差。
-- **标定**：`calibration.intrinsic` 是 3×3 内参；`ground_to_image` 是 3×3 地面投影矩阵，满足 `[u,v,1] ∝ H @ [x,y,1]`，地面点可用逆矩阵转换。它不适用于障碍物顶部等非地面点。
-- **返回数据**：使用普通 Python 数字、列表和字典，不能包含 NaN 或无穷大。NumPy 数组用 `.tolist()`，标量可用 `float(...)` 转换。单帧输出总量最多 64 KiB，不要放入整张图像。
-- **运行时间**：每次 `step` 应尽快返回。常见仿真步长为 0.05 s；默认单步硬超时为 1 s，超时会终止运行。
+## 4. 基本巡线方法：从图像到局部引导线
 
-如果只想输出规划路径，可在上传时选「局部路径」，返回 `status="TRACK"` 和 `local_path_m=[(0.4,0.0),(0.8,0.1), ...]`，由平台控制转向和速度。路径至少两个点，按行驶顺序排列，使用上述车辆坐标系；默认执行器只支持前进。初学时推荐先用「车辆动作」。
+建议从“单条深色引导线、明亮地面、没有障碍物”的场景开始。目标不是一步实现复杂地图，而是逐步建立一条能解释、能调试的处理链：
+
+```text
+RGB 图像 → 地面区域 → 深色候选 → 每行线中心
+         → 关联同一目标 → 转成米制点 → 平滑、排序 → 局部路径
+```
+
+下面只讲方法，不提供识别实现代码。
+
+### 第一步：限定观察区域
+
+先观察原始图像，确定地面所在区域。近处引导线一般较宽，远处较细；画面上方可能包含背景或不可靠的远处信息。最初只处理图像中下部的地面，减少无关物体影响。
+
+不要把“固定裁掉一半图像”当成对所有相机都正确的规则。改变相机俯角后需要重新检查区域。若缩小或裁剪图像处理，保存缩放比例和裁剪偏移，输出像素点时还原到**原图坐标**，否则标定转换也会出错。
+
+### 第二步：把可能的引导线找出来
+
+把 RGB 图像转换为灰度图，利用“线比地面暗”的差异做阈值分割，得到二值候选图。均匀光照下可从固定阈值开始；光照变化时再尝试局部自适应阈值或 Otsu 阈值。参数应通过观察候选图调整，不要只盯最终成绩。[OpenCV 阈值分割原理](https://docs.opencv.org/4.x/d7/d4d/tutorial_py_thresholding.html)
+
+少量模糊可以抑制噪声，小尺度形态学操作可以去掉孤立点或补小裂缝；操作过强会让细线消失，或把相邻道路连接到一起。阴影和深色障碍物也可能被分割出来，因此“深色区域”只是候选，不等于目标线。[OpenCV 形态学说明](https://docs.opencv.org/4.x/d9/d61/tutorial_py_morphological_ops.html)
+
+### 第三步：用扫描带提取线中心
+
+从图像下方向上选取若干水平扫描带。每条带内，找出连续的深色区间；一段区间的左右边界为 `u_left` 和 `u_right` 时，中心约为 `(u_left + u_right) / 2`。为它同时保留所在行、宽度等信息。
+
+一行可能有多段深色区间。**分别保留各段中心，不要把整行所有深色像素平均成一个中心**，否则两条平行线会被合成为中间的一条假线。剔除明显过宽或过窄的区间时，也要考虑远近尺度变化。
+
+这一步的结果应是“每个扫描带有若干候选中心”，还不是一条可靠路径。调试时可以通过 `candidates_px` 分组显示候选，先确认真正的线没有被漏掉。
+
+### 第四步：把属于同一目标的中心串起来
+
+首帧依据 `task_hint` 建立目标身份：从提示点或区域附近选择候选，或从起点颜色标记及箭头附近找到应接入的引导线。不能一开始就默认图像中央最近的黑线是目标。
+
+随后从近到远连接候选中心，优先选择与上一扫描带位置、方向连续的点。可以设定允许的横向跳变和方向变化范围；遇到明显跳跃时停止连接。这样能够把一组离散点串成一条局部折线，而不是在相邻道路之间来回跳动。
+
+当两条候选无法区分时先返回 `AMBIGUOUS`；不确定时降低速度或停车，优于输出一条外观平滑但身份错误的线。
+
+### 第五步：把像素点变成车辆坐标
+
+平台提供的矩阵 `H = calibration.ground_to_image` 满足：
+
+```text
+[u, v, 1]ᵀ ∝ H [x, y, 1]ᵀ
+q = H⁻¹ [u, v, 1]ᵀ
+x = q₀ / q₂，y = q₁ / q₂
+```
+
+这里的 `(x,y)` 已经是**当前后轴坐标系**下的米制位置，无需再额外叠加相机安装偏移或世界位姿。用原图上的目标线中心做逆变换，得到车辆前方局部点。[OpenCV 单应矩阵说明](https://docs.opencv.org/4.x/d9/dab/tutorial_homography.html)
+
+若 `q₂` 接近零，转换会把像素噪声放大为很远的点，应舍弃；也要剔除非有限值、车后方点和不合理的远点。该变换假设点在地面上，只适用于引导线等地面点，不能把障碍物顶部像素直接当成地面位置。没有标定时先做像素感知实验，不要把像素数硬当成米。
+
+### 第六步：平滑并形成可执行路径
+
+对于前向、没有回头的短局部路段，可用直线或低阶曲线表示 `y=f(x)`；直线阶段先拟合 `y=ax+b`，弯道再考虑二次曲线。使用异常点剔除和适度平滑，避免个别噪声点让路径突然折转。高阶曲线可能产生剧烈振荡，不是阶数越高越好。
+
+在可靠可见范围内重新采样，从近到远输出至少两个点到 `local_path_m`；把识别出的原图点放到 `centerline_px` 方便检查。车正在走向远处时，应每帧重新计算相对于当前车体的路径。不要把某一帧的局部点当成整个实验的固定地图。
+
+路径不能出现不符合车辆转弯能力的尖角。简单几何上最小转弯半径约为 `wheelbase / tan(max_steering)`，默认参数对应约 0.56 m；这只是低速几何限制，有惯性时还要考虑速度、转角变化率等因素。先保留短而平滑的真实线段，再扩展观察距离。
+
+### 第七步：利用前一帧，避免跳到邻线
+
+保存上一帧的目标线位置、方向和可信程度，下一帧优先寻找连续的候选。初学时先低速运行，限定合理的跨帧变化；之后再根据时间间隔和自身历史控制信息改进运动预测。
+
+前一帧像素和车辆坐标都会随小车运动而改变，不能不作判断就原样复用。短暂遮挡可以做有界预测，但要明确限制持续时间和可信范围；本阶段最简单的处理是找不到可靠线就返回 `LOST` 并制动。多条线距离接近时，保持原目标身份比逐帧追最近线更重要。
+
+### 第八步：按层检查，逐步增加难度
+
+按“直线 → 单弯 → S 弯 → 光照变化 → 相邻干扰线”的顺序测试，每次只增加一个难点。先确认候选分割正确，再确认像素中心线正确，随后检查米制路径，最后观察车辆是否沿它行驶。
+
+| 现象 | 优先检查 |
+|---|---|
+| 两条路之间生成了一条假线 | 是否把同一扫描带的所有暗像素混在一起平均 |
+| 画面中的线正确，但车辆反向转弯 | y 向左为正的约定、像素坐标还原、标定逆变换 |
+| 路径出现很远的尖刺 | 是否使用了接近地平线的点，齐次除数是否接近零 |
+| 邻线一出现就切换目标 | 是否使用起点提示，是否关联上一帧目标 |
+| 小车左右摆动 | 路径是否抖动、点序是否正确、可见路径是否过短 |
+| 输出了线但车辆不动 | 是否选择局部路径模式、是否提供 `local_path_m`、状态是否允许行驶 |
+
+批量评测时保留失败记录，给不同版本使用相同场景和种子；重点观察合法接入、完成度、偏离、碰撞和综合评分，而不只看自报的 `TRACK`。这个基础方法并不自动解决路口拓扑、连续遮挡或避障，先把输入到路径输出的每一层做对，再逐步扩展。
+
+## 5. 提交时的最小约定
+
+ZIP 根目录放 `algorithm.py`，包含 `StudentAlgorithm`；需要的辅助代码和资源一同打包。不要包含 `.venv`、平台目录或运行记录。ZIP 最大 32 MiB，解压合计最大 128 MiB，单文件最大 32 MiB。
+
+依赖已提供 NumPy、OpenCV 和 SDK；额外第三方库需要教师统一配置，上传 `requirements.txt` 不会自动安装。常见仿真步长是 0.05 s，默认单步硬超时 1 s；这是超时上限，不代表算法达到 20 Hz 的实时要求。
+
+更多字段见 [公共 SDK 协议](protocol.md)，指标含义见 [评测说明](evaluation.md)。
