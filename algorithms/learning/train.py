@@ -200,21 +200,18 @@ def fit(args):
                     actions, logits, _ = model(images, context)
                     valid = (phase_weight > 0).float()
                     denominator = valid.sum().clamp_min(1)
-                    auxiliary_weights = (
-                        phase_weight if args.acquisition_targets == "all" else valid
-                    )
                     weights = (1 + 3 * labels[:, :, 0].abs()) * phase_weight
                     steering = (
                         (actions[:, :, 0] - labels[:, :, 0]) ** 2 * weights
                     ).sum() / denominator
                     speed = (
-                        ((actions[:, :, 1] - labels[:, :, 1]) ** 2) * auxiliary_weights
+                        ((actions[:, :, 1] - labels[:, :, 1]) ** 2) * phase_weight
                     ).sum() / denominator
                     visibility = (
                         nn.functional.binary_cross_entropy_with_logits(
                             logits, visible, reduction="none"
                         )
-                        * auxiliary_weights
+                        * phase_weight
                     ).sum() / denominator
                     loss = 5 * steering + 2 * speed + 0.15 * visibility
                     if split == "train":
@@ -376,12 +373,10 @@ def main():
     collect.add_argument("--beta", type=float, default=0.2)
     train = commands.add_parser("fit")
     train.add_argument("--data", nargs="+", default=["artifacts/learning/data"])
-    train.add_argument(
-        "--output", default="algorithms/learning/weights/driver-complex.pt"
-    )
+    train.add_argument("--output", default="artifacts/learning/model.pt")
     train.add_argument("--epochs", type=int, default=20)
     train.add_argument("--batch-size", type=int, default=32)
-    train.add_argument("--sequence-length", type=int, default=12)
+    train.add_argument("--sequence-length", type=int, default=24)
     train.add_argument("--threads", type=int, default=4)
     train.add_argument("--lr", type=float, default=0.0005)
     train.add_argument("--seed", type=int, default=42)
@@ -389,13 +384,7 @@ def main():
     train.add_argument(
         "--input-version",
         choices=["rgb_hint_v1", "rgb_marker_v2"],
-        default="rgb_hint_v1",
-    )
-    train.add_argument(
-        "--acquisition-targets",
-        choices=["steering", "all"],
-        default="all",
-        help="起步阶段加权监督哪些输出；steering 用于复现第一阶段实验",
+        default="rgb_marker_v2",
     )
     train.add_argument(
         "--save-every",
@@ -407,7 +396,7 @@ def main():
         "--acquisition-weight",
         type=float,
         default=1,
-        help="前 3.5 s 接入阶段的损失权重，作用输出由 acquisition-targets 指定",
+        help="前 3.5 s 接入阶段转向、速度与可见性的损失权重",
     )
     average = commands.add_parser(
         "average", help="平均同架构、同初始化微调模型的参数，推理仍为单个网络"

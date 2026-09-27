@@ -93,12 +93,10 @@ def collect_scene(scene, folder, checkpoint=None, beta=0.5, provenance=None):
     limits = scene.vehicle.model_dump()
     student = None
     if checkpoint:
-        from .algorithm import RecurrentPolicy, checkpoint_for_limits
+        from .algorithm import DEFAULT_CHECKPOINT, RecurrentPolicy
 
-        if checkpoint in {"auto", "legacy"}:
-            checkpoint = str(
-                checkpoint_for_limits(limits, legacy=checkpoint == "legacy")
-            )
+        if checkpoint == "auto":
+            checkpoint = str(DEFAULT_CHECKPOINT)
         student = RecurrentPolicy()
         student.initialize({"checkpoint": checkpoint}, {"vehicle_limits": limits})
     previous = np.zeros(2, np.float32)

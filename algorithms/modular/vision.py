@@ -55,6 +55,7 @@ class BirdEye:
     resolution = 0.025
     forward = 6.0
     half_width = 3.0
+    dark_line_ratio = 1.0
 
     def __init__(self, calibration):
         self.size = (calibration.width, calibration.height)
@@ -62,6 +63,7 @@ class BirdEye:
         self.inv = np.linalg.inv(self.h)
         rows, cols = np.mgrid[:241, :241]
         ground = self.metric(np.c_[cols.ravel(), rows.ravel()])
+        self.ground = ground.reshape(*rows.shape, 2)
         pixels = transform_points(ground, self.h)
         homogeneous = np.c_[ground, np.ones(len(ground))] @ self.h.T
         valid = (
@@ -85,7 +87,7 @@ class BirdEye:
     def pixels(self, metric):
         return transform_points(metric, self.h)
 
-    def extract(self, rgb, hint):
+    def extract(self, rgb, hint, excluded_ground=None):
         bird = cv2.remap(
             rgb, self.mx, self.my, cv2.INTER_LINEAR, borderValue=(255, 255, 255)
         )
@@ -100,6 +102,7 @@ class BirdEye:
             self.valid
             & neutral
             & (gray < threshold)
+            & (gray < background * self.dark_line_ratio)
             & (contrast > np.maximum(10, background * 0.18))
         )
         hsv = cv2.cvtColor(bird, cv2.COLOR_RGB2HSV)
@@ -116,6 +119,8 @@ class BirdEye:
         mask &= ~cv2.dilate(marker.astype(np.uint8), np.ones((3, 3), np.uint8)).astype(
             bool
         )
+        if excluded_ground is not None:
+            mask &= ~excluded_ground
         skeleton = thinning(mask)
         count, labels, stats, _ = cv2.connectedComponentsWithStats(skeleton, 8)
         components = []

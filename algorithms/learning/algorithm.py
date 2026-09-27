@@ -8,24 +8,7 @@ import numpy as np
 
 from pathlab.sdk import Action, AlgorithmOutput
 
-LEGACY_CHECKPOINT = Path(__file__).parent / "weights" / "driver.pt"
-INERTIAL_CHECKPOINT = LEGACY_CHECKPOINT.with_name("driver-inertial.pt")
-DEFAULT_CHECKPOINT = LEGACY_CHECKPOINT.with_name("driver-complex.pt")
-
-
-def checkpoint_for_limits(limits, *, legacy=False):
-    """The current model is trained on both supported public motion models.
-
-    Historical weights remain available through the explicit checkpoint option.
-    Keep this selection boundary for future models with different capabilities.
-    """
-    if legacy:
-        return (
-            INERTIAL_CHECKPOINT
-            if limits.get("motion_model") == "inertial_v2"
-            else LEGACY_CHECKPOINT
-        )
-    return DEFAULT_CHECKPOINT
+DEFAULT_CHECKPOINT = Path(__file__).parent / "weights" / "driver-complex.pt"
 
 
 class RecurrentPolicy:
@@ -44,10 +27,10 @@ class RecurrentPolicy:
             "max_steering_rad": 0.52,
             "max_speed_mps": 1.5,
         }
-        checkpoint = Path(config.get("checkpoint", checkpoint_for_limits(self.limits)))
+        checkpoint = Path(config.get("checkpoint", DEFAULT_CHECKPOINT))
         if not checkpoint.is_file():
             raise RuntimeError(
-                "学习模型不可用：缺少权重。请运行 python run.py learning fit --data artifacts/learning/data"
+                "学习模型不可用：缺少权重。请恢复发布权重，或用 checkpoint 参数指定自行训练的权重文件"
             )
         raw_checkpoint = checkpoint.read_bytes()
         self.checkpoint_sha256 = hashlib.sha256(raw_checkpoint).hexdigest()

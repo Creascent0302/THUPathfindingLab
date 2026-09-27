@@ -90,21 +90,21 @@
   {
     "id": "temporal_pursuit_avoidance",
     "name": "时序拓扑 + Pure Pursuit + 避障",
-    "version": "2.0",
+    "version": "3.1",
     "capabilities": [
       "action"
     ],
     "entrypoint": "algorithms.avoidance:AvoidingPursuit",
-    "description": "独立避障方案 v2：剔除立体物件伪线、弯道侧移观察、保持原路线身份、按当前姿态规划接回；检查转弯约束、障碍物与邻线净距。"
+    "description": "独立避障方案 v3.1：RGB 物件感知、紧凑绕行、连续障碍物接续和有界原线预测；重见原线后校正接回，预测不可靠时停车，必要时沿已驶过走廊倒车恢复。"
   },
   {
     "id": "temporal_mpc_avoidance",
     "name": "时序拓扑 + MPC + 避障",
-    "version": "2.0",
+    "version": "3.1",
     "capabilities": [
       "action"
     ],
     "entrypoint": "algorithms.avoidance:AvoidingMPC",
-    "description": "独立避障方案 v2：剔除立体物件伪线、弯道侧移观察、保持原路线身份、按当前姿态规划接回；检查转弯约束、障碍物与邻线净距。"
+    "description": "独立避障方案 v3.1：RGB 物件感知、紧凑绕行、连续障碍物接续和有界原线预测；重见原线后校正接回，预测不可靠时停车，必要时沿已驶过走廊倒车恢复。"
   }
 ]

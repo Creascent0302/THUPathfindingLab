@@ -4,7 +4,7 @@ import math
 import numpy as np
 
 from pathlab.sdk import Action
-from pathlab.dynamics import integrate_motion
+from pathlab.dynamics import integrate_motion, signed_speed
 
 
 class MotionEstimate:
@@ -17,6 +17,10 @@ class MotionEstimate:
     @property
     def speed(self):
         return float(np.linalg.norm(self.state[3:5]))
+
+    @property
+    def signed_speed(self):
+        return float(signed_speed(self.state))
 
     @property
     def steering(self):
@@ -47,8 +51,9 @@ class MotionEstimate:
 
 
 class Pursuit:
-    def __init__(self, limits, speed=0.85):
+    def __init__(self, limits, speed=0.85, *, lookahead_m=0.57):
         self.limits, self.cruise = limits, speed
+        self.lookahead_m = lookahead_m
 
     def command(self, path, confidence, motion):
         distance = np.linalg.norm(path, axis=1)
@@ -60,7 +65,7 @@ class Pursuit:
             if self.limits.get("motion_model") == "inertial_v2"
             else 0
         )
-        lookahead = 0.57 + (0.12 + response) * motion.speed
+        lookahead = self.lookahead_m + (0.12 + response) * motion.speed
         indices = np.flatnonzero((distance >= lookahead) & (path[:, 0] > 0.05))
         target = path[indices[0] if len(indices) else -1]
         curvature = 2 * target[1] / max(float(target @ target), 0.04)

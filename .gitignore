@@ -1,18 +1,14 @@
 .venv/
+.cache/
 __pycache__/
 .pytest_cache/
+.ruff_cache/
 *.egg-info/
 frontend/node_modules/
 frontend/dist/
 frontend/*.tsbuildinfo
-artifacts/runs/
-artifacts/uploads/
-artifacts/browser/
-.cache/
-artifacts/submissions/
-artifacts/maps/
-artifacts/browser-authoring/
-artifacts/browser-evaluation/
-artifacts/learning/
-artifacts/custom-map-regression/
-artifacts/challenge-search/
+artifacts/
+
+# Deployment credentials
+access-codes*.json
+online.env
