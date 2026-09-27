@@ -12,8 +12,8 @@ import cv2
 from .config import Scene
 from .simulation import VehicleState, wrap_angle
 
-EVALUATOR_VERSION = "4.0"
-SCORE_VERSION = "4.0"
+EVALUATOR_VERSION = "5.0"
+SCORE_VERSION = "5.0"
 SCORE_WEIGHTS = {
     "tracking": 35,
     "efficiency": 20,
@@ -90,6 +90,11 @@ class Evaluator:
             + scene.vehicle.max_speed_mps / scene.vehicle.acceleration_mps2
         )
         self.progress = 0.0
+        self.reference_progress = 0.0
+        self.reverse_distance_m = 0.0
+        self.reverse_time_s = 0.0
+        self.reverse_count = 0
+        self.reversing = False
         self.acquired_at = None
         self.offtrack_s = 0.0
         self.switch_s = 0.0
@@ -130,6 +135,12 @@ class Evaluator:
         travel = float(np.linalg.norm(p - self.previous))
         self.previous = p
         dt, t = self.scene.dt_s, THRESHOLDS
+        reversing = state.speed_mps < -0.01
+        if reversing:
+            self.reverse_distance_m += travel
+            self.reverse_time_s += dt
+            self.reverse_count += not self.reversing
+        self.reversing = reversing
         collision_ids = self._collision_ids(state)
         for index in set(collision_ids) - self.contacts:
             self.collisions.append({"object_index": index, "timestamp_s": timestamp})
@@ -159,14 +170,22 @@ class Evaluator:
                 "collision_ids": collision_ids,
             }
             return self.last_evaluation.copy()
-        if travel > self.scene.vehicle.max_speed_mps * dt * 1.05 + 0.001:
+        max_speed = max(
+            self.scene.vehicle.max_speed_mps,
+            self.scene.vehicle.max_reverse_speed_mps
+            if self.scene.vehicle.reverse_allowed
+            else 0,
+        )
+        if travel > max_speed * dt * 1.05 + 0.001:
             self.done_reason = "invalid_motion"
         upper = (
             t["entry_arc_m"]
             if self.acquired_at is None
-            else self.progress + travel * 1.5
+            else self.reference_progress + travel * 1.5
         )
-        lower = max(0, self.progress - 0.35)
+        # Current ordered position may retreat; credited completion is a high-water
+        # mark. Never search globally or grant new progress for retracing a road.
+        lower = max(0, self.reference_progress - 0.35)
         arc, error, tangent = self.path.project(p, lower, upper)
         heading_error = abs(wrap_angle(state.yaw_rad - tangent))
         entry_distance = float(np.linalg.norm(p - self.path.points[0]))
@@ -190,6 +209,7 @@ class Evaluator:
         ):
             self.acquired_at = timestamp
             self.progress = arc
+            self.reference_progress = arc
         ontrack = (
             error <= t["track_distance_m"]
             and heading_error <= t["track_heading_rad"]
@@ -200,7 +220,7 @@ class Evaluator:
             and not ontrack
             and not wrong_line
             and any(
-                low <= self.progress <= high
+                low <= self.reference_progress <= high
                 and low <= arc <= high
                 and error <= width
                 and heading_error <= 1.0
@@ -210,6 +230,7 @@ class Evaluator:
         if self.acquired_at is not None:
             if (ontrack or avoidance) and self.done_reason is None:
                 self.progress = max(self.progress, arc)
+                self.reference_progress = arc
                 self.offtrack_s = 0
             else:
                 self.offtrack_s += dt
@@ -283,6 +304,8 @@ class Evaluator:
             "reason": self.done_reason,
             "collision_ids": collision_ids,
             "avoidance_active": avoidance,
+            "reverse_distance_m": self.reverse_distance_m,
+            "reverse_count": self.reverse_count,
         }
         return self.last_evaluation.copy()
 
@@ -352,8 +375,8 @@ class Evaluator:
             )
         margin = THRESHOLDS["identity_neighborhood_m"]
         intervals = [
-            (0.0, self.progress - margin),
-            (self.progress + margin, self.path.total),
+            (0.0, self.reference_progress - margin),
+            (self.reference_progress + margin, self.path.total),
         ]
         for low, high in intervals:
             if high <= low:
@@ -624,6 +647,9 @@ def summarize(
         "timeout_count": timeout_count,
         "timeout_rate": timeout_count / max(len(compute) + timeout_count, 1),
         "speed_mps": distribution([a["speed_mps"] for a in actual]),
+        "reverse_distance_m": evaluator.reverse_distance_m if evaluator else None,
+        "reverse_time_s": evaluator.reverse_time_s if evaluator else None,
+        "reverse_count": evaluator.reverse_count if evaluator else None,
         "simulation_time_s": elapsed if evaluator else None,
         "completion_time_s": (evaluator.success_at_s or elapsed)
         if evaluator and reason == "success"

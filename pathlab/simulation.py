@@ -9,7 +9,7 @@ import numpy as np
 
 from .config import CameraConfig, Pose, Scene, VehicleConfig
 from .sdk import Action, Calibration, Model
-from .dynamics import integrate_motion
+from .dynamics import integrate_motion, signed_speed
 from .scene_objects import ObjectRenderer, object_footprint
 
 
@@ -45,15 +45,18 @@ class Vehicle:
         steer = float(
             np.clip(action.steering_angle_rad, -c.max_steering_rad, c.max_steering_rad)
         )
-        speed = float(np.clip(action.speed_mps, 0, c.max_speed_mps))
+        reverse_limit = c.max_reverse_speed_mps if c.reverse_allowed else 0
+        speed = float(np.clip(action.speed_mps, -reverse_limit, c.max_speed_mps))
         events = []
         if steer != action.steering_angle_rad:
             events.append("steering_saturated")
         if speed != action.speed_mps:
             events.append("speed_saturated")
+        if speed * s.speed_mps < 0:
+            events.append("direction_change_braking")
         velocity = np.array([s.velocity_x_mps, s.velocity_y_mps])
         # Also support callers initializing a stationary/legacy state by speed.
-        if abs(np.linalg.norm(velocity) - s.speed_mps) > 1e-9:
+        if abs(np.linalg.norm(velocity) - abs(s.speed_mps)) > 1e-9:
             velocity = s.speed_mps * np.array(
                 [math.cos(s.yaw_rad), math.sin(s.yaw_rad)]
             )
@@ -79,7 +82,7 @@ class Vehicle:
             s.yaw_rate_rad_s,
             s.acceleration_mps2,
         ) = map(float, values)
-        s.speed_mps = math.hypot(s.velocity_x_mps, s.velocity_y_mps)
+        s.speed_mps = float(signed_speed(values))
         if abs(s.steering_angle_rad - steer) > 1e-9:
             events.append("steering_rate_limited")
         if abs(s.speed_mps - speed) > 1e-9:

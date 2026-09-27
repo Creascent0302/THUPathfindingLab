@@ -1,120 +1,279 @@
-# 参考算法与复现
+# 参考算法：从图像到车辆动作
 
-六种实现均已接入 `algorithms.json` 和前端，其中四种沿线方法与两种避障方法独立注册。部署代码只读 RGB、公开标定、时间、初始化提示、车辆公开约束；地图、真实位姿、场景族、种子和评分不进入策略。训练与评测使用私有真值的代码单独位于 `learning/data.py` 和评测脚本，推理不导入它们。
+本文按实际执行顺序解释当前六种寻迹方法。先说明共同的问题和接口，再分别推导扫描线、时序拓扑控制、端到端学习，最后连接到独立避障方案。阅读代码时建议从入口的 `step()` 开始，沿本文给出的函数名向下查看，而不是从所有工具函数开始阅读。
 
-| ID | 架构 | 依赖与用途 |
+学生逐步实现不带避障的视觉识别并输出局部路径，可先阅读 [时序引导线识别教程](temporal-path-tutorial.md)。
+
+## 1. 六种方法究竟有哪些区别
+
+| 前端方法 / 注册 ID | 路线表示与记忆 | 如何产生动作 | 占道物件与倒车恢复 |
+|---|---|---|---|
+| 扫描线 PD / `scanline_pid` | 标记初始化、时序身份关联、旋转截面采样 | 曲率前馈 + 预瞄误差 PD | 无 |
+| 时序拓扑 PP / `temporal_pursuit` | 鸟瞰骨架图、有序路径、短时预测 | Pure Pursuit + 曲率调速 | 无 |
+| 时序拓扑 MPC / `temporal_mpc` | 与 PP 相同 | 有限时域候选动作仿真 | 无 |
+| CNN + GRU / `cnn_gru` | 图像特征和递归隐状态 | 网络直接输出转角与前进速度 | 无 |
+| PP + 避障 / `temporal_pursuit_avoidance` | 显式原路线、物件、邻线、已驶过走廊 | 局部绕行规划 + PP；受限倒车恢复 | 有，倒车须由场景允许 |
+| MPC + 避障 / `temporal_mpc_avoidance` | 与 PP 避障版相同 | 局部绕行规划 + MPC；受限倒车恢复 | 有，倒车须由场景允许 |
+
+注册表是 [algorithms.json](../algorithms.json)。停车、固定动作、图像分割探针和独立进程示例用于验证平台链路，不计作寻迹算法。`scanline_pid` 的 ID 为兼容已有实验保留，当前控制器没有积分项，准确名称是 **PD**。
+
+这六种方法不是六套完全重复的代码。三个传统沿线方法共享目标身份管理和公开运动预测，扫描线替换路径提取及控制器，MPC 替换 PP 控制器。避障版有独立入口和注册 ID，只复用它们需要的公共部分。CNN/GRU 的部署不调用这些几何方法。
+
+## 2. 先分清任务信息、估计状态和真值
+
+### 2.1 一帧能够知道什么
+
+[Observation](../pathlab/sdk.py) 包含 RGB 图像、时间戳、步长、公开相机标定和任务提示。`initialize()` 还能拿到公开车辆限制，如轴距、转角上限、制动参数。算法拿不到地图目标数组、物件列表、车辆真实位姿、真实速度或评测器进度。
+
+这决定了一个基本顺序：**先由提示确定要跟哪条线，再保持这条线的身份，之后才能计算如何控制车辆。** 在近距平行道路上，“图像中离车最近的一条线”不能替代目标身份；车偏出去之后，错误道路反而可能更近。
+
+场景中的真实状态只进入渲染和独立评分。学习数据采集可以离线使用真值专家，但部署入口与采集器分离，详见 [学习模型说明](learning.md)。
+
+### 2.2 坐标和动作的含义
+
+车体坐标原点是后轴中心，`x` 向车头前方，`y` 向左，单位为米；正前轮转角表示前轮向左。`local_path_m` 是按行驶顺序排列的车体坐标点，不是任意点云。
+
+```python
+Action(steering_angle_rad=0.2, speed_mps=0.4)   # 左打方向，前进
+Action(steering_angle_rad=0.2, speed_mps=-0.3)  # 同一前轮角度，倒车
+Action(steering_angle_rad=0.2, speed_mps=0)     # 保持当前转角，请求制动
+```
+
+`speed_mps` 是目标速度，不是强制设置实际速度。倒车时相同转角产生相反的车身角速度。场景可禁用倒车；允许时负目标速度受独立的 `max_reverse_speed_mps` 限制。正负换向必须经过实际零速，零速指令本身不会使车反向运动。
+
+### 2.3 动作怎样改变下一帧
+
+以传统算法的 [VisualDriver.step](../algorithms/modular/algorithm.py) 为例，每帧执行：
+
+1. 校验时间顺序，不能把未来的记忆用于过去帧。
+2. 用上次真正请求的动作和已经经过的时间，积分自己的运动估计。
+3. 把旧路线、起点及终点记忆变换到当前车体坐标。
+4. 处理当前图像，关联原目标并生成有序局部路径。
+5. 控制器把局部路径变成转角和速度；记录这次动作供下一次预测。
+6. 平台按状态门控、动作限幅和动力学执行，生成下一帧图像并独立评分。
+
+核心调用可在代码中直接找到：
+
+```python
+translation, yaw = self.motion.advance(
+    self.last_action, elapsed, observation.dt_s
+)
+self.tracker.advance(translation, yaw)
+track = self.tracker.observe(observation, max(elapsed, observation.dt_s))
+```
+
+[MotionEstimate](../algorithms/modular/control.py) 使用自己的八维状态 `(x, y, yaw, vx, vy, steering, yaw_rate, acceleration)`。每次更新后将原点移动到新的估计车体坐标，同时旋转速度向量，保留横向动量。它与模拟器共用 [integrate_motion](../pathlab/dynamics.py) 的方程，但没有读取模拟器状态。
+
+惯性模型先限制转角变化率，再对速度响应施加加速度和 jerk 上限；车身角速度和速度向量方向分别经过响应及横向加速度限制。因此“已经发出向左转的指令”和“车辆此时已经沿左转方向运动”不是同一时刻。控制器需要前视、限速和制动余量。运动学 `kinematic_v1` 保留为旧场景兼容模型。
+
+动作预测在默认同步、确定性仿真中与车辆模型一致。压力测试的丢帧、动作延迟、TTL 制动没有实际执行回执供策略修正，预测可能漂移；这也是必须单独评测压力集合的原因。
+
+## 3. 共同视觉层：为什么需要时序拓扑
+
+实现集中在 [vision.py](../algorithms/modular/vision.py) 的 `BirdEye`、`TargetTracker` 和 `trace_component`。
+
+### 第一步：将透视图变成可比较的地面距离
+
+`BirdEye` 使用公开 `ground_to_image` 单应矩阵，把前方约 6 m、左右各 3 m 的地面采成 241×241 网格，分辨率 0.025 m。这里只对地面成立；立体物件的上沿不能当成地面点反投影。
+
+使用米制网格后，0.16 m 的关联门限在不同相机安装高度、俯角下仍有相同几何意义。相机看不到的格子保持无效，算法不会因为鸟瞰图是矩形就把整块区域都当作已经观测。
+
+### 第二步：提取细暗线，保留分支关系
+
+`BirdEye.extract()` 用灰度、局部背景差和颜色中性约束提取窄暗线。局部背景由形态学闭运算估计，作用是计算对比度；**不是对道路掩膜闭运算来连接两条路**。绿色提示区域及其抗锯齿边缘从暗线掩膜中排除。
+
+`thinning()` 将掩膜细化成骨架，连通域过滤很小的噪声。得到的每个候选同时保留网格坐标和米制坐标：前者用于判断像素是否相邻，后者用于几何距离及控制。
+
+### 第三步：只在初始化时使用任务提示
+
+默认绿色圆环和方向箭头为起点提示。算法估计标记主方向，并在该方向末端寻找目标线。点提示或区域提示也可以反投影成初始化锚点。
+
+当没有可用提示且存在多个候选时返回 `AMBIGUOUS`，不猜最近的道路。标记暂不可见时返回 `UNINITIALIZED`。初始化成功之后，路线身份由连续观测维持，而不是每帧重新寻找一个起点。
+
+### 第四步：预测旧目标在新图像中应该出现的位置
+
+旧路径经过自运动变换后，选取约 `x > 0.65 m`、距车小于 2.5 m 的可见部分形成锚点和支持点。对每个候选连通域计算：
+
+```text
+关联代价 = 支持点到候选的距离中位数
+         + 0.08 × (1 − 候选切向与预测切向的点积)
+```
+
+正常跟踪门限为 0.16 m；标记初始化允许更宽的 0.42 m。如果最佳和次佳候选代价差小于 0.035 m，返回 `AMBIGUOUS`。这个“代价差”检查很关键：两个近邻候选都接近预测位置时，选最小值并不足以证明身份唯一。
+
+### 第五步：沿连通图走出一条有序路径
+
+`trace_component()` 建立骨架的相邻关系，排除已有直角连接处的冗余对角边，避免像素级小环。沿初始切向向前、向后各走一遍，再拼接为有序路径。遇到分支时综合切向连续性和最多六层的续接长度；不会跳到不连通的旁边道路。
+
+只有确定了路径顺序，才做局部五点平均来降低一个像素带来的转向抖动。如果先把所有候选点按图像行取平均，近邻平行路或回头弯可能被平均成场景中根本不存在的“中间路线”。
+
+“时序拓扑”因此由两层约束组成：时序关联决定**还是不是原来的线**，局部连通性决定**这条线接下来怎样延伸**。它是短时局部视觉记忆，没有建立完整地图或保证任意交叉口拓扑可辨。
+
+### 第六步：缺失时保留身份，按时间降低信任
+
+关联暂时失败时，最多 0.45 s 沿已观测路径预测，置信度按指数衰减，预测驾驶速度最多 0.35 m/s。超过预算返回 `LOST` 并制动，不清除身份去认领另一条线。
+
+已观测终点进入近端相机盲区有单独的有界预测逻辑，最长 3 s、终点距车小于 1.2 m。终点是否真正完成仍由平台评分器决定，算法看到终点颜色不能直接替代完成判定。
+
+## 4. 扫描线 PD：用容易解释的反馈建立基线
+
+代码入口 [ScanlinePID](../algorithms/scanline.py) 继承 `VisualDriver`，替换为 `ScanlineTracker` 和 `ScanlinePD`。
+
+### 4.1 扫描线为什么要旋转
+
+普通水平图像扫描行在回头弯上可能同时穿过同一路线的两段，也可能穿过两条不同路线。当前 `scan_component()` 在已选定连通域的地面坐标中，以最近切向为轴，查找前方 0.02–0.115 m、横向偏差小于 0.075 m 的短截面。把截面内相邻点求均值，再用新位移更新切向；每一步都旋转下一次截面。
+
+这让采样顺序能够跟随弯道甚至局部向车后方折返，而不是要求路径必须是 `y=f(x)`。`ordered_nearest()` 只在有序路径第一个距离谷底中选近点，避免后面的回返路段因为欧氏距离更小而抢走控制目标。
+
+### 4.2 从预瞄误差到转角
+
+控制器选取前视距离附近的实际观测点，前视为：
+
+```text
+L_preview = 0.65 + (0.12 + τ_yaw + τ_lateral) × 估计速度
+e = atan2(预瞄点 y, max(预瞄点 x, 0.15))
+D_filtered = 0.8 × D_previous + 0.2 × (e − e_previous) / dt
+```
+
+运动学模型的两个响应时间取零。用观测预瞄点而不是将远处拟合多项式外推到后轴，是为了避免直线刚进入弯道、近端又不可见时出现错误的反向转弯。
+
+路径上相隔约 0.3 m 的三个点提供有符号曲率。若向量依次是 `ab, bc, ac`，则 `κ = 2 cross(ab, bc) / (|ab||bc||ac|)`，并限制在 ±2 /m。最后的控制式对应代码：
+
+```python
+steering = 0.15 * math.atan(wheelbase * curvature) + feedback_scale * (
+    kp * error + (kd + 0.25 * response) * filtered_derivative
+)
+```
+
+其中 `feedback_scale = 2 × wheelbase / max(L_preview, 0.35)`，默认 `kp=0.85, kd=0.045`。曲率前馈预先给出弯道转角，P 项纠正预瞄误差，D 项抑制误差快速增长；惯性更大时增加阻尼。没有积分项，因此没有积分饱和或积分清零策略。
+
+### 4.3 为什么速度也必须由误差决定
+
+默认巡航请求 0.65 m/s，曲率越大速度越低；低置信度进一步减速，较大预瞄角误差再除以 `1+0.8|e|`。最后仍受车辆转角和速度限制。丢线后清空误差导数，避免恢复时把长时间间隔误当成突然转向。
+
+它的优势是误差、增益和控制动作都容易观察，适合反馈控制实验。它依赖相同的视觉身份层，不能把它的成绩解释成“完全没有时序的单帧扫描线”。它也没有物件感知，不能在占道任务上把碰撞归因于 PD 参数本身。
+
+## 5. 时序拓扑 + Pure Pursuit：追踪有序几何目标
+
+入口是 [TemporalPursuit](../algorithms/modular/algorithm.py)，控制实现是 [Pursuit.command](../algorithms/modular/control.py)。视觉层已经回答“跟哪条路”，控制器只处理这条局部路径。
+
+### 5.1 几何推导
+
+在路径最近点之后，选第一个距离达到前视距离且位于车前方的点 `(x_L, y_L)`。假设从后轴出发的圆弧经过此点，则：
+
+```text
+κ = 2 y_L / (x_L² + y_L²)
+δ = atan(轴距 × κ)
+```
+
+正 `y_L` 给出正曲率和左转角。前视过短容易随图像抖动，过长会切弯；当前前视为 `0.57 + (0.12 + τ_yaw + τ_lateral) × 估计速度`，用更远的目标补偿高速或惯性响应。
+
+### 5.2 从几何可行走向动态可跟踪
+
+速度取巡航值、车辆上限和 `0.8/max(1,|κ|)` 的较小者，并按置信度缩放。惯性模型还检查横向加速度速度上限 `sqrt(0.75 a_lat_max / max(|κ|,0.05))`。
+
+控制器继续查看前视点之后 0.7 m 的路线，估计即将到来的急弯限速，再用制动距离关系约束当前请求速度。它不把当前直段的高速度原样保持到弯道入口。平台还会实施 jerk 和转角变化率限制，因此这一检查仍是近似的前瞻调速，最终效果要由完整闭环验证。
+
+PP 计算量小、行为易解释；对路径切线、前视点和初始横向偏差敏感，没有显式比较一组未来控制序列。更复杂的动态过程由下一种方法处理。
+
+## 6. 时序拓扑 + MPC：比较未来，而不是只追一个点
+
+[TemporalMPC](../algorithms/modular/algorithm.py) 仅把控制器替换为 [Predictive](../algorithms/modular/control.py)。同一个场景下，它与 PP 使用相同视觉输入和路线关联规则，便于把性能差异定位到控制层。
+
+### 6.1 如何形成有限搜索问题
+
+先执行一次 PP，得到中心转角和经过曲率调节的速度。以此转角为中心生成 9 个第一段偏移，再组合 7 个第二段增量，共 63 个候选；第一段用于前 0.4 s，第二段用于之后 0.8 s。
+
+预测时域 1.2 s，共 12 个 0.1 s 节点；每个节点内部执行两个 0.05 s 动力学积分，保留转角变化率、加速度、角速度和横向动量。代码没有调用外部优化器，也没有搜索连续的所有可能控制序列。
+
+### 6.2 为什么参考点必须按弧长排序
+
+以当前最近路径点为起点，按候选速度和时间沿局部路径弧长插值参考位置。回头弯的另一段即使很近，也不会成为任一预测节点可任意选择的最近目标。
+
+每个候选的代价为：
+
+```text
+J = Σ [(预测 x − 参考 x)² + 5(预测 y − 参考 y)²]
+  + 0.18(第一段转角 − 当前估计转角)²
+  + 0.20(第二段转角 − 第一段转角)²
+```
+
+位置代价促使轨迹靠近有序参考，转角项减少急剧动作。选择最低代价候选的第一个转角执行；下一帧重新观察并重新求解，就是滚动时域控制。
+
+### 6.3 应当怎样理解它的能力
+
+它是围绕 PP 初值的**采样式局部 MPC 基线**：速度在一次搜索中固定，没有联合优化速度和转角，没有全局最优保证。相比 PP，它显式考虑惯性和短期动作后果，但不能修正视觉层已认错道路的问题。普通 MPC 控制器也不含碰撞代价；碰撞和邻线约束由独立避障规划器负责。
+
+## 7. CNN + GRU：由图像序列直接预测动作
+
+完整训练与部署链路见 [learning.md](learning.md)。这里先解释它与传统方法的结构差别。
+
+1. [image_input](../algorithms/learning/model.py) 将 RGB 缩放到 160×96，并加一个公开绿色提示通道。它只标记颜色提示，不提取目标中心线。
+2. 四层步幅卷积提取空间特征，经过全连接层得到 128 维图像表示。
+3. 与 5 维公开上下文拼接，送入 96 维 GRU。上下文含上一动作、轴距、最大转角和时间间隔。
+4. 三个输出分别对应归一化转角、前进速度、可见性 logit。网络通过 `tanh` 和 `sigmoid` 限制动作范围。
+5. 部署每 0.1 s 更新网络与隐状态，中间仿真帧保持上一动作。可见性小于 0.2 返回 `LOST`，平台制动。
+
+```python
+sequence, hidden = self.memory(torch.cat([encoded, context], dim=-1), hidden)
+raw = self.head(sequence)
+actions = torch.stack(
+    [torch.tanh(raw[..., 0]), torch.sigmoid(raw[..., 1])], dim=-1
+)
+```
+
+时序信息在网络隐状态中，没有显式的“这是原道路”几何约束。它可能从训练数据学到类似行为，也可能在未覆盖的近邻路线中切到错误支路。发布网络的速度头是非负 sigmoid，**此次平台支持倒车不会自动赋予网络倒车能力**；它没有物件规划或传统控制器回退。
+
+当前仅附带 `driver-complex.pt`，401,259 参数。必须使用该权重支持的默认绿色提示；不支持的提示、缺失权重或依赖直接报错。可见性不是“绕行安全概率”或“闭环成功概率”。
+
+## 8. 独立避障方法如何接到上述链路
+
+[AvoidingPursuit / AvoidingMPC](../algorithms/avoidance.py) 在同一视觉身份跟踪之上增加三个独立职责：
+
+- [ObstacleMemory、DetourPlanner](../algorithms/modular/obstacles.py)：从 RGB 估计物件占用，保留原线与邻线，生成满足曲率和净距的绕行路径。
+- 同一文件中的 `AvoidanceTracker`：先排除物件图像区域造成的伪线，并使绕行期间的路径关联始终绑定原路线。
+- [ReverseRecovery](../algorithms/modular/recovery.py)：前进绕行不可行时，检查已驶过走廊中的退回位置；先制动，再沿走廊倒车，再制动，最后保留身份重规划。
+
+PP 避障版与 MPC 避障版使用同一规划约束，只替换前进轨迹控制器。倒车恢复使用同一个专用低速后向路径跟踪器；不能把负 `x` 的路径直接交给只选择前方点的普通控制器。
+
+3.1 版优先选择离线面积更小的紧凑候选，使用独立的 0.34 m 基础前视和较低绕行速度；绕过前一个物件后，可在尚未回线时直接规划下一个。遮挡时可由已确认原线的末端几何作有界预测；有效预测下延长观测预算，新画面恢复后校正并确认接回。当前目标持续不可见的时间 / 距离预算跨规划段累计，不能因新障碍物出现或再次调用预测而清零。原版 PP 和 MPC 的前视、巡航与丢线规则保持原配置。
+
+连续障碍物为何会失效、如何计算退回距离、怎样防止退到邻路，按具体代码展开于 [avoidance.md](avoidance.md)。
+
+## 9. 从一次失败中定位是哪一层出错
+
+| 现象 | 先看什么 | 对应代码与诊断 |
 |---|---|---|
-| `scanline_pid` | 标记与时序身份 → 自适应旋转扫描线 → 曲率前馈 PD | NumPy/OpenCV；ID 保留 PID 命名，反馈实际使用 P、D 两项 |
-| `temporal_pursuit` | 标定鸟瞰 → 骨架连通性 → 时序身份 → 调速 Pure Pursuit | 推荐作为几何方法参考；无需训练 |
-| `temporal_mpc` | 同一视觉层 → 有限时域采样 MPC | 比较两种控制器，显式考虑速度和转向变化约束 |
-| `cnn_gru` | 160×96 图像 → CNN → GRU → 转角、速度、可见性 | 可选 PyTorch；真实模仿学习权重，无专家动作回退 |
-| `temporal_pursuit_avoidance` | 时序拓扑 → RGB 障碍物记忆 → 局部绕行 → Pure Pursuit | 独立避障方案；原 `temporal_pursuit` 不启用此功能 |
-| `temporal_mpc_avoidance` | 同一避障规划 → 限速 MPC | 独立避障方案；原 `temporal_mpc` 不启用此功能 |
+| 起步直接跟错旁路线 | 提示是否有效、候选代价是否唯一 | `TargetTracker.observe`；`identity_initialized` |
+| 同一路线中段跳到回返段 | 局部路径顺序、骨架连接和预测关联 | `trace_component` / `ordered_nearest` |
+| 选对线但来回摆动 | 预瞄、估计速度、转角和实际速度向量 | `Pursuit` / `ScanlinePD` / `Predictive` |
+| 障碍物边缘被当成道路 | RGB 物件框及被排除区域 | `ObstacleMemory` / `ObstacleCamera` |
+| 车停在障碍物前 | 没看见续段，还是曲率、净距、邻线检查拒绝 | `planning_rejections`、`avoidance_state` |
+| 倒车恢复拒绝启动 | 场景是否允许、是否有已驶过走廊和可行重试位置 | `recovery_stage`、`recovery_reason` |
+| CNN 看见线却停车 | 可见性头、输入提示、网络是否更新 | `visibility_probability`、`network_updated` |
 
-没有将这些实现命名为 SOTA。引用方法不等于超越已有研究；性能结论以本项目固定集合的实测结果为准。
+不要只盯最终得分调参。先比较原始相机、算法局部路径、请求动作和实际轨迹，区分感知、身份关联、规划和动态跟踪错误。算法诊断是解释依据，私有评测才是成功、碰撞与非法换线的判定依据。
 
-默认场景使用 `inertial_v2` 动力学、渲染版本 `3`、0.38 rad 前视相机与路侧立体物件。最近一轮修复与成绩见 [复杂地图回归](custom-map-results.md)。[惯性初版](inertial-results.md) 和 [运动学历史结果](algorithm-results.md) 保留当时的代码、模型和评分口径，不能直接混入新版评分排行。
+## 10. 参数、复现和结果口径
 
-## 模块化方法
+`speed_mps` 控制传统方法巡航请求；`association_gate_m` 和 `memory_s` 调整时序门限；扫描线还有 `kp`、`kd`。`temporal=false` 或 `topology=false` 为消融实验：后者改为所有候选的分行质心，失去分支隔离。修改参数后应重新评测，不能沿用默认结果。避障恢复的安全预算集中在 `ReverseRecovery`，不是所有传统算法通用的隐藏开关。
 
-`algorithms/modular/vision.py` 负责几何、图像分割和身份状态；`control.py` 负责两种可替换控制器；`algorithm.py` 仅组装 SDK 生命周期。控制器不读取像素，视觉层不输出车辆动力学真值。
-
-1. 利用公开地面单应矩阵得到 2.5 cm 分辨率的局部鸟瞰图。局部背景对比度抑制阴影，彩色标记单独排除；Zhang–Suen 细化保持断开的线条不被形态学闭运算连接。背景估计使用闭运算，目标掩膜本身不做闭合。
-2. 起点标记的方向与位置用于选择目标；也支持公开首帧点 / 区域提示。没有明确身份且存在多个候选时输出 `AMBIGUOUS` 并停车。
-3. 通过上一帧请求动作和公开车辆约束预测短时相对运动，将历史目标投影到当前车辆坐标系。公共 `pathlab/dynamics.py` 的纯积分函数同时供仿真和算法使用；算法维护自己的 8 维估计，保留速度向量、偏航率和加速度，在坐标变换时保留侧向动量，不读取仿真状态。多点关联、切向一致性和门限约束阻止跳到相邻线。骨架遍历只允许相邻顶点，避免扫描行均值把同线的不同路段混合。
-4. 短时缺失允许 0.45 s 的限速预测，置信度衰减；超时输出 `LOST`。此前确实从图像观测到的橙色终点进入近端盲区时，最多使用 3 s 的尾段预测。它不是从地图推断终点。
-5. Pure Pursuit 根据速度、偏航与横向响应延迟选择前视距离，按曲率、可见前方弯道与横向加速度限制调速。MPC 在 1.2 s 有限时域内采样 63 组两段转向方案，以相同公共积分器和 0.05 s 子步预测惯性、转向变化及制动；代价含有序路径误差、横向误差和转向平滑项。它是轻量采样优化，不声称求解连续全局最优控制。
-
-两者使用 `action` 接口，图像中心线与米制路径同时用于展示。内部运动预测假设执行其输出动作，因此不把它们注册为可由平台另一控制器替换动作的 `path` 插件。平台制动、掉帧或延迟会使模型预测产生误差，视觉关联门限负责拒绝不一致目标；这不等价于真实里程计。
-
-可在前端参数 JSON 中设置：
-
-```json
-{"speed_mps": 0.8, "association_gate_m": 0.16, "memory_s": 0.45}
-```
-
-`temporal: false` 和 `topology: false` 分别用于消融。正常运行请保留默认身份约束。
-
-扫描线 2.0 复用标定、图像分割、起点初始化和时序身份模块，独立实现路径提取与控制：在已选目标组件上，沿最近切线旋转小范围的法向扫描截面，将前进和后退两次扫描按路线顺序拼接。因此回头弯不再被错误压成图像每行的一个平均横坐标，相邻道路也不会因为出现在同一行而混合。控制使用实际可见预瞄点的角度误差 PD，并加入少量局部曲率前馈，不调用 Pure Pursuit 或 MPC，也不将远处拟合曲线外推到相机盲区。默认巡航上限 0.65 m/s，实际按曲率、置信度与偏差减速；支持 `speed_mps`、`kp`、`kd`。失线采用与其他几何方法相同的有界记忆和终点盲区处理。它需要公开相机标定；没有目标提示且多条线同时可见时会停止并报告歧义。
-
-几何方案的 `confidence` 是启发式关联质量分数，不是经校准的成功概率。输出保留状态、候选、路径、预测标志和失败说明，便于课程分析。
-
-## 独立的避障算法序列
-
-入口在 `algorithms/avoidance.py`，图像障碍物估计与局部规划在 `algorithms/modular/obstacles.py`。原有四种方法保持独立 ID、版本和行为，不通过 `avoidance=true` 参数切换，也不会在避障困难时悄悄回退到其他方法。学生可以直接在批量评测中同时选择原版与对应避障版。
-
-当前两种避障入口为 **2.0**，修复弯道遮挡时无法侧移、物件边缘污染道路骨架及侧移后无法规划接回的问题。实现逻辑、新旧对照与仍失败的地图见 [避障 v2 修复记录](avoidance-v2.md)；下方及 0920 挑战文档中的历史评测不能替代该版本的结果。
-
-避障版从 RGB 中提取彩色立体物件轮廓与地面接触位置；使用公开标定估计平面占用，并以自身上一帧动作预测短时相对运动。支持范围是当前仿真中的彩色交通锥、纸箱等物件，灰色、低对比或与起点标记同色的物件可能漏检。开发中试过灰色宽面的运动残差，但会误把近邻道路当成障碍物，最终版移除了这个分支。策略没有访问地图物件列表、真实位姿或评分器。
-
-遮挡后方路线不可见时，先在已观测走廊内做有限侧移恢复视野；只桥接与遮挡范围相符、切向一致且唯一的续段。规划保存原路线及邻线的空间记忆，候选曲线检查车辆曲率上限、估计障碍物净距和邻线间距。绕行过程中保留原路线身份，只有重新观测到与记忆吻合的目标线并接回后才退出绕行。纯预测路径不足以确认重新接入。
-
-侧移和绕行巡航分别限制在 0.25、0.38 m/s；MPC 使用同一请求速度预测，制动仍由公开惯性模型执行。没有可行候选、后续路线身份无法确认或局部规划预算耗尽时请求停车。它是教学仿真的单目局部规划基线，连续遮挡、灰色物件、未知物体形状、模型误差仍有失败，具体成功和失败均保存在 [0920 挑战记录](0920-challenges.md)。规划中的估计净距不能代替评分器的实际车体碰撞检查。
-
-## 端到端模型与训练
-
-`algorithms/learning/model.py` 定义 401,259 参数的 CNN + 96 维 GRU；`algorithm.py` 只加载权重并推理。网络直接输出有界转角和速度，10 Hz 更新动作，仿真仍以 20 Hz 推进。GRU 在每次 `reset` 清空；时间倒退会拒绝运行。
-
-默认使用同时覆盖两种运动模型的 `driver-complex.pt`，来自实际 CPU 训练并通过闭环验证的固定权重。推理 debug 显示实际权重 SHA-256 与输入版本；具体数据、选择过程和复现见 [复杂地图训练说明](custom-learning.md)。历史 `driver.pt` 和 `driver-inertial.pt` 均保留原文件，可通过参数 `checkpoint` 显式选择，不会因加载旧地图而自动退回旧算法。
-
-模型另预测可见性；可见性很低时输出 `LOST`，按统一平台规则停车。该头不是闭环成功概率，学习算法的 `confidence` 留空。缺少依赖、权重或不匹配的权重格式均明确报错，绝不使用随机初始化模型继续驾驶。
-
-当前权重覆盖默认绿色起点标记。点 / 区域提示与自定义标记颜色没有相应训练覆盖，因此当前权重明确拒绝这些初始化方式。网络保留提示输入通道，后续有相应训练数据时可扩展。训练中的相机扰动不意味着支持任意相机、车辆或真实道路。
-
-训练流程包括：
-
-- 使用完整轨迹的特权专家生成监督标签。专家依据有序真值路线驾驶，部署策略无法调用它。
-- 随机改变线宽、灰度、光照、阴影、噪声、模糊、相机高度与俯角，施加短时转向扰动并采集真实纠偏轨迹；加入短暂全图遮挡以训练停车信号。
-- 最新模型用 24 帧序列训练，真实起步帧参与监督；从轨迹中途截取的窗口才用前 2 帧初始化记忆。训练时水平翻转同步反转转向和历史动作符号。
-- DAgger 阶段让旧模型实际驾驶，由专家标注其访问的状态；保留 25% 专家行为混合，数据加入训练集继续拟合。专家只存在于离线采集。
-- 接入阶段用 `--acquisition-weight` 加权前 3.5 s 的损失，默认覆盖转向、速度及可见性；`--acquisition-targets steering` 可复现只加权转向的旧实验。
-- 训练 / 验证按完整场景分组。复杂地图训练使用开发种子 0–99 范围，离线验证 201–202，闭环验证 203；本轮独立测试使用 6001–6002。用户反馈地图作为开发数据，不能当作未见测试图。5001–5002、1001–1005 分别是两轮历史报告的测试种子。
-- 对同一初始模型微调得到的权重，提供参数均值工具，借鉴 model soups 思路。结果仍为单个网络，是否改善以独立闭环验证判断；不把论文中的分类性能迁移为本平台结论。
-
-附带权重、训练参数与逐轮真实日志位于 `algorithms/learning/weights/`，新版数据规模与每个 NPZ 的校验值保存在 [惯性训练数据摘要](../artifacts/algorithms/inertial-data-summary.json)，旧数据见 [历史摘要](../artifacts/algorithms/training-data.json)。原始图像数据在本地 `artifacts/learning/`，不要求学生下载，不纳入版本控制。普通 CPU 可以推理；训练需要额外内存和时间。
-
-从头训练（平台启动无需执行）：
+激活项目环境后可执行：
 
 ```bash
-python scripts/setup_learning.py
-python run.py learning collect --data artifacts/learning/new-bc --episodes-per-family 8 --validation-seeds 2 --jobs 4
-python run.py learning fit --data artifacts/learning/new-bc --epochs 20 --output artifacts/learning/bc.pt
-python run.py learning collect --data artifacts/learning/new-dagger --checkpoint artifacts/learning/bc.pt --beta 0.25 --jobs 4
-python run.py learning fit --data artifacts/learning/new-bc artifacts/learning/new-dagger --resume artifacts/learning/bc.pt --epochs 8 --lr 0.00015 --output artifacts/learning/dagger.pt
-python run.py learning fit --data artifacts/learning/new-bc artifacts/learning/new-dagger --resume artifacts/learning/bc.pt --epochs 4 --lr 0.00015 --acquisition-weight 8 --output artifacts/learning/acquisition.pt
-python run.py learning average --checkpoints artifacts/learning/dagger.pt artifacts/learning/acquisition.pt --output artifacts/learning/mean.pt
+python scripts/evaluate_algorithms.py --algorithms temporal_pursuit temporal_mpc scanline_pid cnn_gru --seeds 6001 --split test --jobs 4 --output artifacts/evaluation-core
+python scripts/evaluate_algorithms.py --algorithms temporal_pursuit_avoidance temporal_mpc_avoidance --scene-files scenarios/challenges/block-double.json --reverse on --steps 1800 --jobs 2 --output artifacts/evaluation-avoidance
 ```
 
-采集目录已有 manifest 时会拒绝覆盖，防止训练记录被替换。训练主文件按完整验证集损失保存；`--save-every` 另保存固定轮次候选，发布依据独立闭环验证。可通过前端参数 `{"checkpoint":"artifacts/learning/dagger.pt"}` 试验新权重。不要只看离线动作误差来选择驾驶模型。
+`--scene-files` 固定完整输入，只有显式 `--seeds` 才改变种子。旧地图明确保存 `reverse_allowed=false` 时须先在车辆设置中开启、另存后评测，或通过上述 CLI 的 `--reverse on` 显式覆盖。当前结果和已知失败见 [避障说明](avoidance.md)，3.1 版紧凑规划回归保存在 [compact-detour-results.json](compact-detour-results.json)。[reverse-results.json](reverse-results.json) 保留 3.0 版的 14 回合、倒车开关对照和 Worker 验证；[algorithm-results.json](algorithm-results.json) 保留更早的历史摘要，两者不能当成本次新跑结果。
 
-上述命令使用当前场景生成器建立新的实验，不会复现旧图像分布。新版附带权重由历史驾驶模型初始化，在两组实际惯性轨迹上微调，按独立验证集监督损失选择第 6 轮，之后冻结权重进行闭环测试。复现这次微调的精确命令见惯性模型卡。历史 DAgger 模型与 `collection-policy.pt` 的来源、20 + 8 轮训练及接入加权实验见 [历史选择记录](../artifacts/algorithms/model-selection.json)；旧权重不会被新版默认模型覆盖。
+历史基础集合中三个传统方法各 16/16、CNN 15/16；当时基础评分器为 3.0、避障评分器为 4.0。当前评分器为 5.0，旧分数不能直接混排。完整 Worker 协议测试使用 `python run.py benchmark ...`，快速脚本只统计进程内推理耗时；同图、同车辆参数、同预算、同评分版本才适合比较。
 
-## 固定评测
+## 11. 思路来源与实现范围
 
-上一轮复杂地图回归的独立集包含八类默认场景各一个保留种子，以及套圈 / 平行弯线 × 两种物理模型 × 两个保留种子，共每方法 16 回合。默认 640×360 RGB、固定 0.05 s、最多 4000 个算法帧，随后另记实际制动至静止的帧。当时评分器 / 总分版本为 3.0；当前避障回归使用 4.0，两者成绩不可混合。历史评分阈值不能替代新增约束。
+- [Nav2 Regulated Pure Pursuit 官方说明](https://github.com/ros-navigation/navigation2/blob/main/nav2_regulated_pure_pursuit_controller/README.md)：自适应前视与曲率调速思想，本项目为自己的简化实现和接口。
+- [NVIDIA 图像直接驾驶论文](https://arxiv.org/abs/1604.07316)：图像监督动作的思路；本项目 CNN + GRU 结构不同，不是原网络复现。
+- [Ross 等人的 DAgger](https://proceedings.mlr.press/v15/ross11a.html)：聚合学习策略访问状态上的专家标签，缓解闭环分布偏移。
+- [Wortsman 等人的 Model soups](https://arxiv.org/abs/2203.05482)：同初始化候选网络的参数平均思路；平均后的驾驶模型仍须单独验证。
 
-维护者可激活 `.venv` 后使用快速评测脚本：
-
-```bash
-python scripts/evaluate_algorithms.py --algorithms temporal_pursuit temporal_mpc scanline_pid cnn_gru --seeds 6001 --split test --jobs 4 --output artifacts/reproduction-core
-python scripts/evaluate_algorithms.py --algorithms scanline_pid cnn_gru --scene-files artifacts/maps/你的地图.json --steps 4000 --output artifacts/reproduction-custom
-```
-
-该脚本实际闭环运行公开 SDK 策略、物理模型与私有评分器；推理耗时统计只计 `step`（含 PNG 解码），不包含工作进程传输。`--scene-files` 冻结完整输入，保留地图、相机、物理模型和原种子，只有显式 `--seeds` 才重复改变种子。报告写入逐回合 JSON、CSV、Markdown、实际轨迹和代码 / 权重 SHA-256；失败全部纳入分母。终止后的制动不会增加任务完成度，但碰撞和舒适性统计覆盖刹停过程。不同机器、同时运行的任务会影响墙钟耗时与实时性分数。运行评测期间应固定代码和权重。
-
-完整协议评测使用无需激活环境的入口：
-
-```bash
-python run.py benchmark --algorithms temporal_pursuit temporal_mpc scanline_pid cnn_gru --families parallel repeated --seeds 204 --split validation --steps 4000 --output artifacts/protocol-check
-```
-
-它启动真实工作进程并保存逐帧记录，推理耗时包含 JSONL 协议开销。不要将两种耗时口径混用。压力评测在快速脚本中通过 `--suite appearance|camera|occlusion|offset|custom` 单独选择，不能混入核心成功率。
-
-## 方法来源
-
-- [Nav2 Regulated Pure Pursuit 官方实现说明](https://github.com/ros-navigation/navigation2/blob/main/nav2_regulated_pure_pursuit_controller/README.md)：参考自适应前视与曲率调速思想，本项目使用独立实现和自己的接口。
-- [NVIDIA, End to End Learning for Self-Driving Cars](https://arxiv.org/abs/1604.07316)：图像直接监督驾驶动作的思路；本项目为不同规模的 CNN + GRU，不是原网络复现。
-- [Ross et al., DAgger](https://proceedings.mlr.press/v15/ross11a.html)：由学习策略访问状态并聚合专家监督，缓解闭环分布偏移。
-- [Wortsman et al., Model soups](https://arxiv.org/abs/2203.05482)：同初始化微调网络的参数平均；本项目仅借鉴均值思路，重新验证驾驶闭环效果。
-
-没有拷贝或嵌入上述项目的代码，没有使用外部预训练权重。结果只能支持本教学仿真范围内的比较，不能推出真实车辆部署或学术 SOTA 结论。
+这些是方法背景，具体行为以本仓库实现和评测为准。仓库没有嵌入上述项目代码，也未使用外部预训练权重。目前的结果支持教学仿真内部比较，不能推出真实车辆部署性能或学术 SOTA 结论。

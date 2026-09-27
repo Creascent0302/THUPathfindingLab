@@ -52,32 +52,13 @@ def test_command_motion_estimate_matches_vehicle_with_lateral_momentum(model):
     assert estimate.speed == 0
 
 
-def test_learning_checkpoint_selection_preserves_explicit_legacy_models():
-    from algorithms.learning.algorithm import (
-        INERTIAL_CHECKPOINT,
-        LEGACY_CHECKPOINT,
-        checkpoint_for_limits,
-    )
+def test_current_learning_checkpoint_matches_registered_asset():
+    from algorithms.learning.algorithm import DEFAULT_CHECKPOINT
+    from pathlab.registry import ROOT
 
-    assert checkpoint_for_limits({}).name == "driver-complex.pt"
-    assert (
-        checkpoint_for_limits({"motion_model": "kinematic_v1"}).name
-        == "driver-complex.pt"
-    )
-    assert (
-        checkpoint_for_limits({"motion_model": "inertial_v2"}).name
-        == "driver-complex.pt"
-    )
-    assert LEGACY_CHECKPOINT.name == "driver.pt" and LEGACY_CHECKPOINT.is_file()
-    assert (
-        INERTIAL_CHECKPOINT.name == "driver-inertial.pt"
-        and INERTIAL_CHECKPOINT.is_file()
-    )
-    assert checkpoint_for_limits({}, legacy=True) == LEGACY_CHECKPOINT
-    assert (
-        checkpoint_for_limits({"motion_model": "inertial_v2"}, legacy=True)
-        == INERTIAL_CHECKPOINT
-    )
+    spec = registry()["cnn_gru"]
+    assert DEFAULT_CHECKPOINT.resolve() == (ROOT / spec.checkpoint_file).resolve()
+    assert DEFAULT_CHECKPOINT.is_file()
 
 
 def observation(scene, frame=0, *, blank=False):

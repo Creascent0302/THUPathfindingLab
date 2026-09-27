@@ -54,6 +54,7 @@ export function useManualDrive(
   tab: string,
   speedLimit: number,
   steerLimit: number,
+  reverseLimit: number,
 ) {
   const [action, setAction] = useState<Action>({
     steering_angle_rad: 0,
@@ -97,7 +98,7 @@ export function useManualDrive(
                 event.key === "ArrowUp"
                   ? Math.min(speedLimit, a.speed_mps + 0.1)
                   : event.key === "ArrowDown"
-                    ? Math.max(0, a.speed_mps - 0.1)
+                    ? Math.max(-reverseLimit, a.speed_mps - 0.1)
                     : a.speed_mps,
               steering_angle_rad:
                 event.key === "ArrowLeft"
@@ -120,6 +121,6 @@ export function useManualDrive(
       window.removeEventListener("keyup", up);
       window.removeEventListener("blur", zero);
     };
-  }, [active, algorithm, speedLimit, steerLimit, tab]);
+  }, [active, algorithm, speedLimit, steerLimit, reverseLimit, tab]);
   return [action, setAction] as const;
 }

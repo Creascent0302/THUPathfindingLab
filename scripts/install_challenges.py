@@ -17,7 +17,7 @@ from pathlab.map_library import normalize_names, read_maps, unique_name
 from pathlab.scenarios import validate_scene
 from pathlab.storage import write_json
 
-CATALOG = ROOT / "artifacts/algorithms/0920-hard/catalog.json"
+CATALOG = ROOT / "scenarios/challenges/catalog.json"
 
 
 def install(root: Path) -> list[dict]:
@@ -25,7 +25,7 @@ def install(root: Path) -> list[dict]:
     # Validate the entire input set before changing the user's map library.
     scenes = []
     for entry in catalog:
-        source = CATALOG.parent / "scenes" / entry["file"]
+        source = CATALOG.parent / entry["file"]
         scene = Scene.model_validate_json(source.read_text(encoding="utf-8"))
         errors = validate_scene(scene)
         if errors:

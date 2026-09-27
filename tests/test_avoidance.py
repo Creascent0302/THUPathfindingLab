@@ -142,14 +142,14 @@ def test_visibility_probe_respects_turning_radius_and_neighboring_line():
     neighbor = route + [0, -0.55]
     planner.road_memory = neighbor
     blocker = Obstacle(np.array([3.0, 0]), 0.25)
-    path = planner.peek_path(route, [(None, route)], [blocker], blocker)
+    path = planner.peek_path(route, [blocker], blocker)
     assert path is not None and path[-1, 1] > 0
     assert (
         path_curvature(path).max()
         < math.tan(limits["max_steering_rad"]) / limits["wheelbase_m"]
     )
     planner.limits = {**limits, "max_steering_rad": 0.1}
-    assert planner.peek_path(route, [(None, route)], [blocker], blocker) is None
+    assert planner.peek_path(route, [blocker], blocker) is None
 
 
 def test_plan_cannot_release_identity_using_only_predicted_continuation():
@@ -261,9 +261,12 @@ def test_curved_approach_can_find_a_tangent_aligned_side_view():
     route = np.linspace(0.7, 1.7, 40)[:, None] * tangent - 0.15 * normal
     blocker = Obstacle(2.0 * tangent - 0.15 * normal, 0.24)
     planner.road_memory = route - 0.55 * normal
-    path = planner.peek_path(route, [], [blocker], blocker)
+    path = planner.peek_path(route, [blocker], blocker)
     assert path is not None
-    assert np.min(np.linalg.norm(path - blocker.center, axis=1)) > blocker.radius + 0.3
+    assert (
+        np.min(np.linalg.norm(path - blocker.center, axis=1))
+        > blocker.radius + limits["width_m"] / 2 + 0.12
+    )
     assert (
         path_curvature(path).max()
         < math.tan(limits["max_steering_rad"]) / limits["wheelbase_m"]
@@ -286,3 +289,484 @@ def test_temporarily_lost_continuation_does_not_discard_locked_identity(monkeypa
     assert active and planner.peeking
     np.testing.assert_array_equal(planner.path, saved_path)
     np.testing.assert_array_equal(planner.reference, saved_reference)
+
+
+def recovery_fixture(*, reverse_allowed=True, rear_blocked=False):
+    from types import SimpleNamespace
+    from algorithms.modular.control import MotionEstimate
+    from algorithms.modular.recovery import ReverseRecovery
+
+    limits = obstacle_scene().vehicle.model_dump()
+    limits["reverse_allowed"] = reverse_allowed
+    planner, recovery = DetourPlanner(limits), ReverseRecovery(limits)
+    route = np.c_[np.linspace(0.4, 5, 100), np.zeros(100)]
+    blocker = Obstacle(np.array([1.25, 0.0]), 0.25)
+    objects = [blocker]
+    if rear_blocked:
+        objects.append(Obstacle(np.array([-0.55, 0.0]), 0.22))
+    planner.blocking, planner.reference = blocker, route.copy()
+    recovery.history = np.c_[np.linspace(-2, 0, 81), np.zeros(81)]
+    recovery.headings = np.zeros(81)
+    tracker = SimpleNamespace(
+        initialized=True,
+        planner=planner,
+        path=route,
+        components=[],
+        obstacles=SimpleNamespace(items=objects),
+    )
+    return tracker, recovery, MotionEstimate(limits)
+
+
+def test_reverse_recovery_stops_then_retraces_and_replans_without_resetting_identity():
+    tracker, recovery, motion = recovery_fixture()
+    for _ in range(5):
+        recovery.request(tracker, motion, 0.05)
+    assert recovery.stage == "brake_before"
+    actions, stages = [], []
+    retreat = 0
+    for _ in range(250):
+        action = recovery.command(tracker, motion, 0.05)
+        actions.append(action.speed_mps)
+        stages.append(recovery.stage)
+        translation, yaw = motion.advance(action, 0.05, 0.05)
+        retreat -= translation[0]
+        recovery.advance(translation, yaw)
+        tracker.planner.advance(translation, yaw)
+        for obstacle in tracker.obstacles.items:
+            from algorithms.modular.obstacles import rotation
+
+            obstacle.center = (obstacle.center - translation) @ rotation(yaw)
+        if not recovery.active:
+            break
+    assert min(actions) < 0 and max(actions) == 0
+    assert "retreat" in stages and "brake_after" in stages
+    assert recovery.completed == 1 and motion.speed == 0
+    assert 0.35 < retreat < 1.65
+    assert tracker.initialized and tracker.planner.reference is not None
+    assert tracker.planner.path is not None or tracker.planner.recovery_pending
+
+
+@pytest.mark.parametrize("case", ["disabled", "rear_blocked", "untravelled"])
+def test_reverse_never_enters_a_blocked_or_untravelled_corridor(case):
+    tracker, recovery, motion = recovery_fixture(
+        reverse_allowed=case != "disabled", rear_blocked=case == "rear_blocked"
+    )
+    if case == "untravelled":
+        recovery.history, recovery.headings = np.zeros((1, 2)), np.zeros(1)
+    for _ in range(6):
+        recovery.request(tracker, motion, 0.05)
+    if case == "disabled":
+        assert not recovery.active
+    else:
+        action = recovery.command(tracker, motion, 0.05)
+        assert action.speed_mps == 0 and recovery.stage == "failed"
+
+
+def test_new_obstacle_can_veto_a_forward_plan_after_reverse_braking():
+    tracker, recovery, motion = recovery_fixture()
+    for _ in range(5):
+        recovery.request(tracker, motion, 0.05)
+    inserted = False
+    for _ in range(250):
+        action = recovery.command(tracker, motion, 0.05)
+        if recovery.stage == "brake_after" and not inserted:
+            path = recovery.retry_plan[0]
+            tracker.obstacles.items.append(Obstacle(path[len(path) // 2].copy(), 0.3))
+            inserted = True
+        translation, yaw = motion.advance(action, 0.05, 0.05)
+        recovery.advance(translation, yaw)
+        tracker.planner.advance(translation, yaw)
+        for obstacle in tracker.obstacles.items:
+            from algorithms.modular.obstacles import rotation
+
+            obstacle.center = (obstacle.center - translation) @ rotation(yaw)
+        if not recovery.active:
+            break
+    assert inserted and recovery.completed == 1 and motion.speed == 0
+    assert tracker.planner.path is None
+    assert tracker.planner.recovery_pending
+
+
+def test_cropped_cone_is_masked_even_when_its_ground_contact_is_unknown():
+    from pathlab.simulation import vehicle_to_world
+
+    scene = obstacle_scene()
+    scene.camera.pitch_down_rad = 0.38
+    scene.objects = [SceneObject(kind="cone", x_m=3.5)]
+    pose = Pose(x_m=1.3, y_m=0.25, yaw_rad=0.486)
+    renderer = Renderer(scene)
+    rgb = renderer.render(pose, 129)
+    camera, memory = ObstacleCamera(renderer.camera.calibration()), ObstacleMemory()
+    memory.observe(rgb, camera, scene.task_hint, scene.dt_s)
+    assert memory.items == []  # No fabricated 3D position for a cropped object.
+    assert memory.image_boxes and memory.image_boxes[0][2] == scene.camera.width
+    camera.image_boxes = memory.image_boxes
+    components, _, _ = camera.extract(rgb, scene.task_hint)
+    points = vehicle_to_world(np.vstack([m for _, m in components]), pose)
+    beyond = points[(points[:, 0] > 4.5) & (points[:, 0] < 6.2)]
+    raw, _, _ = BirdEye(renderer.camera.calibration()).extract(rgb, scene.task_hint)
+    raw_points = vehicle_to_world(np.vstack([m for _, m in raw]), pose)
+    false_road = raw_points[(raw_points[:, 0] > 4.5) & (raw_points[:, 0] < 6.2)]
+    assert np.count_nonzero(np.abs(false_road[:, 1]) > 0.1) > 8
+    assert np.max(np.abs(beyond[:, 1]), initial=0) < 0.08
+
+
+def test_offset_grid_adapts_to_a_box_that_is_not_centered_on_the_line():
+    planner = DetourPlanner(obstacle_scene().vehicle.model_dump())
+    route = np.c_[np.linspace(0, 6, 150), np.zeros(150)]
+    planner.road_memory = route + [0, -0.65]
+    blocker = Obstacle(np.array([3.0, 0.12]), 0.4)
+    path, active = planner.command_path(route, [], [blocker], 0.05)
+    assert active and path is not None
+    assert 0.78 < path[:, 1].max() < 0.87
+    assert np.linalg.norm(path - blocker.center, axis=1).min() > 0.66
+
+
+def test_recovery_may_leave_a_nearby_line_but_cannot_follow_it():
+    x = np.linspace(0, 1, 80)
+    neighbor = np.c_[x, np.full(len(x), 0.22)]
+    offset = np.full(len(x), 0.6)
+    assert DetourPlanner.neighbor_clearance(np.c_[x, -0.4 * x], offset, neighbor)
+    assert not DetourPlanner.neighbor_clearance(
+        np.c_[x, np.zeros(len(x))], offset, neighbor
+    )
+    assert not DetourPlanner.neighbor_clearance(np.c_[x, 0.1 * x], offset, neighbor)
+
+
+def test_occlusion_does_not_erase_the_last_confirmed_blocked_route():
+    planner = DetourPlanner(obstacle_scene().vehicle.model_dump())
+    planner.last_route = np.c_[np.linspace(0, 1.0, 30), np.zeros(30)]
+    blocker = Obstacle(np.array([1.5, 0]), 0.35)
+    path, active = planner.command_path(None, [], [blocker], 0.05)
+    assert active and planner.blocking is blocker
+    assert planner.reference is not None
+    if path is not None:
+        assert planner.peeking
+        assert (
+            np.linalg.norm(path - blocker.center, axis=1).min() >= blocker.radius + 0.26
+        )
+
+
+@pytest.mark.parametrize("side", [-1, 1])
+def test_compact_detour_stays_on_line_until_a_feasible_late_departure(side):
+    planner = DetourPlanner(obstacle_scene().vehicle.model_dump())
+    x = np.arange(0, 6, 0.025)
+    route = np.c_[x, np.zeros(len(x))]
+    planner.road_memory = route + [0, -side * 0.65]
+    blocker = Obstacle(np.array([3.0, 0.0]), 0.25)
+    path, active = planner.command_path(route, [], [blocker], 0.05)
+    assert active and path is not None
+    assert path[np.abs(path[:, 1]) > 0.05][0, 0] > 1.6
+    assert 0.51 < (side * path[:, 1]).max() < 0.62
+    assert np.linalg.norm(path - blocker.center, axis=1).min() >= 0.51
+    assert path_curvature(path).max() <= planner.max_curvature
+    assert abs(path[-1, 1]) < 0.02 and path[-1, 0] < 5
+
+
+def test_short_spaced_visible_blockers_share_one_return_to_the_original_line():
+    planner = DetourPlanner(obstacle_scene().vehicle.model_dump())
+    x = np.arange(0, 7, 0.025)
+    route = np.c_[x, np.zeros(len(x))]
+    obstacles = [Obstacle(np.array([x, 0.0]), 0.2) for x in (2.0, 3.0)]
+    path, active = planner.command_path(route, [], obstacles, 0.05)
+    assert active and path is not None and planner.planned_obstacles == 2
+    assert all(
+        np.linalg.norm(path - item.center, axis=1).min() >= 0.46 for item in obstacles
+    )
+    middle = path[(path[:, 0] > 2) & (path[:, 0] < 3)]
+    assert np.min(np.abs(middle[:, 1])) > 0.45
+    assert abs(path[-1, 1]) < 0.02
+
+
+def test_next_detour_can_begin_before_rejoining_without_changing_route_identity():
+    planner = DetourPlanner(obstacle_scene().vehicle.model_dump())
+    x = np.arange(-0.8, 6, 0.05)
+    route = np.c_[x, np.full(len(x), -0.45)]
+    planner.reference = route.copy()
+    planner.road_memory = route + [0, -0.65]
+    planner.path = np.array([[0, 0], [1, -0.1], [2, -0.3], [3, -0.45]])
+    previous = Obstacle(np.array([-0.6, -0.45]), 0.2)
+    following = Obstacle(np.array([2.0, -0.45]), 0.25)
+    planner.blocking = previous
+    assert not planner.rejoin_observed
+    path, active = planner.command_path(route, [], [previous, following], 0.05)
+    assert active and path is not None and planner.handoffs == 1
+    assert planner.blocking is following
+    assert np.linalg.norm(path[0]) < 0.05
+    np.testing.assert_allclose(planner.reference[:, 1], -0.45)
+    assert np.linalg.norm(path - following.center, axis=1).min() >= 0.51
+
+
+@pytest.mark.parametrize("unseen_s,unseen_m", [(6.1, 0.0), (0.5, 1.51)])
+def test_continuing_detours_cannot_refresh_the_unseen_route_budget(unseen_s, unseen_m):
+    planner = DetourPlanner(obstacle_scene().vehicle.model_dump())
+    x = np.arange(0, 5, 0.05)
+    route = np.c_[x, np.zeros(len(x))]
+    planner.reference = route.copy()
+    planner.path = route + [0, 0.6]
+    planner.blocking = Obstacle(np.array([1.0, 0]), 0.25)
+    planner.route_unseen_s, planner.route_unseen_m = unseen_s, unseen_m
+    path, active = planner.command_path(route, [], [planner.blocking], 0.05)
+    assert active and path is None and planner.visibility_exhausted
+    assert planner.reference is not None
+
+
+def test_a_new_object_on_the_committed_detour_invalidates_it_before_collision():
+    planner = DetourPlanner(obstacle_scene().vehicle.model_dump())
+    x = np.arange(0, 6, 0.05)
+    route = np.c_[x, np.zeros(len(x))]
+    blocker = Obstacle(np.array([2.0, 0.0]), 0.2)
+    original, active = planner.command_path(route, [], [blocker], 0.05)
+    assert active and original is not None
+    newcomer = Obstacle(original[np.argmin(abs(original[:, 0] - 1.2))].copy(), 0.3)
+    path, active = planner.command_path(route, [], [blocker, newcomer], 0.05)
+    assert active and planner.reference is not None
+    if path is not None:
+        assert np.linalg.norm(path - newcomer.center, axis=1).min() >= 0.56
+    else:
+        assert planner.blocking is newcomer
+
+
+def test_reliable_observed_road_can_be_forecast_without_inventing_fresh_evidence():
+    from algorithms.modular.prediction import RouteForecast
+
+    forecast = RouteForecast()
+    x = np.linspace(0, 1.4, 40)
+    observed = np.c_[x, np.zeros(len(x))]
+    forecast.observe(observed, [])
+    forecast.age, forecast.travel = 9.0, 2.1
+    continuation = forecast.continuation()
+    assert continuation is not None and continuation[-1, 0] > 5.5
+    np.testing.assert_allclose(continuation[:, 1], 0, atol=1e-9)
+    assert forecast.age == 9 and forecast.travel == 2.1
+    assert forecast.uncertainty(4) > forecast.uncertainty(1)
+    forecast.age = 20.1
+    assert forecast.continuation() is None
+
+
+def test_prediction_relaxes_visibility_budget_only_with_reliable_geometry():
+    planner = DetourPlanner(obstacle_scene().vehicle.model_dump())
+    x = np.linspace(0, 1.4, 40)
+    planner.reference = np.c_[x, np.zeros(len(x))]
+    planner.route_unseen_s, planner.route_unseen_m = 9.0, 2.1
+    assert planner.visibility_exhausted
+    planner.forecast.observe(planner.reference, [])
+    planner.forecast.age, planner.forecast.travel = 9.0, 2.1
+    assert (
+        planner.visibility_exhausted
+    )  # Rejected/unused forecasts cannot extend motion.
+    planner.predicted_route = True
+    assert not planner.visibility_exhausted
+    planner.forecast.travel = 4.6
+    assert planner.visibility_exhausted
+
+
+@pytest.mark.parametrize("sign", [-1, 1])
+def test_curve_forecast_uses_ordered_tangent_and_preserves_turn_direction(sign):
+    from algorithms.modular.prediction import RouteForecast
+
+    forecast = RouteForecast()
+    angle = np.linspace(0, 1.3 / 3, 40)
+    path = np.c_[3 * np.sin(angle), sign * 3 * (1 - np.cos(angle))]
+    forecast.observe(path, [])
+    continuation = forecast.continuation()
+    assert continuation is not None
+    assert abs(forecast.curvature - sign / 3) < 0.06
+    assert np.max(abs(np.linalg.norm(continuation - [0, sign * 3], axis=1) - 3)) < 0.12
+
+
+def test_ambiguous_visible_continuations_cannot_be_resolved_by_prediction(monkeypatch):
+    planner = DetourPlanner(obstacle_scene().vehicle.model_dump())
+    x = np.linspace(0, 2, 60)
+    route = np.c_[x, np.zeros(len(x))]
+    planner.forecast.observe(route, [])
+    planner.peek_attempted = True
+    blocker = Obstacle(np.array([2.5, 0]), 0.25)
+
+    def ambiguous(*args):
+        planner.continuation_ambiguous = True
+        return None
+
+    monkeypatch.setattr(planner, "extend", ambiguous)
+    path, active = planner.command_path(route, [], [blocker], 0.05)
+    assert active and path is None and not planner.predicted_route
+
+
+def test_forecast_keeps_the_observed_bend_before_a_straight_tail():
+    from algorithms.modular.prediction import RouteForecast
+
+    angle = np.linspace(0, math.pi / 2, 45)
+    path = np.vstack(
+        [
+            np.c_[np.sin(angle), 1 - np.cos(angle)],
+            np.c_[np.ones(50), np.linspace(1.05, 3, 50)],
+        ]
+    )
+    forecast = RouteForecast()
+    forecast.observe(path, [])
+    continuation = forecast.continuation()
+    assert continuation is not None
+    np.testing.assert_allclose(continuation[: len(path) - 1], path[:-1])
+    assert abs(forecast.curvature) < 0.01
+
+
+def test_short_occluded_road_supports_a_bounded_prediction_detour():
+    planner = DetourPlanner(obstacle_scene().vehicle.model_dump())
+    x = np.linspace(0, 1.4, 40)
+    route = np.c_[x, np.zeros(len(x))]
+    planner.forecast.observe(route, [])
+    planner.peek_attempted = True
+    blocker = Obstacle(np.array([1.8, 0]), 0.25)
+    path, active = planner.command_path(route, [], [blocker], 0.05)
+    assert active and path is not None and planner.predicted_route
+    assert not planner.rejoin_observed
+    assert path[-1, 0] > blocker.center[0] + 1
+    assert np.linalg.norm(path - blocker.center, axis=1).min() >= 0.51
+    assert path_curvature(path).max() <= planner.max_curvature
+
+
+def test_visual_budget_expiry_tries_a_reliable_prediction_without_refreshing_evidence():
+    planner = DetourPlanner(obstacle_scene().vehicle.model_dump())
+    x = np.linspace(0, 1.4, 40)
+    planner.reference = np.c_[x, np.zeros(len(x))]
+    planner.forecast.observe(planner.reference, [])
+    planner.forecast.age = planner.route_unseen_s = 6.1
+    planner.blocking = Obstacle(np.array([1.8, 0]), 0.25)
+    path, active = planner.command_path(planner.reference, [], [planner.blocking], 0.05)
+    assert active and path is not None and planner.predicted_route
+    assert planner.route_unseen_s == planner.forecast.age == 6.1
+    assert not planner.visibility_exhausted and not planner.rejoin_observed
+
+
+def test_prediction_can_hold_offset_when_the_final_return_is_not_yet_in_view():
+    planner = DetourPlanner(obstacle_scene().vehicle.model_dump())
+    x = np.linspace(0, 1.4, 40)
+    route = np.c_[x, np.zeros(len(x))]
+    planner.forecast.observe(route, [])
+    planner.forecast.residual, planner.forecast.span = 0.004, 0.7
+    planner.peek_attempted = True
+    obstacles = [Obstacle(np.array([x, 0]), 0.25) for x in (2, 3.5)]
+    path, active = planner.command_path(route, [], obstacles, 0.05)
+    assert active and path is not None and planner.continuing
+    assert 0.5 < abs(path[-1, 1]) < 0.7
+    assert all(np.linalg.norm(path - b.center, axis=1).min() >= 0.51 for b in obstacles)
+    assert path_curvature(path).max() <= planner.max_curvature
+    assert not planner.rejoin_observed
+
+
+def test_a_rejected_prediction_cannot_drive_past_the_verified_peek_endpoint():
+    planner = DetourPlanner(obstacle_scene().vehicle.model_dump())
+    x = np.linspace(-1, 0.8, 40)
+    route = np.c_[x, np.full(len(x), -0.6)]
+    planner.reference = route.copy()
+    planner.forecast.observe(route, [])
+    planner.path = np.array([[-0.05, 0], [0, 0], [0.12, 0]])
+    planner.peeking = planner.peek_attempted = True
+    planner.blocking = Obstacle(np.array([1.3, -0.6]), 0.25)
+    # An unresolved parallel road lies inside the future uncertainty corridor.
+    planner.road_memory = np.c_[np.linspace(1, 3, 40), np.full(40, -0.38)]
+    path, active = planner.command_path(route, [], [planner.blocking], 0.05)
+    assert active and path is None and planner.reference is not None
+    assert planner.prediction_rejection
+
+
+def test_prediction_respects_neighbors_but_accepts_collinear_ground_support():
+    planner = DetourPlanner(obstacle_scene().vehicle.model_dump())
+    x = np.linspace(0, 1.4, 40)
+    route = np.c_[x, np.zeros(len(x))]
+    planner.forecast.observe(route, [])
+    blocker = Obstacle(np.array([1.8, 0]), 0.25)
+    cloud = np.c_[np.linspace(2.2, 4, 40), np.zeros(40)]
+    planner.road_memory = cloud
+    assert planner.predict_reference(route, None, blocker) is not None
+    planner.road_memory = cloud + [0, 0.22]
+    assert planner.predict_reference(route, None, blocker) is None
+    assert planner.prediction_rejection
+
+
+def test_noisy_refit_cannot_reset_prediction_age_or_freeze_its_motion():
+    from algorithms.modular.prediction import RouteForecast
+
+    forecast = RouteForecast()
+    x = np.linspace(0, 1.4, 40)
+    road = np.c_[x, np.zeros(len(x))]
+    forecast.observe(road, [])
+    forecast.age = 5
+    forecast.observe(road + np.c_[np.zeros(len(x)), 0.12 * np.sin(30 * x)], [])
+    assert forecast.age == 5
+    forecast.advance(np.array([0.2, 0]), np.eye(2), 0)
+    np.testing.assert_allclose(forecast.origin, [1.2, 0], atol=1e-8)
+    assert forecast.travel == 0.2
+
+
+def test_prediction_diagnostics_are_json_serializable_after_passing_the_fit_origin():
+    import json
+    from algorithms.modular.prediction import RouteForecast
+
+    forecast = RouteForecast()
+    x = np.linspace(0, 1.4, 40)
+    forecast.observe(np.c_[x, np.zeros(len(x))], [])
+    forecast.advance(np.array([2.0, 0]), np.eye(2), 0)
+    assert json.dumps({"available": forecast.trustworthy}) == '{"available": true}'
+
+
+def test_fresh_rgb_replaces_the_predicted_return_and_releases_identity_on_the_line():
+    scene = obstacle_scene()
+    scene.objects = []
+    renderer = Renderer(scene)
+    obs = Observation.from_rgb(
+        renderer.render(Pose(), 0),
+        episode_id="prediction-rejoin",
+        frame_id=0,
+        timestamp_s=0,
+        dt_s=scene.dt_s,
+        calibration=renderer.camera.calibration(),
+        task_hint=scene.task_hint,
+    )
+    policy = AvoidingPursuit()
+    policy.initialize({}, {"vehicle_limits": scene.vehicle.model_dump()})
+    policy.reset(obs, obs.task_hint)
+    tracker, planner = policy.tracker, policy.tracker.planner
+    x = np.arange(0, 4, 0.05)
+    planner.reference = np.c_[x, np.zeros(len(x))]
+    planner.path = planner.reference + [0, 0.6]
+    planner.blocking = Obstacle(np.array([-0.6, 0]), 0.25)
+    planner.predicted_route = True
+    result = tracker.observe(obs, scene.dt_s)
+    assert result.path is not None and not result.predicted
+    assert planner.rejoin_observed and not planner.predicted_route
+    assert planner.path is None and planner.recovery_pending
+    _, active = planner.command_path(result.path, tracker.components, [], scene.dt_s)
+    assert not active and planner.reference is None
+
+
+def test_unverified_prediction_cannot_trigger_reverse_retries(monkeypatch):
+    scene = obstacle_scene()
+    renderer = Renderer(scene)
+    obs = Observation.from_rgb(
+        renderer.render(Pose(), 0),
+        episode_id="prediction-stop",
+        frame_id=0,
+        timestamp_s=0,
+        dt_s=scene.dt_s,
+        calibration=renderer.camera.calibration(),
+        task_hint=scene.task_hint,
+    )
+    policy = AvoidingPursuit()
+    policy.initialize({}, {"vehicle_limits": scene.vehicle.model_dump()})
+    policy.reset(obs, obs.task_hint)
+    planner = policy.tracker.planner
+
+    def no_feasible_forecast(*args):
+        planner.predicted_route = True
+        return None, True
+
+    monkeypatch.setattr(planner, "command_path", no_feasible_forecast)
+    monkeypatch.setattr(
+        policy.tracker.recovery,
+        "request",
+        lambda *args: pytest.fail("A hypothetical road cannot authorize reverse retry"),
+    )
+    result = policy.step(obs)
+    assert result.action.speed_mps == 0
+    assert policy.tracker.recovery.stage == "idle"

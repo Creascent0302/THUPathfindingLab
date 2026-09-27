@@ -222,12 +222,13 @@ def test_deterministic_motion_and_stress(execute):
     assert any("action_expired" in r["interventions"] for r in a.records)
 
 
-def test_manual_pause_step_cancel_and_brake(tmp_path):
+@pytest.mark.parametrize("speed", [0.8, -0.4])
+def test_manual_pause_step_cancel_and_brake(tmp_path, speed):
     run = Run(RunConfig(algorithm="manual", max_steps=400), tmp_path, headless=True)
     run.start()
     try:
         wait_until(lambda: run.state == "running")
-        run.set_action(Action(steering_angle_rad=0.2, speed_mps=0.8))
+        run.set_action(Action(steering_angle_rad=0.2, speed_mps=speed))
         run.control("step")
         wait_until(lambda: len(run.records) == 1)
         time.sleep(0.12)

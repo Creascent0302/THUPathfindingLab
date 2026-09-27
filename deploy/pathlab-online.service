@@ -1,0 +1,26 @@
+[Unit]
+Description=Pathlab isolated online classroom gateway
+After=network-online.target docker.service
+Requires=docker.service
+
+[Service]
+# Set these paths and the dedicated deployment user for your machine.
+User=pathlab
+Group=pathlab
+SupplementaryGroups=docker
+WorkingDirectory=/opt/THUPathfindingLab
+EnvironmentFile=/etc/pathlab/online.env
+ExecStart=/opt/THUPathfindingLab/.venv/bin/python run.py online --port 8000
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=90
+KillMode=control-group
+UMask=0077
+NoNewPrivileges=yes
+# This is the gateway limit, separate from the Docker session limits.
+MemoryMax=768M
+TasksMax=256
+LimitNOFILE=4096
+
+[Install]
+WantedBy=multi-user.target

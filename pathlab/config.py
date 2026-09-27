@@ -26,7 +26,8 @@ class VehicleConfig(Model):
     lateral_response_s: float = Field(default=0.10, ge=0.05, le=1)
     jerk_limit_mps3: float = Field(default=6, ge=0.5, le=40)
     max_lateral_acceleration_mps2: float = Field(default=3, ge=0.3, le=15)
-    reverse_allowed: Literal[False] = False
+    reverse_allowed: bool = True
+    max_reverse_speed_mps: float = Field(default=0.5, gt=0, le=2)
 
     @model_validator(mode="after")
     def finite_braking(self):

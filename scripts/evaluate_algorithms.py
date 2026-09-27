@@ -35,9 +35,11 @@ from pathlab.simulation import Renderer, Vehicle
 from pathlab.storage import environment, write_json
 
 
-def evaluation_scene(family, seed, split, suite, scene_file=None):
+def evaluation_scene(family, seed, split, suite, scene_file=None, reverse=None):
     if scene_file:
         scene = Scene.model_validate_json(Path(scene_file).read_text(encoding="utf-8"))
+        if reverse is not None:
+            scene.vehicle.reverse_allowed = reverse == "on"
         return scene.model_copy(update={"seed": seed, "split": split})
     scene = generate("straight" if suite == "custom" else family, seed, split=split)
     rng = np.random.default_rng(seed)
@@ -77,6 +79,8 @@ def evaluation_scene(family, seed, split, suite, scene_file=None):
             )
         )
         scene.split = split
+    if reverse is not None:
+        scene.vehicle.reverse_allowed = reverse == "on"
     return scene
 
 
@@ -94,7 +98,14 @@ def evaluate(job):
         *extra,
     ) = job
     cv2.setNumThreads(1)
-    scene = evaluation_scene(family, seed, split, suite, extra[0] if extra else None)
+    scene = evaluation_scene(
+        family,
+        seed,
+        split,
+        suite,
+        extra[0] if extra else None,
+        extra[1] if len(extra) > 1 else None,
+    )
     if resolution:
         scene.camera.width, scene.camera.height = resolution, round(resolution * 9 / 16)
     simulator, vehicle, evaluator = (
@@ -170,7 +181,7 @@ def evaluate(job):
     # full worker-based platform, including a collision after crossing finish.
     terminal_task_frame = records[-1] if records else None
     evaluator.begin_coasting()
-    while vehicle.state.speed_mps > 1e-8:
+    while abs(vehicle.state.speed_mps) > 1e-8:
         before = vehicle.state.model_dump()
         applied = vehicle.advance(Action(steering_angle_rad=0, speed_mps=0), scene.dt_s)
         timestamp = (len(records) + 1) * scene.dt_s
@@ -218,6 +229,21 @@ def evaluate(job):
                 "pose": r["pose"],
                 "evaluation": r["evaluation"],
                 "status": (r.get("output") or {}).get("status"),
+                "recovery_stage": ((r.get("output") or {}).get("debug") or {}).get(
+                    "recovery_stage"
+                ),
+                "detour_handoffs": ((r.get("output") or {}).get("debug") or {}).get(
+                    "detour_handoffs"
+                ),
+                "avoidance_state": ((r.get("output") or {}).get("debug") or {}).get(
+                    "avoidance_state"
+                ),
+                "route_prediction": ((r.get("output") or {}).get("debug") or {}).get(
+                    "route_prediction"
+                ),
+                "detour_continuing": ((r.get("output") or {}).get("debug") or {}).get(
+                    "detour_continuing"
+                ),
                 "safety_braking": "safety_braking" in r.get("interventions", []),
             }
             for r in records
@@ -249,6 +275,8 @@ def write_report(folder, plan, reports):
         "score_total",
         "collision_count",
         "simulation_time_s",
+        "reverse_count",
+        "reverse_distance_m",
     ]
     with (folder / "report.csv").open("w", encoding="utf-8-sig", newline="") as handle:
         writer = csv.DictWriter(handle, fields)
@@ -264,6 +292,8 @@ def write_report(folder, plan, reports):
                     "score_total": (m.get("score") or {}).get("total"),
                     "collision_count": m.get("collision_count"),
                     "simulation_time_s": m.get("simulation_time_s"),
+                    "reverse_count": m.get("reverse_count"),
+                    "reverse_distance_m": m.get("reverse_distance_m"),
                 }
             )
     lines = [
@@ -346,6 +376,11 @@ def main():
         "--resolution", type=int, default=0, help="0 preserves the full 640×360 camera"
     )
     parser.add_argument("--jobs", type=int, default=4)
+    parser.add_argument(
+        "--reverse",
+        choices=["on", "off"],
+        help="覆盖本次所有案例的倒车许可，写入冻结场景；省略时保留地图设置",
+    )
     parser.add_argument("--parameters", type=json.loads, default={})
     parser.add_argument(
         "--suite",
@@ -355,7 +390,7 @@ def main():
     parser.add_argument(
         "--split", choices=["development", "validation", "test"], default="development"
     )
-    parser.add_argument("--output", default="artifacts/algorithms/development")
+    parser.add_argument("--output", default="artifacts/evaluation")
     args = parser.parse_args()
     if args.suite == "custom":
         args.families = ["custom"]  # One distinct map per seed, never count duplicates.
@@ -379,6 +414,8 @@ def main():
         cases = []
         for index, name in enumerate(args.scene_files):
             scene = Scene.model_validate_json(Path(name).read_text(encoding="utf-8"))
+            if args.reverse is not None:
+                scene.vehicle.reverse_allowed = args.reverse == "on"
             destination = inputs / f"{index:02d}-{Path(name).stem}.json"
             write_json(destination, scene.model_dump())
             cases.append((destination.stem, str(destination.resolve())))
@@ -392,7 +429,12 @@ def main():
             "测试集须使用保留种子 >=1001；开发和调参请使用 development / validation"
         )
     representative_scene = evaluation_scene(
-        cases[0][0], case_seeds[cases[0][0]][0], args.split, args.suite, cases[0][1]
+        cases[0][0],
+        case_seeds[cases[0][0]][0],
+        args.split,
+        args.suite,
+        cases[0][1],
+        args.reverse,
     )
     plan = {
         **vars(args),
@@ -421,12 +463,12 @@ def main():
             for path in sorted((ROOT / "pathlab").glob("*.py"))
         },
     }
-    from algorithms.learning.algorithm import checkpoint_for_limits
+    from algorithms.learning.algorithm import DEFAULT_CHECKPOINT
 
     checkpoint = Path(
         args.parameters.get(
             "checkpoint",
-            checkpoint_for_limits(representative_scene.vehicle.model_dump()),
+            DEFAULT_CHECKPOINT,
         )
     )
     if "cnn_gru" in args.algorithms and checkpoint.exists():
@@ -444,6 +486,7 @@ def main():
             args.suite,
             args.output,
             scene_file,
+            args.reverse,
         )
         for a in args.algorithms
         for f, scene_file in cases

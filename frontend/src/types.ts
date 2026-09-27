@@ -71,6 +71,8 @@ export type Scene = {
   vehicle: {
     motion_model: "kinematic_v1" | "inertial_v2";
     max_speed_mps: number;
+    reverse_allowed: boolean;
+    max_reverse_speed_mps: number;
     max_steering_rad: number;
     wheelbase_m: number;
     length_m: number;
@@ -187,6 +189,9 @@ export type Metrics = {
   collision_count?: number | null;
   collision_duration_s?: number | null;
   avoidance_duration_s?: number | null;
+  reverse_distance_m?: number | null;
+  reverse_time_s?: number | null;
+  reverse_count?: number | null;
   completion_time_s?: number | null;
   simulation_time_s?: number | null;
   steering_rate_rad_s?: Distribution;

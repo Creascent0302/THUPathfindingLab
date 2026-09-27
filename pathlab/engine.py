@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import base64
 import math
+import os
 from collections import deque
 from pathlib import Path
 import threading
@@ -395,12 +396,14 @@ class Run:
         # Model limits imply a finite stop. Keep a hard guard as well, so an
         # invalid/custom dynamics implementation cannot fill the disk forever.
         # Speed may still rise while positive acceleration ramps through zero.
-        stopping_time = c.max_speed_mps / max(c.braking_mps2, 0.05)
+        stopping_time = max(c.max_speed_mps, c.max_reverse_speed_mps) / max(
+            c.braking_mps2, 0.05
+        )
         ramp_time = (c.acceleration_mps2 + c.braking_mps2) / c.jerk_limit_mps3
         limit = min(30000, math.ceil((stopping_time + ramp_time + 2) / self.dt))
         # Fixed-step physical braking is recorded, never teleport speed to zero.
         for _ in range(limit):
-            if self.vehicle.state.speed_mps <= 1e-8:
+            if abs(self.vehicle.state.speed_mps) <= 1e-8:
                 break
             start = time.monotonic()
             animate = (
@@ -441,7 +444,7 @@ class Run:
             )
             if animate:
                 time.sleep(max(0, self.dt - (time.monotonic() - start)))
-        if self.vehicle.state.speed_mps > 1e-8:
+        if abs(self.vehicle.state.speed_mps) > 1e-8:
             self.reason = "braking_failure"
             self.failures.append(
                 {
@@ -502,6 +505,8 @@ class RunManager:
     def __init__(self, root: Path):
         self.root = root
         self.root.mkdir(parents=True, exist_ok=True)
+        self.ephemeral = os.environ.get("PATHLAB_EPHEMERAL") == "1"
+        self.max_active = 1 if self.ephemeral else 3
         self.runs: dict[str, Run] = {}
         self.lock = threading.Lock()
 
@@ -509,8 +514,15 @@ class RunManager:
         self, config: RunConfig, *, headless=False, spec=None, metadata=None
     ) -> Run:
         with self.lock:
-            if sum(run.thread.is_alive() for run in self.runs.values()) >= 3:
-                raise RunCapacityError("最多同时运行 3 个实验，请先停止已有实验")
+            if (
+                sum(run.thread.is_alive() for run in self.runs.values())
+                >= self.max_active
+            ):
+                raise RunCapacityError(
+                    f"最多同时运行 {self.max_active} 个实验，请先停止已有实验"
+                )
+            if self.ephemeral:
+                config = config.model_copy(update={"record_images": False})
             if len(list((self.root / "runs").glob("*/manifest.json"))) >= 200:
                 raise ValueError("已保存 200 次实验，请在运行记录中删除不需要的记录")
             check_run_storage(self.root)

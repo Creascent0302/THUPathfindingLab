@@ -274,6 +274,18 @@ export function ResultsPage({
                   (r: Manifest) => fmt(r.metrics?.avoidance_duration_s, 1),
                 ],
                 [
+                  "倒车距离 / m",
+                  (r: Manifest) => fmt(r.metrics?.reverse_distance_m, 2),
+                ],
+                [
+                  "倒车时间 / s",
+                  (r: Manifest) => fmt(r.metrics?.reverse_time_s, 1),
+                ],
+                [
+                  "倒车次数",
+                  (r: Manifest) => String(r.metrics?.reverse_count ?? "不提供"),
+                ],
+                [
                   "完成时间 / s",
                   (r: Manifest) => fmt(r.metrics?.completion_time_s, 1),
                 ],

@@ -17,6 +17,13 @@ const fields: {
     step: 0.1,
   },
   {
+    key: "max_reverse_speed_mps",
+    label: "最高倒车速度 / m/s",
+    min: 0.1,
+    max: 2,
+    step: 0.1,
+  },
+  {
     key: "acceleration_mps2",
     label: "最大加速度 / m/s²",
     min: 0.1,
@@ -111,8 +118,19 @@ export function VehicleSettings({
           <option value="kinematic_v1">历史运动学 v1</option>
         </select>
       </label>
+      <label>
+        <input
+          type="checkbox"
+          checked={vehicle.reverse_allowed ?? false}
+          disabled={disabled}
+          onChange={(e) =>
+            setVehicle({ ...vehicle, reverse_allowed: e.target.checked })
+          }
+        />
+        允许倒车
+      </label>
       {fields
-        .filter((_, i) => vehicle.motion_model === "inertial_v2" || i < 4)
+        .filter((_, i) => vehicle.motion_model === "inertial_v2" || i < 5)
         .map((field) => (
           <label key={field.key}>
             {field.label}
@@ -123,7 +141,7 @@ export function VehicleSettings({
               max={field.max}
               step={field.step}
               disabled={disabled}
-              value={vehicle[field.key]}
+              value={Number(vehicle[field.key] ?? 0.5)}
               onChange={(e) =>
                 setVehicle({ ...vehicle, [field.key]: Number(e.target.value) })
               }

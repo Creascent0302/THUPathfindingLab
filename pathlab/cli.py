@@ -176,11 +176,13 @@ def main():
     serve = sub.add_parser("serve", help="启动本地工作台")
     serve.add_argument("--port", type=int, default=8000)
     serve.add_argument("--host", default="127.0.0.1")
+    online = sub.add_parser("online", help="启动 HTTPS 反向代理后的隔离课堂网关")
+    online.add_argument("--port", type=int, default=8000)
     sub.add_parser("doctor", help="检查运行环境")
     sub.add_parser("test", help="运行平台回归测试")
     scenes = sub.add_parser("scenes", help="生成八类场景 JSON")
     scenes.add_argument("--seeds", nargs="+", type=int, default=[7])
-    scenes.add_argument("--output", default=str(ROOT / "scenarios"))
+    scenes.add_argument("--output", default=str(ROOT / "artifacts" / "scenes"))
     bench = sub.add_parser("benchmark", help="确定性、无界面批量评测")
     bench.add_argument(
         "--algorithms",
@@ -213,6 +215,13 @@ def main():
             port=getattr(args, "port", 8000),
             log_level="info",
         )
+    elif args.command == "online":
+        import uvicorn
+        from .public import create_public_app
+
+        uvicorn.run(create_public_app(), host="127.0.0.1", port=args.port,
+                    limit_concurrency=128, ws_max_size=1024, ws_max_queue=1,
+                    proxy_headers=False, timeout_keep_alive=5)
     elif args.command == "doctor":
         print(
             json.dumps(

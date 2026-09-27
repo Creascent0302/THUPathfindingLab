@@ -1,0 +1,972 @@
+{
+  "date": "2026-09-21",
+  "algorithm_versions": {
+    "temporal_pursuit_avoidance": "3.1",
+    "temporal_mpc_avoidance": "3.1"
+  },
+  "scope": "Development regression: eight fixed scenes, all sixteen outcomes retained. The new densely occluded three-obstacle case remains a task failure when safely stopped; it is not counted as successful avoidance.",
+  "evaluator_version": "5.0",
+  "score_version": "5.0",
+  "settings": {
+    "reverse_allowed": true,
+    "steps": 1800,
+    "dt_s": 0.05,
+    "camera_resolution": [
+      640,
+      360
+    ],
+    "jobs": 6,
+    "parameters": {},
+    "motion_model": "inertial_v2",
+    "thresholds": {
+      "acquire_distance_m": 0.2,
+      "acquire_heading_rad": 0.45,
+      "entry_arc_m": 0.5,
+      "identity_neighborhood_m": 0.75,
+      "approach_improvement_m": 0.01,
+      "track_distance_m": 0.24,
+      "track_heading_rad": 0.65,
+      "offtrack_timeout_s": 2.0,
+      "switch_distance_m": 0.14,
+      "switch_margin_m": 0.035,
+      "switch_duration_s": 0.5,
+      "finish_remaining_m": 0.18,
+      "avoidance_approach_m": 2.5,
+      "avoidance_departure_m": 2.5,
+      "avoidance_max_offset_m": 1.2
+    }
+  },
+  "environment": {
+    "python": "3.13.9 | packaged by Anaconda, Inc. | (main, Oct 21 2025, 19:16:10) [GCC 11.2.0]",
+    "platform": "Linux-5.15.0-139-generic-x86_64-with-glibc2.31",
+    "packages": {
+      "numpy": "2.2.6",
+      "opencv-python-headless": "4.11.0.86",
+      "fastapi": "0.115.12",
+      "pydantic": "2.11.5",
+      "uvicorn": "0.34.3"
+    }
+  },
+  "scene_sources": [
+    {
+      "case": "00-block-double",
+      "file": "scenarios/challenges/block-double.json",
+      "name": "0920挑战·连续占道",
+      "source_sha256": "5ed7670fec123a22252a2b5f7353f06aafc1360d3a1d7cd382e2b2485a46bcf2",
+      "normalized_reverse_on_sha256": "2c4590dabd650e5a8659596803f137cd817fe1ac47479e90c2da68ea4d2232d2",
+      "seeds": [
+        920
+      ]
+    },
+    {
+      "case": "01-user-close-obstacles",
+      "file": "scenarios/challenges/user-close-obstacles.json",
+      "name": "0920挑战·近距平行干扰(1)",
+      "source_sha256": "9ecf37abd07b6e99408bcb313e24e6081248f20bad51fec2c51109f4cb13f087",
+      "normalized_reverse_on_sha256": "75c9f273178bf822688cc0ee28786a2b3e7dcfbf412a8429113872126398d8f2",
+      "seeds": [
+        920
+      ]
+    },
+    {
+      "case": "02-block-coil",
+      "file": "scenarios/challenges/block-coil.json",
+      "name": "0920挑战·套圈占道",
+      "source_sha256": "ceeb3a6fb1b8d644d5694b7fed11119f18bff0472bda338fb98bec32ea9e2182",
+      "normalized_reverse_on_sha256": "ef684fa246bd6ebe76ed125c16eb596784aa31ee823cec8a8abf2d24a300255f",
+      "seeds": [
+        920
+      ]
+    },
+    {
+      "case": "03-block-neighbor",
+      "file": "scenarios/challenges/block-neighbor.json",
+      "name": "0920挑战·占道与邻线",
+      "source_sha256": "0e3823861699c208951990f99090f4d7feffa1a3cfd2f7e6c91535b8240257b2",
+      "normalized_reverse_on_sha256": "df81882200132ac89119893c8bde0e4daf587d3539e4f5cf9e879895db9082c9",
+      "seeds": [
+        920
+      ]
+    },
+    {
+      "case": "04-mirror-close-obstacles",
+      "file": "scenarios/challenges/mirror-close-obstacles.json",
+      "name": "0920挑战·近距平行干扰(1) · 镜像回归",
+      "source_sha256": "b50da6713110c8d74de5a7a81140e3da22747f419b840fd0c76f58366b23b488",
+      "normalized_reverse_on_sha256": "b7d52d708196e0703d859e405495d547825d63c5aa4b8a56bba54b7b8bfe9811",
+      "seeds": [
+        10029
+      ]
+    },
+    {
+      "case": "05-user-0920",
+      "file": "scenarios/challenges/user-0920.json",
+      "name": "0920测试",
+      "source_sha256": "10a1a2eb08097ef79b017cb8301a1728bf8c0fb7be217b3f495a3f707a46300e",
+      "normalized_reverse_on_sha256": "f29bad1c78db977963a22e7cfeb90b678485dcbe4b44c05198fc42c15066faaa",
+      "seeds": [
+        7
+      ]
+    },
+    {
+      "case": "06-user-0920-obstacles",
+      "file": "scenarios/challenges/user-0920-obstacles.json",
+      "name": "0920测试",
+      "source_sha256": "aeeb9dfbc0a2f0f4c6a63b673b9e6439d1571f2c724da2f1c30674a7e33ea206",
+      "normalized_reverse_on_sha256": "250bcffa9edb27a436f35a62164f67eb50cca1a7c3394bb2f2e5d4c7440bbe60",
+      "seeds": [
+        7
+      ]
+    },
+    {
+      "case": "07-block-chain-occluded",
+      "file": "scenarios/challenges/block-chain-occluded.json",
+      "name": "0920挑战·近距三障遮挡压力",
+      "source_sha256": "7d6f1667aafabb7000b08638169849ebd6226d689a222c5d3bd5c0af9c021c7a",
+      "normalized_reverse_on_sha256": "7d6f1667aafabb7000b08638169849ebd6226d689a222c5d3bd5c0af9c021c7a",
+      "seeds": [
+        920
+      ]
+    }
+  ],
+  "normalization": "Scene.model_validate_json(source); set vehicle.reverse_allowed=True; json.dumps(scene.model_dump(),ensure_ascii=False,indent=2,allow_nan=False), UTF-8 without trailing newline.",
+  "code_sha256": {
+    "algorithms/__init__.py": "08f5f58aa57f280f42729c8a3222cf7d792b37eb2304963f58bbc39b106241fa",
+    "algorithms/avoidance.py": "d5d3ce806c5ee1c98f259838a0848367ac8012a5e2a3e1bf400e5eb3f760491c",
+    "algorithms/examples.py": "e93c6f81bd78b21e2e1ab709366e4e0b4ed4c895b888a4b2834a4c2100bf3e82",
+    "algorithms/learning/__init__.py": "22013f582d9a48ad8396ee16caac83a6016dcdd327e686ccb6a21cd4be3b588c",
+    "algorithms/learning/algorithm.py": "2803591e992aefabaa027c33a745dbd3dbb00bc1317b96c7c738b273ed97a1e0",
+    "algorithms/learning/custom_data.py": "c076fd92a3cd9f2630df1f601b25cae23ecf47677e4602bfff199832fd9aef80",
+    "algorithms/learning/data.py": "1cd606b46207453207d5ea123ead6e455e6baae46e2e1793fa81961abba6b586",
+    "algorithms/learning/model.py": "f56e89e21be96100ab795f0163371d062a4fdee5a43dbcdb380cf5324e03a4f1",
+    "algorithms/learning/train.py": "a5286431cf57ba503da0799420a1ee93876ebe804963e1982724e79ba803b639",
+    "algorithms/modular/__init__.py": "eeccb5f09492121f56d5081dfeaef423b3a5f739860535d2de2b601ad9741a31",
+    "algorithms/modular/algorithm.py": "3e0e8cb570e5f449421ab9086af542435d4c71cf060c6315b539f973586bf612",
+    "algorithms/modular/control.py": "ba30ef50ace282214f945d805cda47543d31eba32bd5c5d80cf09b9b9ae0e0b5",
+    "algorithms/modular/obstacles.py": "f71e9c3c93f35ceac1ebf7f8bea2e925e3e17ee0e224d4e50c5ae583b835435c",
+    "algorithms/modular/prediction.py": "4d038cb842c0f90dba11bd63fe41a8afac81278266b1ba926b12a3b20ac45669",
+    "algorithms/modular/recovery.py": "26eb9071d7fb209c73376fe0c53225953e69dac4f8615491c9bf45ca2616c2f1",
+    "algorithms/modular/vision.py": "2f11e564ac541337edef21b2b0f0ea61cd696cf9179812d66ba121f2be7476eb",
+    "algorithms/scanline.py": "85bef17907f9d94a505f88c374a31b758cfa5fd952e176a1d01b29b9d1b5122c"
+  },
+  "platform_sha256": {
+    "pathlab/__init__.py": "4c2a0990ea293b33c8bb306a60e7ed457a07e72ed5763c236704efb2d3102702",
+    "pathlab/adapters.py": "6c22b335de3a532f30f348fae9c16af4e1de4026bffaaeacf04c7235360e7532",
+    "pathlab/api.py": "6f9bf8f172b2c694ee34e3cb8ba65f8d6884f190c5d3979b1dff2e9af3fc483d",
+    "pathlab/benchmark.py": "89e389728d2ab9cc673ba5bcb1565db6a8e0a9f511d58f3b3905ea543df9315c",
+    "pathlab/cli.py": "bd81fff78bea52a227e66a7ae4430bc13e4061cfbc69bed2a340ad22a9e88b27",
+    "pathlab/config.py": "d3d5bd6fd58573e97e5e73a9fdca6c3fb9ac2287d8a71f8dbc6ecaff6b9ee4ed",
+    "pathlab/dynamics.py": "fb5a4bdead84d32aed59ee961a82c2b0d86c0761845c78fd9c52786c7aca8719",
+    "pathlab/engine.py": "cc049981e0873d01dc773bb722b7b4e617f8312994f1702182435c8ae5630f61",
+    "pathlab/evaluation.py": "1f2d059044b941604245f828f480874b4d4948760fe18503ad7d7b0209a538d7",
+    "pathlab/map_editor.py": "b4d4c6dbbd10bfedc598eb726a6a2c5a3b32ced6f2166eec7c861453bb906cab",
+    "pathlab/map_library.py": "2c1bf5d91305fdad566e90ebd70870869ce4fb44aea1dccf0d7da2b926888fd4",
+    "pathlab/registry.py": "75ca2595ad0488f1f8c2d0153fb39fea3a7d586dfa00ef72d1b568c91939d26c",
+    "pathlab/scenarios.py": "007cefec7dc505081324683a9125ab8b2248b9921545cb573b8f4bf6d1af603e",
+    "pathlab/scene_objects.py": "e331142f9558672a42fdbbc4f66ff53ee58c66542bd56b6fc3fffaa68c5b2962",
+    "pathlab/sdk.py": "ca8956d1a5f5528f8827dd287b8f6227660e30313c07636039fb4f6324223258",
+    "pathlab/simulation.py": "881a2e9a478bf20bd4b8d2c21589261c3708383b9aa873a48d09e48cb5a687d6",
+    "pathlab/sources.py": "acb009b455197cc67fac6868a835f2b5d7d99822dabb2cf69af5add4e6a1d3ee",
+    "pathlab/storage.py": "4ed3fbc064a119dcd087bd0f80d703571d589d324378bf92d0672e54e240010e",
+    "pathlab/submissions.py": "8d18ff773c5bba360135e71cd7f6f8a98296bf174461310c15e240060516de39",
+    "pathlab/worker.py": "a48f3f73d6ae4c9162be80a75fa6c17b3ac88615eb56f06c98160b549947484b"
+  },
+  "runner_sha256": "9dc5beda23a19af5a16e01f90a351cd566a4c3e304de8d90dfb0720e7bcf3efa",
+  "registry_sha256": "4b6e071befbb621cdc4ea8736b8c35720c3673cf18a3edef0294040b2841c057",
+  "reproduce": "python scripts/evaluate_algorithms.py --algorithms temporal_pursuit_avoidance temporal_mpc_avoidance --scene-files scenarios/challenges/block-double.json scenarios/challenges/user-close-obstacles.json scenarios/challenges/block-coil.json scenarios/challenges/block-neighbor.json scenarios/challenges/mirror-close-obstacles.json scenarios/challenges/user-0920.json scenarios/challenges/user-0920-obstacles.json scenarios/challenges/block-chain-occluded.json --reverse on --steps 1800 --jobs 6 --output artifacts/evaluation-compact",
+  "summary": {
+    "temporal_pursuit_avoidance": {
+      "successes": 6,
+      "episodes": 8,
+      "collisions": 0,
+      "illegal_switches": 0
+    },
+    "temporal_mpc_avoidance": {
+      "successes": 6,
+      "episodes": 8,
+      "collisions": 0,
+      "illegal_switches": 0
+    }
+  },
+  "episodes": [
+    {
+      "algorithm": "temporal_pursuit_avoidance",
+      "case": "00-block-double",
+      "seed": 920,
+      "metrics": {
+        "reason": "success",
+        "success": true,
+        "frames": 1362,
+        "task_frames": 1355,
+        "completion": 0.9946277022572677,
+        "simulation_time_s": 67.75,
+        "completion_time_s": 67.75,
+        "tracking_lateral_error_m": {
+          "mean": 0.046536113389852106,
+          "p95": 0.18381713404131633,
+          "max": 0.23965608216287548
+        },
+        "reverse_count": 0,
+        "reverse_distance_m": 0.0,
+        "collision_count": 0,
+        "timeout_count": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "illegal_switch_count": 0
+      },
+      "detour_handoffs": 1,
+      "prediction_reference_frames": 0,
+      "continuing_frames": 0,
+      "final_speed_mps": 0.0
+    },
+    {
+      "algorithm": "temporal_pursuit_avoidance",
+      "case": "01-user-close-obstacles",
+      "seed": 920,
+      "metrics": {
+        "reason": "success",
+        "success": true,
+        "frames": 1354,
+        "task_frames": 1347,
+        "completion": 0.9945070312670463,
+        "simulation_time_s": 67.35000000000001,
+        "completion_time_s": 67.35000000000001,
+        "tracking_lateral_error_m": {
+          "mean": 0.05175086260060312,
+          "p95": 0.1785352066136903,
+          "max": 0.23882970669583797
+        },
+        "reverse_count": 0,
+        "reverse_distance_m": 0.0,
+        "collision_count": 0,
+        "timeout_count": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "illegal_switch_count": 0
+      },
+      "detour_handoffs": 0,
+      "prediction_reference_frames": 0,
+      "continuing_frames": 0,
+      "final_speed_mps": 0.0
+    },
+    {
+      "algorithm": "temporal_pursuit_avoidance",
+      "case": "02-block-coil",
+      "seed": 920,
+      "metrics": {
+        "reason": "success",
+        "success": true,
+        "frames": 1123,
+        "task_frames": 1116,
+        "completion": 0.9945611789588508,
+        "simulation_time_s": 55.800000000000004,
+        "completion_time_s": 55.800000000000004,
+        "tracking_lateral_error_m": {
+          "mean": 0.039511417146171464,
+          "p95": 0.10996606821717753,
+          "max": 0.23421690686731392
+        },
+        "reverse_count": 0,
+        "reverse_distance_m": 0.0,
+        "collision_count": 0,
+        "timeout_count": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "illegal_switch_count": 0
+      },
+      "detour_handoffs": 0,
+      "prediction_reference_frames": 0,
+      "continuing_frames": 0,
+      "final_speed_mps": 0.0
+    },
+    {
+      "algorithm": "temporal_pursuit_avoidance",
+      "case": "03-block-neighbor",
+      "seed": 920,
+      "metrics": {
+        "reason": "success",
+        "success": true,
+        "frames": 1083,
+        "task_frames": 1076,
+        "completion": 0.994433403280987,
+        "simulation_time_s": 53.800000000000004,
+        "completion_time_s": 53.800000000000004,
+        "tracking_lateral_error_m": {
+          "mean": 0.035269493798864036,
+          "p95": 0.12252146750610168,
+          "max": 0.23995562304791454
+        },
+        "reverse_count": 0,
+        "reverse_distance_m": 0.0,
+        "collision_count": 0,
+        "timeout_count": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "illegal_switch_count": 0
+      },
+      "detour_handoffs": 0,
+      "prediction_reference_frames": 0,
+      "continuing_frames": 0,
+      "final_speed_mps": 0.0
+    },
+    {
+      "algorithm": "temporal_pursuit_avoidance",
+      "case": "04-mirror-close-obstacles",
+      "seed": 10029,
+      "metrics": {
+        "reason": "success",
+        "success": true,
+        "frames": 1350,
+        "task_frames": 1343,
+        "completion": 0.9943706916213908,
+        "simulation_time_s": 67.15,
+        "completion_time_s": 67.15,
+        "tracking_lateral_error_m": {
+          "mean": 0.051757109887989365,
+          "p95": 0.17904158781240503,
+          "max": 0.2395818234975291
+        },
+        "reverse_count": 0,
+        "reverse_distance_m": 0.0,
+        "collision_count": 0,
+        "timeout_count": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "illegal_switch_count": 0
+      },
+      "detour_handoffs": 0,
+      "prediction_reference_frames": 0,
+      "continuing_frames": 0,
+      "final_speed_mps": 0.0
+    },
+    {
+      "algorithm": "temporal_pursuit_avoidance",
+      "case": "05-user-0920",
+      "seed": 7,
+      "metrics": {
+        "reason": "success",
+        "success": true,
+        "frames": 880,
+        "task_frames": 873,
+        "completion": 0.9948772280882645,
+        "simulation_time_s": 43.650000000000006,
+        "completion_time_s": 43.650000000000006,
+        "tracking_lateral_error_m": {
+          "mean": 0.02921634457826722,
+          "p95": 0.09019688833560782,
+          "max": 0.18394622886946152
+        },
+        "reverse_count": 0,
+        "reverse_distance_m": 0.0,
+        "collision_count": 0,
+        "timeout_count": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "illegal_switch_count": 0
+      },
+      "detour_handoffs": 0,
+      "prediction_reference_frames": 0,
+      "continuing_frames": 0,
+      "final_speed_mps": 0.0
+    },
+    {
+      "algorithm": "temporal_pursuit_avoidance",
+      "case": "06-user-0920-obstacles",
+      "seed": 7,
+      "metrics": {
+        "reason": "episode_timeout",
+        "success": false,
+        "frames": 1800,
+        "task_frames": 1800,
+        "completion": 0.1669366672597411,
+        "simulation_time_s": 90.0,
+        "completion_time_s": null,
+        "tracking_lateral_error_m": {
+          "mean": 0.03766157746028728,
+          "p95": 0.040051114114312426,
+          "max": 0.18394622886946152
+        },
+        "reverse_count": 0,
+        "reverse_distance_m": 0.0,
+        "collision_count": 0,
+        "timeout_count": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "illegal_switch_count": 0
+      },
+      "detour_handoffs": 0,
+      "prediction_reference_frames": 0,
+      "continuing_frames": 0,
+      "final_speed_mps": 0.0,
+      "terminal_diagnostics": {
+        "avoidance_state": "沿目标路线行驶",
+        "recovery_stage": "idle",
+        "recovery_reason": "",
+        "route_unseen_s": 81.30000000000065,
+        "route_unseen_m": 0.0,
+        "route_prediction": false,
+        "prediction_available": false,
+        "prediction_rejection": "",
+        "prediction_age_s": 82.15000000000063,
+        "status": "LOST",
+        "messages": [
+          "目标关联门限未通过，停车保留身份"
+        ]
+      }
+    },
+    {
+      "algorithm": "temporal_pursuit_avoidance",
+      "case": "07-block-chain-occluded",
+      "seed": 920,
+      "metrics": {
+        "reason": "episode_timeout",
+        "success": false,
+        "frames": 1800,
+        "task_frames": 1800,
+        "completion": 0.1074081445193673,
+        "simulation_time_s": 90.0,
+        "completion_time_s": null,
+        "tracking_lateral_error_m": {
+          "mean": 0.042315452536721455,
+          "p95": 0.19088081682884386,
+          "max": 0.23641880206888075
+        },
+        "reverse_count": 0,
+        "reverse_distance_m": 0.0,
+        "collision_count": 0,
+        "timeout_count": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "illegal_switch_count": 0
+      },
+      "detour_handoffs": 1,
+      "prediction_reference_frames": 1486,
+      "continuing_frames": 0,
+      "final_speed_mps": 0.0,
+      "terminal_diagnostics": {
+        "avoidance_state": "原目标路线持续不可见，停止接续绕行并制动保留身份",
+        "recovery_stage": "idle",
+        "recovery_reason": "",
+        "route_unseen_s": 80.15000000000069,
+        "route_unseen_m": 1.5460186518506733,
+        "route_prediction": true,
+        "prediction_available": false,
+        "prediction_rejection": "",
+        "prediction_age_s": 82.6000000000006,
+        "status": "LOST",
+        "messages": [
+          "原目标路线持续不可见，停止接续绕行并制动保留身份"
+        ]
+      }
+    },
+    {
+      "algorithm": "temporal_mpc_avoidance",
+      "case": "00-block-double",
+      "seed": 920,
+      "metrics": {
+        "reason": "success",
+        "success": true,
+        "frames": 1352,
+        "task_frames": 1345,
+        "completion": 0.9947203360868594,
+        "simulation_time_s": 67.25,
+        "completion_time_s": 67.25,
+        "tracking_lateral_error_m": {
+          "mean": 0.03806341803991264,
+          "p95": 0.18225893513376928,
+          "max": 0.23864708822650763
+        },
+        "reverse_count": 0,
+        "reverse_distance_m": 0.0,
+        "collision_count": 0,
+        "timeout_count": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "illegal_switch_count": 0
+      },
+      "detour_handoffs": 1,
+      "prediction_reference_frames": 0,
+      "continuing_frames": 0,
+      "final_speed_mps": 0.0
+    },
+    {
+      "algorithm": "temporal_mpc_avoidance",
+      "case": "01-user-close-obstacles",
+      "seed": 920,
+      "metrics": {
+        "reason": "success",
+        "success": true,
+        "frames": 1341,
+        "task_frames": 1334,
+        "completion": 0.994479183264827,
+        "simulation_time_s": 66.7,
+        "completion_time_s": 66.7,
+        "tracking_lateral_error_m": {
+          "mean": 0.04392719867513359,
+          "p95": 0.1812884269203057,
+          "max": 0.23923550363558574
+        },
+        "reverse_count": 0,
+        "reverse_distance_m": 0.0,
+        "collision_count": 0,
+        "timeout_count": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "illegal_switch_count": 0
+      },
+      "detour_handoffs": 0,
+      "prediction_reference_frames": 0,
+      "continuing_frames": 0,
+      "final_speed_mps": 0.0
+    },
+    {
+      "algorithm": "temporal_mpc_avoidance",
+      "case": "02-block-coil",
+      "seed": 920,
+      "metrics": {
+        "reason": "success",
+        "success": true,
+        "frames": 1105,
+        "task_frames": 1098,
+        "completion": 0.9946228549734883,
+        "simulation_time_s": 54.900000000000006,
+        "completion_time_s": 54.900000000000006,
+        "tracking_lateral_error_m": {
+          "mean": 0.02668774204415152,
+          "p95": 0.10896295332661653,
+          "max": 0.23786564993133164
+        },
+        "reverse_count": 0,
+        "reverse_distance_m": 0.0,
+        "collision_count": 0,
+        "timeout_count": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "illegal_switch_count": 0
+      },
+      "detour_handoffs": 0,
+      "prediction_reference_frames": 0,
+      "continuing_frames": 0,
+      "final_speed_mps": 0.0
+    },
+    {
+      "algorithm": "temporal_mpc_avoidance",
+      "case": "03-block-neighbor",
+      "seed": 920,
+      "metrics": {
+        "reason": "success",
+        "success": true,
+        "frames": 1076,
+        "task_frames": 1069,
+        "completion": 0.994282967160341,
+        "simulation_time_s": 53.45,
+        "completion_time_s": 53.45,
+        "tracking_lateral_error_m": {
+          "mean": 0.02535431275448466,
+          "p95": 0.11969675464640216,
+          "max": 0.23958935185147842
+        },
+        "reverse_count": 0,
+        "reverse_distance_m": 0.0,
+        "collision_count": 0,
+        "timeout_count": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "illegal_switch_count": 0
+      },
+      "detour_handoffs": 0,
+      "prediction_reference_frames": 0,
+      "continuing_frames": 0,
+      "final_speed_mps": 0.0
+    },
+    {
+      "algorithm": "temporal_mpc_avoidance",
+      "case": "04-mirror-close-obstacles",
+      "seed": 10029,
+      "metrics": {
+        "reason": "success",
+        "success": true,
+        "frames": 1341,
+        "task_frames": 1334,
+        "completion": 0.994831196011266,
+        "simulation_time_s": 66.7,
+        "completion_time_s": 66.7,
+        "tracking_lateral_error_m": {
+          "mean": 0.04551520462911673,
+          "p95": 0.18298626027445586,
+          "max": 0.23966629211529228
+        },
+        "reverse_count": 0,
+        "reverse_distance_m": 0.0,
+        "collision_count": 0,
+        "timeout_count": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "illegal_switch_count": 0
+      },
+      "detour_handoffs": 0,
+      "prediction_reference_frames": 0,
+      "continuing_frames": 0,
+      "final_speed_mps": 0.0
+    },
+    {
+      "algorithm": "temporal_mpc_avoidance",
+      "case": "05-user-0920",
+      "seed": 7,
+      "metrics": {
+        "reason": "success",
+        "success": true,
+        "frames": 865,
+        "task_frames": 858,
+        "completion": 0.9944500642314167,
+        "simulation_time_s": 42.900000000000006,
+        "completion_time_s": 42.900000000000006,
+        "tracking_lateral_error_m": {
+          "mean": 0.016706116711679174,
+          "p95": 0.04588338867428513,
+          "max": 0.18394622886946152
+        },
+        "reverse_count": 0,
+        "reverse_distance_m": 0.0,
+        "collision_count": 0,
+        "timeout_count": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "illegal_switch_count": 0
+      },
+      "detour_handoffs": 0,
+      "prediction_reference_frames": 0,
+      "continuing_frames": 0,
+      "final_speed_mps": 0.0
+    },
+    {
+      "algorithm": "temporal_mpc_avoidance",
+      "case": "06-user-0920-obstacles",
+      "seed": 7,
+      "metrics": {
+        "reason": "episode_timeout",
+        "success": false,
+        "frames": 1800,
+        "task_frames": 1800,
+        "completion": 0.1666777890966706,
+        "simulation_time_s": 90.0,
+        "completion_time_s": null,
+        "tracking_lateral_error_m": {
+          "mean": 0.045451539126874996,
+          "p95": 0.04858427658075318,
+          "max": 0.18394622886946152
+        },
+        "reverse_count": 0,
+        "reverse_distance_m": 0.0,
+        "collision_count": 0,
+        "timeout_count": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "illegal_switch_count": 0
+      },
+      "detour_handoffs": 0,
+      "prediction_reference_frames": 0,
+      "continuing_frames": 0,
+      "final_speed_mps": 0.0,
+      "terminal_diagnostics": {
+        "avoidance_state": "沿目标路线行驶",
+        "recovery_stage": "idle",
+        "recovery_reason": "",
+        "route_unseen_s": 81.30000000000065,
+        "route_unseen_m": 0.0,
+        "route_prediction": false,
+        "prediction_available": false,
+        "prediction_rejection": "",
+        "prediction_age_s": 82.15000000000063,
+        "status": "LOST",
+        "messages": [
+          "目标关联门限未通过，停车保留身份"
+        ]
+      }
+    },
+    {
+      "algorithm": "temporal_mpc_avoidance",
+      "case": "07-block-chain-occluded",
+      "seed": 920,
+      "metrics": {
+        "reason": "episode_timeout",
+        "success": false,
+        "frames": 1800,
+        "task_frames": 1800,
+        "completion": 0.09699815040247563,
+        "simulation_time_s": 90.0,
+        "completion_time_s": null,
+        "tracking_lateral_error_m": {
+          "mean": 0.039564271904443296,
+          "p95": 0.1914086089390684,
+          "max": 0.23927103209793557
+        },
+        "reverse_count": 2,
+        "reverse_distance_m": 1.274334820604858,
+        "collision_count": 0,
+        "timeout_count": 0,
+        "failure_counts": {
+          "timeout": 0,
+          "crash": 0,
+          "protocol": 0,
+          "invalid_output": 0,
+          "exception": 0
+        },
+        "illegal_switch_count": 0
+      },
+      "detour_handoffs": 0,
+      "prediction_reference_frames": 0,
+      "continuing_frames": 0,
+      "final_speed_mps": 0.0,
+      "terminal_diagnostics": {
+        "avoidance_state": "原目标路线持续不可见，停止接续绕行并制动保留身份",
+        "recovery_stage": "failed",
+        "recovery_reason": "同一占道物件的倒车重试预算已耗尽，制动保留路线身份",
+        "route_unseen_s": 63.50000000000116,
+        "route_unseen_m": 0.016801458458266,
+        "route_prediction": false,
+        "prediction_available": false,
+        "prediction_rejection": "预测误差走廊与其他可见道路重叠，等待唯一续段",
+        "prediction_age_s": 82.50000000000061,
+        "status": "LOST",
+        "messages": [
+          "原目标路线持续不可见，停止接续绕行并制动保留身份",
+          "同一占道物件的倒车重试预算已耗尽，制动保留路线身份"
+        ]
+      }
+    }
+  ],
+  "local_trajectory_comparison": {
+    "selection": "Before progress reaches 8.5 m, on the first straight with world x in [0,8]. First obstacle x=3.5, second x=6.5. Offset area uses trapezoidal |world y| times Euclidean distance between consecutive poses, including reverse travel. The manually cancelled run is only a local comparison.",
+    "references": [
+      {
+        "label": "user_manual_partial_run",
+        "run_id": "1d0cb0e1cccf4c2095b48d6dc7c347fa",
+        "manifest_sha256": "f77ab30d0825738785c41c3c0419ff05536749f7aa9da069781f6231b43a12b2",
+        "frames_sha256": "b5a554748137b93f9b008c539da7d5ab4a58f780f53da2aeb9df77ffd54fd076",
+        "run_reason": "user_cancelled",
+        "metrics": {
+          "first_offset_over_5cm_x_m": 2.0428286988910904,
+          "first_obstacle_peak_offset_m": 0.5351631103209387,
+          "second_obstacle_peak_offset_m": 0.6221674469183003,
+          "offset_area_m2": 2.1891391043740764,
+          "distance_travelled_m": 8.408568556555744
+        }
+      },
+      {
+        "label": "previous_mpc_3.0",
+        "run_id": "312e6517009942409e3977cce02044f1",
+        "manifest_sha256": "ec93a40e4ad7c29f49a06a8cf1015d91d94494e688e58d187f408ff54a0f306d",
+        "frames_sha256": "c7526f81c8e0b6f3e4a1ea1c365da11334887790ff798c788119f60f27e4bf53",
+        "run_reason": "success",
+        "metrics": {
+          "first_offset_over_5cm_x_m": 0.8261924007633114,
+          "first_obstacle_peak_offset_m": 0.6857215015389031,
+          "second_obstacle_peak_offset_m": 0.853576824980115,
+          "offset_area_m2": 4.250420251612164,
+          "distance_travelled_m": 11.156526256370132
+        }
+      }
+    ],
+    "current": [
+      {
+        "algorithm": "temporal_pursuit_avoidance",
+        "metrics": {
+          "first_offset_over_5cm_x_m": 1.7455150655917535,
+          "first_obstacle_peak_offset_m": 0.5967335240742346,
+          "second_obstacle_peak_offset_m": 0.8021447906003529,
+          "offset_area_m2": 2.799537027058595,
+          "distance_travelled_m": 8.563417300995665
+        },
+        "offset_area_reduction_vs_previous_mpc": 0.34135053445674135
+      },
+      {
+        "algorithm": "temporal_mpc_avoidance",
+        "metrics": {
+          "first_offset_over_5cm_x_m": 1.7798464150927922,
+          "first_obstacle_peak_offset_m": 0.6013838893408744,
+          "second_obstacle_peak_offset_m": 0.8082416449379402,
+          "offset_area_m2": 2.790706306291081,
+          "distance_travelled_m": 8.579863101419372
+        },
+        "offset_area_reduction_vs_previous_mpc": 0.3434281456680479
+      }
+    ]
+  },
+  "jsonl_worker_verification": {
+    "case": "00-block-double",
+    "settings": {
+      "headless": true,
+      "realtime": false,
+      "timeout_s": 1,
+      "max_steps": 1800,
+      "concurrent_workers": 2
+    },
+    "episodes": [
+      {
+        "algorithm": "temporal_pursuit_avoidance",
+        "metrics": {
+          "reason": "success",
+          "success": true,
+          "frames": 1362,
+          "task_frames": 1355,
+          "completion": 0.9946277022572677,
+          "simulation_time_s": 67.75,
+          "completion_time_s": 67.75,
+          "tracking_lateral_error_m": {
+            "mean": 0.046536113389852106,
+            "p95": 0.18381713404131633,
+            "max": 0.23965608216287548
+          },
+          "reverse_count": 0,
+          "reverse_distance_m": 0.0,
+          "collision_count": 0,
+          "timeout_count": 0,
+          "failure_counts": {
+            "timeout": 0,
+            "crash": 0,
+            "protocol": 0,
+            "invalid_output": 0,
+            "exception": 0
+          },
+          "illegal_switch_count": 0
+        },
+        "negative_requests": 0,
+        "final_speed_mps": 0.0,
+        "inference_ms": {
+          "mean": 55.60819853262158,
+          "p95": 63.50808730348945,
+          "max": 109.9031763151288
+        },
+        "realtime_miss_rate": 0.8538745387453874
+      },
+      {
+        "algorithm": "temporal_mpc_avoidance",
+        "metrics": {
+          "reason": "success",
+          "success": true,
+          "frames": 1352,
+          "task_frames": 1345,
+          "completion": 0.9947203360868594,
+          "simulation_time_s": 67.25,
+          "completion_time_s": 67.25,
+          "tracking_lateral_error_m": {
+            "mean": 0.03806341803991264,
+            "p95": 0.18225893513376928,
+            "max": 0.23864708822650763
+          },
+          "reverse_count": 0,
+          "reverse_distance_m": 0.0,
+          "collision_count": 0,
+          "timeout_count": 0,
+          "failure_counts": {
+            "timeout": 0,
+            "crash": 0,
+            "protocol": 0,
+            "invalid_output": 0,
+            "exception": 0
+          },
+          "illegal_switch_count": 0
+        },
+        "negative_requests": 0,
+        "final_speed_mps": 0.0,
+        "inference_ms": {
+          "mean": 58.27043495629135,
+          "p95": 66.92070011049509,
+          "max": 113.35605382919312
+        },
+        "realtime_miss_rate": 0.8855018587360595
+      }
+    ],
+    "timing_note": "Concurrent CPU load; protocol completion under a 1 s timeout does not imply satisfying the 20 Hz frame budget."
+  },
+  "validation": {
+    "full_python_tests": 242,
+    "avoidance_tests": 49,
+    "ruff": "passed",
+    "user_data": "Existing 17 run/map files verified unchanged; no user scenes or records were rewritten."
+  },
+  "notes": [
+    "The five existing dedicated avoidance cases (cases 00 through 04) all succeed, ten runs total, with zero reverse maneuvers.",
+    "The old user-0920-obstacles case remains a route-association failure at about 16.7%. The new three-obstacle case stops after persistent loss of reliable route evidence; both are retained in the denominator.",
+    "Prediction geometry, finite offset continuation, neighbor conflicts, endpoint stopping and RGB rejoining are verified by focused tests; those local tests are not counted as extra successful map episodes.",
+    "No simulator pose, object list, target geometry or private evaluator feedback is supplied to the policy. Scene geometry, collision rules and illegal-switch thresholds were not changed to improve results.",
+    "Public line-following controllers retain their default lookahead. Only avoidance instances use the shorter lookahead and lower cruise speed.",
+    "The second box still produces greater offset than the manual demonstration; monocular footprint estimates and tracking clearance remain conservative."
+  ]
+}

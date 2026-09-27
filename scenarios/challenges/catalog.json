@@ -1,0 +1,22 @@
+[
+  {
+    "file": "close-lines.json",
+    "challenge": "套圈路径、0.18 m 平行干扰线，无占道物件"
+  },
+  {
+    "file": "steep-camera.json",
+    "challenge": "0.55 rad 相机俯角、近邻干扰线，无占道物件"
+  },
+  {
+    "file": "block-coil.json",
+    "challenge": "0920 套圈路段中央交通锥，绕障后不得接入返回段"
+  },
+  {
+    "file": "block-neighbor.json",
+    "challenge": "纸箱完全遮挡目标线，旁侧 0.55 m 有干扰线"
+  },
+  {
+    "file": "block-double.json",
+    "challenge": "连续交通锥与纸箱，旁侧 0.65 m 有干扰线"
+  }
+]

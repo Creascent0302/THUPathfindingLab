@@ -20,4 +20,6 @@ subprocess.run(
     ],
     check=True,
 )
-print("学习环境就绪：python run.py learning collect --help；现有权重可直接在前端选择运行")
+print(
+    "学习环境就绪：python run.py learning collect --help；现有权重可直接在前端选择运行"
+)

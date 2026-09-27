@@ -199,6 +199,9 @@ export default function App() {
     : hint || preview.scene?.task_hint || null;
   const speedLimit = scene?.vehicle.max_speed_mps || 1.5;
   const steerLimit = scene?.vehicle.max_steering_rad || 0.52;
+  const reverseLimit = scene?.vehicle.reverse_allowed
+    ? (scene.vehicle.max_reverse_speed_mps ?? 0.5)
+    : 0;
 
   const connected = useLiveStream(liveId, setSnapshot);
   const [action, setAction] = useManualDrive(
@@ -208,6 +211,7 @@ export default function App() {
     tab,
     speedLimit,
     steerLimit,
+    reverseLimit,
   );
 
   const attempt = async (operation: () => Promise<unknown>) => {
@@ -221,6 +225,22 @@ export default function App() {
       setBusy(false);
     }
   };
+  useEffect(() => {
+    const controller = new AbortController();
+    api<{ id: string | null }>("/workspace/active-run", {
+      signal: controller.signal,
+    })
+      .then(({ id }) => {
+        if (id) {
+          setLiveId(id);
+          setTab("lab");
+        }
+      })
+      .catch((error) => {
+        if (error.name !== "AbortError") setError(String(error));
+      });
+    return () => controller.abort();
+  }, [setTab]);
   useEffect(() => {
     api<typeof catalog>("/catalog")
       .then(setCatalog)
@@ -716,7 +736,9 @@ export default function App() {
                   </h2>
                   <span>
                     {displayAlgorithm === "manual"
-                      ? "正转角向左 · 不允许倒车"
+                      ? reverseLimit
+                        ? "正转角向左 · 负速度倒车 · 换向先停稳"
+                        : "正转角向左 · 场景已禁用倒车"
                       : "缺失信息显示「不提供」"}
                   </span>
                 </div>
@@ -724,16 +746,23 @@ export default function App() {
                   <div className="drive-controls">
                     <div className="key-hint">
                       <kbd>↑</kbd>
-                      <kbd>↓</kbd> 加减速 <kbd>←</kbd>
+                      <kbd>↓</kbd> 加减速（减至负数倒车） <kbd>←</kbd>
                       <kbd>→</kbd> 转向 <kbd>空格</kbd> 制动
                     </div>
                     <label>
                       目标速度{" "}
-                      <strong>{action.speed_mps.toFixed(2)} m/s</strong>
+                      <strong>
+                        {action.speed_mps.toFixed(2)} m/s ·{" "}
+                        {action.speed_mps < 0
+                          ? "倒车"
+                          : action.speed_mps > 0
+                            ? "前进"
+                            : "制动"}
+                      </strong>
                       <input
                         aria-label="目标速度"
                         type="range"
-                        min="0"
+                        min={-reverseLimit}
                         max={speedLimit}
                         step=".05"
                         value={action.speed_mps}

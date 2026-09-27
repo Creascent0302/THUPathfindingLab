@@ -1,0 +1,3731 @@
+{
+  "measured_at": "2026-09-20",
+  "note": "清理前发布版本的实际评测摘要；不作为本次重新执行的算法测评。原始开发输出已清理，可用保留的生成器和地图重新评测。",
+  "algorithm_versions": {
+    "stop": "1.0",
+    "constant": "1.0",
+    "image_probe": "1.0",
+    "external_stop": "1.0",
+    "temporal_pursuit": "0.2",
+    "temporal_mpc": "0.2",
+    "scanline_pid": "2.0",
+    "cnn_gru": "3.0",
+    "temporal_pursuit_avoidance": "2.0",
+    "temporal_mpc_avoidance": "2.0"
+  },
+  "line_following": {
+    "evaluator_version": "3.0",
+    "score_version": "3.0",
+    "max_steps": 4000,
+    "runs": [
+      {
+        "algorithm": "temporal_pursuit",
+        "cohort": "user",
+        "case": "00-user-original",
+        "seed": 7,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9957378046006297,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 91.3,
+            "quality": 78.25,
+            "components": {
+              "tracking": {
+                "value": 81.99,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 49.8,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 63.93,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 54.1
+        }
+      },
+      {
+        "algorithm": "temporal_pursuit",
+        "cohort": "user",
+        "case": "01-user-actual",
+        "seed": 7,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9964088040107469,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 88.95,
+            "quality": 72.36,
+            "components": {
+              "tracking": {
+                "value": 61.84,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 49.91,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 71.59,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 62.75
+        }
+      },
+      {
+        "algorithm": "temporal_mpc",
+        "cohort": "user",
+        "case": "00-user-original",
+        "seed": 7,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9956945751927198,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 89.61,
+            "quality": 74.03,
+            "components": {
+              "tracking": {
+                "value": 80.16,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 50.31,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 39.43,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 53.550000000000004
+        }
+      },
+      {
+        "algorithm": "temporal_mpc",
+        "cohort": "user",
+        "case": "01-user-actual",
+        "seed": 7,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9963631798460572,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 89.43,
+            "quality": 73.57,
+            "components": {
+              "tracking": {
+                "value": 80.28,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 50.76,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 35.45,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 61.7
+        }
+      },
+      {
+        "algorithm": "scanline_pid",
+        "cohort": "user",
+        "case": "00-user-original",
+        "seed": 7,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9957191114740408,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 87.0,
+            "quality": 67.5,
+            "components": {
+              "tracking": {
+                "value": 66.97,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 37.66,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 43.51,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 71.55
+        }
+      },
+      {
+        "algorithm": "scanline_pid",
+        "cohort": "user",
+        "case": "01-user-actual",
+        "seed": 7,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9964436902163503,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 86.03,
+            "quality": 65.09,
+            "components": {
+              "tracking": {
+                "value": 58.27,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 37.35,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 48.14,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 83.85000000000001
+        }
+      },
+      {
+        "algorithm": "cnn_gru",
+        "cohort": "user",
+        "case": "00-user-original",
+        "seed": 7,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9962257580967521,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 89.41,
+            "quality": 73.53,
+            "components": {
+              "tracking": {
+                "value": 68.22,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 51.2,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 62.74,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 52.650000000000006
+        }
+      },
+      {
+        "algorithm": "cnn_gru",
+        "cohort": "user",
+        "case": "01-user-actual",
+        "seed": 7,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9962626544746769,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 89.79,
+            "quality": 74.47,
+            "components": {
+              "tracking": {
+                "value": 72.89,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 51.38,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 57.89,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 60.95
+        }
+      },
+      {
+        "algorithm": "temporal_pursuit",
+        "cohort": "core",
+        "case": "straight",
+        "seed": 6001,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9840368697125512,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 93.24,
+            "quality": 83.09,
+            "components": {
+              "tracking": {
+                "value": 89.96,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 42.11,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 87.9,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 17.1
+        }
+      },
+      {
+        "algorithm": "temporal_pursuit",
+        "cohort": "core",
+        "case": "bend",
+        "seed": 6001,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9833713339649228,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 89.78,
+            "quality": 74.45,
+            "components": {
+              "tracking": {
+                "value": 68.71,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 41.03,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 81.3,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 16.150000000000002
+        }
+      },
+      {
+        "algorithm": "temporal_pursuit",
+        "cohort": "core",
+        "case": "s_curve",
+        "seed": 6001,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9840353195734385,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 87.64,
+            "quality": 69.11,
+            "components": {
+              "tracking": {
+                "value": 58.18,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 41.73,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 69.36,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 16.7
+        }
+      },
+      {
+        "algorithm": "temporal_pursuit",
+        "cohort": "core",
+        "case": "sharp",
+        "seed": 6001,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9839506743959169,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 89.87,
+            "quality": 74.68,
+            "components": {
+              "tracking": {
+                "value": 69.56,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 41.3,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 80.52,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 16.7
+        }
+      },
+      {
+        "algorithm": "temporal_pursuit",
+        "cohort": "core",
+        "case": "hairpin",
+        "seed": 6001,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.986090162790474,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 90.47,
+            "quality": 76.16,
+            "components": {
+              "tracking": {
+                "value": 71.95,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 42.72,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 82.92,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 18.8
+        }
+      },
+      {
+        "algorithm": "temporal_pursuit",
+        "cohort": "core",
+        "case": "parallel",
+        "seed": 6001,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9840370560276662,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 93.21,
+            "quality": 83.03,
+            "components": {
+              "tracking": {
+                "value": 89.85,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 42.11,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 87.77,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 17.1
+        }
+      },
+      {
+        "algorithm": "temporal_pursuit",
+        "cohort": "core",
+        "case": "close_lines",
+        "seed": 6001,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9840449024184212,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 93.39,
+            "quality": 83.48,
+            "components": {
+              "tracking": {
+                "value": 89.05,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 42.11,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 92.62,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 17.1
+        }
+      },
+      {
+        "algorithm": "temporal_pursuit",
+        "cohort": "core",
+        "case": "repeated",
+        "seed": 6001,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9968275096012938,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 91.39,
+            "quality": 78.48,
+            "components": {
+              "tracking": {
+                "value": 74.94,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 50.07,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 81.57,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 68.75
+        }
+      },
+      {
+        "algorithm": "temporal_mpc",
+        "cohort": "core",
+        "case": "straight",
+        "seed": 6001,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9840082783407242,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 93.54,
+            "quality": 83.85,
+            "components": {
+              "tracking": {
+                "value": 93.25,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 42.11,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 85.24,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 17.1
+        }
+      },
+      {
+        "algorithm": "temporal_mpc",
+        "cohort": "core",
+        "case": "bend",
+        "seed": 6001,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9837289619806059,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 89.53,
+            "quality": 73.82,
+            "components": {
+              "tracking": {
+                "value": 84.68,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 41.31,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 43.87,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 93.41,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 16.05
+        }
+      },
+      {
+        "algorithm": "temporal_mpc",
+        "cohort": "core",
+        "case": "s_curve",
+        "seed": 6001,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9838195328774454,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 88.57,
+            "quality": 71.43,
+            "components": {
+              "tracking": {
+                "value": 80.74,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 41.97,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 31.82,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 16.6
+        }
+      },
+      {
+        "algorithm": "temporal_mpc",
+        "cohort": "core",
+        "case": "sharp",
+        "seed": 6001,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9833113946345255,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 89.88,
+            "quality": 74.69,
+            "components": {
+              "tracking": {
+                "value": 84.81,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 41.77,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 44.35,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 16.5
+        }
+      },
+      {
+        "algorithm": "temporal_mpc",
+        "cohort": "core",
+        "case": "hairpin",
+        "seed": 6001,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9858897585728296,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 89.93,
+            "quality": 74.83,
+            "components": {
+              "tracking": {
+                "value": 84.47,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 43.29,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 44.05,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 18.55
+        }
+      },
+      {
+        "algorithm": "temporal_mpc",
+        "cohort": "core",
+        "case": "parallel",
+        "seed": 6001,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9851468130162357,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 93.52,
+            "quality": 83.8,
+            "components": {
+              "tracking": {
+                "value": 93.23,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 41.91,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 85.24,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 17.2
+        }
+      },
+      {
+        "algorithm": "temporal_mpc",
+        "cohort": "core",
+        "case": "close_lines",
+        "seed": 6001,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.98401114687288,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 93.74,
+            "quality": 84.34,
+            "components": {
+              "tracking": {
+                "value": 94.32,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 42.11,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 86.07,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 17.1
+        }
+      },
+      {
+        "algorithm": "temporal_mpc",
+        "cohort": "core",
+        "case": "repeated",
+        "seed": 6001,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9967544104506042,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 90.39,
+            "quality": 75.98,
+            "components": {
+              "tracking": {
+                "value": 84.95,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 50.66,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 40.8,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 67.95
+        }
+      },
+      {
+        "algorithm": "temporal_pursuit",
+        "cohort": "complex",
+        "case": "00-coil-6001-kinematic_v1",
+        "seed": 6001,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9963229726659726,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 90.7,
+            "quality": 76.76,
+            "components": {
+              "tracking": {
+                "value": 82.08,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 50.33,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 53.08,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 63.800000000000004
+        }
+      },
+      {
+        "algorithm": "temporal_pursuit",
+        "cohort": "complex",
+        "case": "01-coil-6001-inertial_v2",
+        "seed": 6001,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9964002517319887,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 89.51,
+            "quality": 73.77,
+            "components": {
+              "tracking": {
+                "value": 63.44,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 49.94,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 77.17,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 64.3
+        }
+      },
+      {
+        "algorithm": "temporal_pursuit",
+        "cohort": "complex",
+        "case": "02-coil-6002-kinematic_v1",
+        "seed": 6002,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9961856575475594,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 90.26,
+            "quality": 75.64,
+            "components": {
+              "tracking": {
+                "value": 81.42,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 49.78,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 47.92,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 58.5
+        }
+      },
+      {
+        "algorithm": "temporal_pursuit",
+        "cohort": "complex",
+        "case": "03-coil-6002-inertial_v2",
+        "seed": 6002,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9961343124289878,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 89.2,
+            "quality": 72.99,
+            "components": {
+              "tracking": {
+                "value": 62.12,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 49.86,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 75.18,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 58.400000000000006
+        }
+      },
+      {
+        "algorithm": "temporal_pursuit",
+        "cohort": "complex",
+        "case": "04-parallel_curve-6001-kinematic_v1",
+        "seed": 6001,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9851430644938256,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 90.0,
+            "quality": 75.0,
+            "components": {
+              "tracking": {
+                "value": 80.87,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 42.07,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 55.2,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 17.85
+        }
+      },
+      {
+        "algorithm": "temporal_pursuit",
+        "cohort": "complex",
+        "case": "05-parallel_curve-6001-inertial_v2",
+        "seed": 6001,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.985454462732988,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 88.77,
+            "quality": 71.92,
+            "components": {
+              "tracking": {
+                "value": 63.6,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 42.32,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 74.64,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 17.75
+        }
+      },
+      {
+        "algorithm": "temporal_pursuit",
+        "cohort": "complex",
+        "case": "06-parallel_curve-6002-kinematic_v1",
+        "seed": 6002,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9844135115154186,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 88.68,
+            "quality": 71.7,
+            "components": {
+              "tracking": {
+                "value": 75.52,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 40.92,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 47.22,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 17.45
+        }
+      },
+      {
+        "algorithm": "temporal_pursuit",
+        "cohort": "complex",
+        "case": "07-parallel_curve-6002-inertial_v2",
+        "seed": 6002,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.983649835341774,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 88.27,
+            "quality": 70.68,
+            "components": {
+              "tracking": {
+                "value": 60.15,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 41.85,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 75.07,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 17.05
+        }
+      },
+      {
+        "algorithm": "temporal_mpc",
+        "cohort": "complex",
+        "case": "00-coil-6001-kinematic_v1",
+        "seed": 6001,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9963776631635809,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 89.08,
+            "quality": 72.7,
+            "components": {
+              "tracking": {
+                "value": 74.44,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 50.65,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 43.42,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 63.400000000000006
+        }
+      },
+      {
+        "algorithm": "temporal_mpc",
+        "cohort": "complex",
+        "case": "01-coil-6001-inertial_v2",
+        "seed": 6001,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9964729876577008,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 90.32,
+            "quality": 75.8,
+            "components": {
+              "tracking": {
+                "value": 83.52,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 50.61,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 43.01,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 63.45
+        }
+      },
+      {
+        "algorithm": "temporal_mpc",
+        "cohort": "complex",
+        "case": "02-coil-6002-kinematic_v1",
+        "seed": 6002,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9961747618019189,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 87.92,
+            "quality": 69.81,
+            "components": {
+              "tracking": {
+                "value": 71.41,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 50.43,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 31.53,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 57.75
+        }
+      },
+      {
+        "algorithm": "temporal_mpc",
+        "cohort": "complex",
+        "case": "03-coil-6002-inertial_v2",
+        "seed": 6002,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9959126554548514,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 89.62,
+            "quality": 74.04,
+            "components": {
+              "tracking": {
+                "value": 80.79,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 50.37,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 37.92,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 57.800000000000004
+        }
+      },
+      {
+        "algorithm": "temporal_mpc",
+        "cohort": "complex",
+        "case": "04-parallel_curve-6001-kinematic_v1",
+        "seed": 6001,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9852092751938071,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 87.2,
+            "quality": 68.0,
+            "components": {
+              "tracking": {
+                "value": 73.37,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 42.43,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 25.55,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 17.7
+        }
+      },
+      {
+        "algorithm": "temporal_mpc",
+        "cohort": "complex",
+        "case": "05-parallel_curve-6001-inertial_v2",
+        "seed": 6001,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9851679633123865,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 89.13,
+            "quality": 72.81,
+            "components": {
+              "tracking": {
+                "value": 81.64,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 42.67,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 38.03,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 17.6
+        }
+      },
+      {
+        "algorithm": "temporal_mpc",
+        "cohort": "complex",
+        "case": "06-parallel_curve-6002-kinematic_v1",
+        "seed": 6002,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9837479250612915,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 85.68,
+            "quality": 64.2,
+            "components": {
+              "tracking": {
+                "value": 73.15,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 41.98,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 1.37,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 17.0
+        }
+      },
+      {
+        "algorithm": "temporal_mpc",
+        "cohort": "complex",
+        "case": "07-parallel_curve-6002-inertial_v2",
+        "seed": 6002,
+        "checkpoint_sha256": null,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.984135958085554,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 87.51,
+            "quality": 68.77,
+            "components": {
+              "tracking": {
+                "value": 82.61,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 42.24,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 9.37,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 16.900000000000002
+        }
+      },
+      {
+        "algorithm": "scanline_pid",
+        "cohort": "core",
+        "case": "straight",
+        "seed": 6001,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9846480662638516,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 90.05,
+            "quality": 75.13,
+            "components": {
+              "tracking": {
+                "value": 84.44,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 34.98,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 57.22,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 20.6
+        }
+      },
+      {
+        "algorithm": "scanline_pid",
+        "cohort": "core",
+        "case": "bend",
+        "seed": 6001,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9826139128450511,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 86.0,
+            "quality": 64.99,
+            "components": {
+              "tracking": {
+                "value": 60.59,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 32.95,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 47.99,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 20.1
+        }
+      },
+      {
+        "algorithm": "scanline_pid",
+        "cohort": "core",
+        "case": "s_curve",
+        "seed": 6001,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.984675414941718,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 81.89,
+            "quality": 54.72,
+            "components": {
+              "tracking": {
+                "value": 34.97,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 32.44,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 39.93,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 21.5
+        }
+      },
+      {
+        "algorithm": "scanline_pid",
+        "cohort": "core",
+        "case": "sharp",
+        "seed": 6001,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9834485984014745,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 86.07,
+            "quality": 65.19,
+            "components": {
+              "tracking": {
+                "value": 60.49,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 32.36,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 50.27,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 21.3
+        }
+      },
+      {
+        "algorithm": "scanline_pid",
+        "cohort": "core",
+        "case": "hairpin",
+        "seed": 6001,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.985356035050189,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 86.89,
+            "quality": 67.21,
+            "components": {
+              "tracking": {
+                "value": 63.32,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 33.16,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 56.14,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 24.200000000000003
+        }
+      },
+      {
+        "algorithm": "scanline_pid",
+        "cohort": "core",
+        "case": "parallel",
+        "seed": 6001,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9849136408953868,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 90.03,
+            "quality": 75.08,
+            "components": {
+              "tracking": {
+                "value": 83.11,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 34.99,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 59.93,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 20.6
+        }
+      },
+      {
+        "algorithm": "scanline_pid",
+        "cohort": "core",
+        "case": "close_lines",
+        "seed": 6001,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9842064880910129,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 90.04,
+            "quality": 75.09,
+            "components": {
+              "tracking": {
+                "value": 83.81,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 35.05,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 58.3,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 20.55
+        }
+      },
+      {
+        "algorithm": "scanline_pid",
+        "cohort": "core",
+        "case": "repeated",
+        "seed": 6001,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9966312893178715,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 87.67,
+            "quality": 69.18,
+            "components": {
+              "tracking": {
+                "value": 67.36,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 37.89,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 53.51,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 90.85000000000001
+        }
+      },
+      {
+        "algorithm": "cnn_gru",
+        "cohort": "core",
+        "case": "straight",
+        "seed": 6001,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9843705101047981,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 94.65,
+            "quality": 86.62,
+            "components": {
+              "tracking": {
+                "value": 95.83,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 45.16,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 93.65,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 15.950000000000001
+        }
+      },
+      {
+        "algorithm": "cnn_gru",
+        "cohort": "core",
+        "case": "bend",
+        "seed": 6001,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9824206623022448,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 91.06,
+            "quality": 77.66,
+            "components": {
+              "tracking": {
+                "value": 81.46,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 44.58,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 68.22,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 14.850000000000001
+        }
+      },
+      {
+        "algorithm": "cnn_gru",
+        "cohort": "core",
+        "case": "s_curve",
+        "seed": 6001,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9846461391276398,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 86.72,
+            "quality": 66.79,
+            "components": {
+              "tracking": {
+                "value": 56.18,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 45.28,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 53.8,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 15.4
+        }
+      },
+      {
+        "algorithm": "cnn_gru",
+        "cohort": "core",
+        "case": "sharp",
+        "seed": 6001,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9845681468323013,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 90.95,
+            "quality": 77.38,
+            "components": {
+              "tracking": {
+                "value": 78.41,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 44.53,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 73.54,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 15.5
+        }
+      },
+      {
+        "algorithm": "cnn_gru",
+        "cohort": "core",
+        "case": "hairpin",
+        "seed": 6001,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9868016913064634,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 91.26,
+            "quality": 78.15,
+            "components": {
+              "tracking": {
+                "value": 80.79,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 45.8,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 71.45,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 17.55
+        }
+      },
+      {
+        "algorithm": "cnn_gru",
+        "cohort": "core",
+        "case": "parallel",
+        "seed": 6001,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9847512367519519,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 93.4,
+            "quality": 83.5,
+            "components": {
+              "tracking": {
+                "value": 88.03,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 45.32,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 90.84,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 15.9
+        }
+      },
+      {
+        "algorithm": "cnn_gru",
+        "cohort": "core",
+        "case": "close_lines",
+        "seed": 6001,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9865044986128443,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 93.15,
+            "quality": 82.88,
+            "components": {
+              "tracking": {
+                "value": 85.95,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 45.12,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 91.86,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 16.0
+        }
+      },
+      {
+        "algorithm": "cnn_gru",
+        "cohort": "core",
+        "case": "repeated",
+        "seed": 6001,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9969891257510133,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 92.1,
+            "quality": 80.26,
+            "components": {
+              "tracking": {
+                "value": 81.98,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 51.43,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 75.23,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 66.95
+        }
+      },
+      {
+        "algorithm": "scanline_pid",
+        "cohort": "complex",
+        "case": "00-coil-6001-inertial_v2",
+        "seed": 6001,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9963716069128005,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 86.34,
+            "quality": 65.86,
+            "components": {
+              "tracking": {
+                "value": 57.99,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 38.69,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 52.17,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 83.0
+        }
+      },
+      {
+        "algorithm": "scanline_pid",
+        "cohort": "complex",
+        "case": "01-coil-6001-kinematic_v1",
+        "seed": 6001,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9964330217250911,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 87.81,
+            "quality": 69.52,
+            "components": {
+              "tracking": {
+                "value": 71.36,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 39.14,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 44.76,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 82.05000000000001
+        }
+      },
+      {
+        "algorithm": "scanline_pid",
+        "cohort": "complex",
+        "case": "02-coil-6002-inertial_v2",
+        "seed": 6002,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9962072054828979,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 86.25,
+            "quality": 65.62,
+            "components": {
+              "tracking": {
+                "value": 58.31,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 38.22,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 50.42,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 76.2
+        }
+      },
+      {
+        "algorithm": "scanline_pid",
+        "cohort": "complex",
+        "case": "03-coil-6002-kinematic_v1",
+        "seed": 6002,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9959376367697467,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 86.59,
+            "quality": 66.48,
+            "components": {
+              "tracking": {
+                "value": 67.01,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 38.59,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 35.41,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 75.45
+        }
+      },
+      {
+        "algorithm": "scanline_pid",
+        "cohort": "complex",
+        "case": "04-parallel_curve-6001-inertial_v2",
+        "seed": 6001,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9845001251437975,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 85.33,
+            "quality": 63.32,
+            "components": {
+              "tracking": {
+                "value": 55.73,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 33.28,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 47.69,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 22.55
+        }
+      },
+      {
+        "algorithm": "scanline_pid",
+        "cohort": "complex",
+        "case": "05-parallel_curve-6001-kinematic_v1",
+        "seed": 6001,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9853885927052983,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 85.8,
+            "quality": 64.49,
+            "components": {
+              "tracking": {
+                "value": 64.36,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 33.54,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 35.05,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 22.400000000000002
+        }
+      },
+      {
+        "algorithm": "scanline_pid",
+        "cohort": "complex",
+        "case": "06-parallel_curve-6002-inertial_v2",
+        "seed": 6002,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9837338990108475,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 84.73,
+            "quality": 61.82,
+            "components": {
+              "tracking": {
+                "value": 55.07,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 32.81,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 39.89,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 21.75
+        }
+      },
+      {
+        "algorithm": "scanline_pid",
+        "cohort": "complex",
+        "case": "07-parallel_curve-6002-kinematic_v1",
+        "seed": 6002,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9850481286633845,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 85.79,
+            "quality": 64.47,
+            "components": {
+              "tracking": {
+                "value": 67.73,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 33.0,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 27.74,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 21.650000000000002
+        }
+      },
+      {
+        "algorithm": "cnn_gru",
+        "cohort": "complex",
+        "case": "00-coil-6001-inertial_v2",
+        "seed": 6001,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9970431380320951,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 91.24,
+            "quality": 78.11,
+            "components": {
+              "tracking": {
+                "value": 78.74,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 51.58,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 68.22,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 62.300000000000004
+        }
+      },
+      {
+        "algorithm": "cnn_gru",
+        "cohort": "complex",
+        "case": "01-coil-6001-kinematic_v1",
+        "seed": 6001,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.99680515005564,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 90.29,
+            "quality": 75.72,
+            "components": {
+              "tracking": {
+                "value": 70.05,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 52.07,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 71.91,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 61.7
+        }
+      },
+      {
+        "algorithm": "cnn_gru",
+        "cohort": "complex",
+        "case": "02-coil-6002-inertial_v2",
+        "seed": 6002,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.996384589584943,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 88.91,
+            "quality": 72.27,
+            "components": {
+              "tracking": {
+                "value": 63.68,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 51.15,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 65.0,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 56.95
+        }
+      },
+      {
+        "algorithm": "cnn_gru",
+        "cohort": "complex",
+        "case": "03-coil-6002-kinematic_v1",
+        "seed": 6002,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9962052125215777,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 90.41,
+            "quality": 76.02,
+            "components": {
+              "tracking": {
+                "value": 72.08,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 51.68,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 69.7,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 56.35
+        }
+      },
+      {
+        "algorithm": "cnn_gru",
+        "cohort": "complex",
+        "case": "04-parallel_curve-6001-inertial_v2",
+        "seed": 6001,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": false,
+          "reason": "illegal_switch",
+          "completion": 0.9181022781522811,
+          "collision_count": 0,
+          "illegal_switches": [
+            {
+              "timestamp_s": 16.2,
+              "x_m": 9.738343829173347,
+              "y_m": -0.6209044899139972,
+              "progress_m": 10.49876989940549,
+              "phase": "tracking",
+              "reference_distance_m": 0.43468696555025066,
+              "other_route": {
+                "kind": "distractor",
+                "index": 0,
+                "arc_m": 11.10762484541055,
+                "distance_m": 0.0756393237232019
+              }
+            }
+          ],
+          "score": {
+            "version": "3.0",
+            "total": 30.21,
+            "quality": 34.32,
+            "components": {
+              "tracking": {
+                "value": 16.99,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 43.2,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 64.91,
+                "weight": 15
+              },
+              "safety": {
+                "value": 0.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 16.2
+        }
+      },
+      {
+        "algorithm": "cnn_gru",
+        "cohort": "complex",
+        "case": "05-parallel_curve-6001-kinematic_v1",
+        "seed": 6001,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9861062609696779,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 86.74,
+            "quality": 66.85,
+            "components": {
+              "tracking": {
+                "value": 49.91,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 45.56,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 68.47,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 16.5
+        }
+      },
+      {
+        "algorithm": "cnn_gru",
+        "cohort": "complex",
+        "case": "06-parallel_curve-6002-inertial_v2",
+        "seed": 6002,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9853121696456567,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 89.46,
+            "quality": 73.65,
+            "components": {
+              "tracking": {
+                "value": 71.98,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 45.24,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 62.71,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 15.8
+        }
+      },
+      {
+        "algorithm": "cnn_gru",
+        "cohort": "complex",
+        "case": "07-parallel_curve-6002-kinematic_v1",
+        "seed": 6002,
+        "checkpoint_sha256": "d87a1d6e0c16823b5ac2b559aa96b827f5eabd868f779aaf0ae035b555574999",
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9836477647998042,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "3.0",
+            "total": 89.22,
+            "quality": 73.05,
+            "components": {
+              "tracking": {
+                "value": 68.47,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 45.74,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 66.24,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 15.600000000000001
+        }
+      }
+    ]
+  },
+  "avoidance": {
+    "evaluator_version": "4.0",
+    "max_steps": 1500,
+    "runs": [
+      {
+        "algorithm": "temporal_pursuit_avoidance",
+        "case": "user-close-obstacles",
+        "scene_name": "0920挑战·近距平行干扰(1)",
+        "seed": 920,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9945269999490199,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "4.0",
+            "total": 82.49,
+            "quality": 56.23,
+            "components": {
+              "tracking": {
+                "value": 23.94,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 34.24,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 73.33,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 61.800000000000004
+        }
+      },
+      {
+        "algorithm": "temporal_pursuit_avoidance",
+        "case": "block-coil",
+        "scene_name": "0920挑战·套圈占道",
+        "seed": 920,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.994503007791057,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "4.0",
+            "total": 86.08,
+            "quality": 65.2,
+            "components": {
+              "tracking": {
+                "value": 47.38,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 40.23,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 70.51,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 52.6
+        }
+      },
+      {
+        "algorithm": "temporal_pursuit_avoidance",
+        "case": "block-neighbor",
+        "scene_name": "0920挑战·占道与邻线",
+        "seed": 920,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9942462923361645,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "4.0",
+            "total": 84.39,
+            "quality": 60.97,
+            "components": {
+              "tracking": {
+                "value": 36.82,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 39.79,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 67.54,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 49.45
+        }
+      },
+      {
+        "algorithm": "temporal_pursuit_avoidance",
+        "case": "block-double",
+        "scene_name": "0920挑战·连续占道",
+        "seed": 920,
+        "metrics": {
+          "success": false,
+          "reason": "episode_timeout",
+          "completion": 0.15198373233865628,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "4.0",
+            "total": 5.65,
+            "quality": 51.64,
+            "components": {
+              "tracking": {
+                "value": 65.05,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 4.5,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 89.16,
+                "weight": 15
+              },
+              "safety": {
+                "value": 23.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 75.0
+        }
+      },
+      {
+        "algorithm": "temporal_pursuit_avoidance",
+        "case": "user-0920",
+        "scene_name": "0920测试",
+        "seed": 7,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9948060741855556,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "4.0",
+            "total": 88.96,
+            "quality": 72.41,
+            "components": {
+              "tracking": {
+                "value": 62.26,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 48.49,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 72.81,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 43.650000000000006
+        }
+      },
+      {
+        "algorithm": "temporal_pursuit_avoidance",
+        "case": "user-0920-obstacles",
+        "scene_name": "0920测试",
+        "seed": 7,
+        "metrics": {
+          "success": false,
+          "reason": "episode_timeout",
+          "completion": 0.15344735860466252,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "4.0",
+            "total": 5.13,
+            "quality": 36.47,
+            "components": {
+              "tracking": {
+                "value": 20.87,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 4.35,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 99.25,
+                "weight": 15
+              },
+              "safety": {
+                "value": 17.07,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 75.0
+        }
+      },
+      {
+        "algorithm": "temporal_mpc_avoidance",
+        "case": "user-close-obstacles",
+        "scene_name": "0920挑战·近距平行干扰(1)",
+        "seed": 920,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.994777666120045,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "4.0",
+            "total": 78.87,
+            "quality": 47.17,
+            "components": {
+              "tracking": {
+                "value": 23.68,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 34.56,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 13.18,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 61.25
+        }
+      },
+      {
+        "algorithm": "temporal_mpc_avoidance",
+        "case": "block-coil",
+        "scene_name": "0920挑战·套圈占道",
+        "seed": 920,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9946904626576283,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "4.0",
+            "total": 81.9,
+            "quality": 54.76,
+            "components": {
+              "tracking": {
+                "value": 47.34,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 41.21,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 1.07,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 97.86,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 51.35
+        }
+      },
+      {
+        "algorithm": "temporal_mpc_avoidance",
+        "case": "block-neighbor",
+        "scene_name": "0920挑战·占道与邻线",
+        "seed": 920,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9941662003171295,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "4.0",
+            "total": 82.6,
+            "quality": 56.51,
+            "components": {
+              "tracking": {
+                "value": 51.85,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 39.95,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 2.49,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 49.25
+        }
+      },
+      {
+        "algorithm": "temporal_mpc_avoidance",
+        "case": "block-double",
+        "scene_name": "0920挑战·连续占道",
+        "seed": 920,
+        "metrics": {
+          "success": false,
+          "reason": "episode_timeout",
+          "completion": 0.14945087178805522,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "4.0",
+            "total": 4.93,
+            "quality": 34.53,
+            "components": {
+              "tracking": {
+                "value": 31.16,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 4.42,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 54.62,
+                "weight": 15
+              },
+              "safety": {
+                "value": 22.73,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 75.0
+        }
+      },
+      {
+        "algorithm": "temporal_mpc_avoidance",
+        "case": "user-0920",
+        "scene_name": "0920测试",
+        "seed": 7,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9946727674309315,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "4.0",
+            "total": 87.87,
+            "quality": 69.68,
+            "components": {
+              "tracking": {
+                "value": 80.62,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 49.39,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 10.6,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 42.85
+        }
+      },
+      {
+        "algorithm": "temporal_mpc_avoidance",
+        "case": "user-0920-obstacles",
+        "scene_name": "0920测试",
+        "seed": 7,
+        "metrics": {
+          "success": false,
+          "reason": "episode_timeout",
+          "completion": 0.15331009363357226,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "4.0",
+            "total": 5.13,
+            "quality": 36.67,
+            "components": {
+              "tracking": {
+                "value": 24.47,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 4.35,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 92.3,
+                "weight": 15
+              },
+              "safety": {
+                "value": 16.93,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 75.0
+        }
+      }
+    ],
+    "mirror_runs": [
+      {
+        "algorithm": "temporal_pursuit_avoidance",
+        "case": "00-mirror-close-obstacles",
+        "scene_name": "0920挑战·近距平行干扰(1) · 镜像回归",
+        "seed": 10029,
+        "metrics": {
+          "success": true,
+          "reason": "success",
+          "completion": 0.9947313280873804,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "4.0",
+            "total": 82.14,
+            "quality": 55.35,
+            "components": {
+              "tracking": {
+                "value": 22.37,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 33.86,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 71.63,
+                "weight": 15
+              },
+              "safety": {
+                "value": 100.0,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 62.5
+        }
+      },
+      {
+        "algorithm": "temporal_mpc_avoidance",
+        "case": "00-mirror-close-obstacles",
+        "scene_name": "0920挑战·近距平行干扰(1) · 镜像回归",
+        "seed": 10029,
+        "metrics": {
+          "success": false,
+          "reason": "episode_timeout",
+          "completion": 0.7265847013933018,
+          "collision_count": 0,
+          "illegal_switches": [],
+          "score": {
+            "version": "4.0",
+            "total": 23.93,
+            "quality": 34.41,
+            "components": {
+              "tracking": {
+                "value": 12.89,
+                "weight": 35
+              },
+              "efficiency": {
+                "value": 20.61,
+                "weight": 20
+              },
+              "smoothness": {
+                "value": 16.29,
+                "weight": 15
+              },
+              "safety": {
+                "value": 66.67,
+                "weight": 20
+              },
+              "realtime": {
+                "value": 100.0,
+                "weight": 10
+              }
+            },
+            "rule": "成功：60 + 40 × 质量；失败：49 × 完成度 × (0.5 + 0.5 × 质量)"
+          },
+          "simulation_time_s": 75.0
+        }
+      }
+    ],
+    "worker_successes": 2
+  }
+}
