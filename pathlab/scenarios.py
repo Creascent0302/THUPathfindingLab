@@ -162,6 +162,15 @@ def validate_scene(scene: Scene) -> list[str]:
         ):
             errors.append("核心场景的干扰线与目标线过近或相交")
     hint = scene.task_hint
+    width, height = scene.camera.width, scene.camera.height
+    if hint.kind == "point":
+        u, v = hint.point_px
+        if not (0 <= u < width and 0 <= v < height):
+            errors.append("起点提示点必须位于首帧图像范围内")
+    elif hint.kind == "region":
+        left, top, right, bottom = hint.region_px
+        if not (0 <= left < right <= width and 0 <= top < bottom <= height):
+            errors.append("起点提示区域必须位于首帧图像范围内")
     if scene.category == "core":
         if hint.kind == "none" or (
             hint.kind == "marker" and not scene.appearance.marker_enabled
@@ -170,17 +179,19 @@ def validate_scene(scene: Scene) -> list[str]:
         if hint.kind == "marker" and hint.marker_rgb != scene.appearance.marker_rgb:
             errors.append("公开提示的标记颜色必须与渲染标记一致")
         cam = Camera(scene.camera)
-        # Check start ring and arrow endpoint, not only its center.
-        tangent = segments[0] / lengths[0]
-        r = scene.appearance.marker_radius_m
-        marker = np.array(
-            [
-                path[0],
-                path[0] + [0, r],
-                path[0] - [0, r],
-                path[0] + tangent * scene.appearance.direction_length_m,
-            ]
-        )
+        # Pixel hints need the start in view, but no invisible ring/arrow margin.
+        marker = path[:1]
+        if hint.kind == "marker":
+            tangent = segments[0] / lengths[0]
+            r = scene.appearance.marker_radius_m
+            marker = np.array(
+                [
+                    path[0],
+                    path[0] + [0, r],
+                    path[0] - [0, r],
+                    path[0] + tangent * scene.appearance.direction_length_m,
+                ]
+            )
         uv, front = cam.project(world_to_vehicle(marker, scene.initial_pose))
         if not np.all(
             front
@@ -189,7 +200,11 @@ def validate_scene(scene: Scene) -> list[str]:
             & (uv[:, 1] >= 8)
             & (uv[:, 1] < scene.camera.height - 8)
         ):
-            errors.append("起点区域或方向箭头不完整可见")
+            errors.append(
+                "起点区域或方向箭头不完整可见"
+                if hint.kind == "marker"
+                else "目标路线起点不在首帧可见范围内"
+            )
         local_start = world_to_vehicle(path[:1], scene.initial_pose)[0]
         relative_yaw = (headings[0] - scene.initial_pose.yaw_rad + math.pi) % (
             2 * math.pi

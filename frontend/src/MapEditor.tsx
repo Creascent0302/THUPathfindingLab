@@ -6,6 +6,7 @@ import {
   objectNames,
 } from "./SceneObjectEditor";
 import { DistractorEditor } from "./DistractorEditor";
+import { MapHintEditor } from "./MapHintEditor";
 import { VehicleSettings } from "./VehicleSettings";
 import { matchesShape, usePersistentState } from "./usePersistentState";
 import type { SavedMap, SceneObject } from "./types";
@@ -13,7 +14,7 @@ import type { SavedMap, SceneObject } from "./types";
 type Design = NonNullable<Scene["design"]>;
 type Draft = Pick<
   Scene,
-  "name" | "seed" | "vehicle" | "camera" | "appearance"
+  "name" | "seed" | "vehicle" | "camera" | "appearance" | "task_hint"
 > & { design: Design; objects: SceneObject[]; source_scene?: Scene };
 const defaultDesign: Design = {
   waypoints: [
@@ -101,6 +102,13 @@ export function MapEditor({
     vehicle: base.vehicle,
     camera: base.camera,
     appearance: base.appearance,
+    task_hint: base.design
+      ? base.task_hint
+      : {
+          kind: "marker",
+          marker_rgb: base.appearance.marker_rgb,
+          direction: "arrow",
+        },
     design: base.design ? sceneDesign(base) : defaultDesign,
     objects: base.design ? base.objects || [] : [],
     source_scene: base.design ? base : undefined,
@@ -112,6 +120,7 @@ export function MapEditor({
       const shape = {
         ...initialDraft(),
         source_scene: undefined,
+        task_hint: undefined,
         design: {
           waypoints: [[0, 0]],
           radius_m: 1,
@@ -120,7 +129,16 @@ export function MapEditor({
         objects: [createSceneObject("cone", [0, 0])],
       };
       if (!matchesShape(value, shape)) throw new Error("Invalid map draft");
-      return value as Draft;
+      const stored = value as Draft;
+      return {
+        ...stored,
+        task_hint: stored.task_hint ??
+          stored.source_scene?.task_hint ?? {
+            kind: "marker",
+            marker_rgb: stored.appearance.marker_rgb,
+            direction: "arrow",
+          },
+      };
     },
   );
   const [mode, setMode] = useState<"target" | "distractor" | "object">(
@@ -250,6 +268,7 @@ export function MapEditor({
       vehicle: normalized.scene.vehicle,
       camera: normalized.scene.camera,
       appearance: normalized.scene.appearance,
+      task_hint: normalized.scene.task_hint,
       design: sceneDesign(scene),
       objects: scene.objects || [],
       source_scene: scene,
@@ -665,15 +684,23 @@ export function MapEditor({
           {storageError ||
             "草稿自动保存在此浏览器，刷新或切换页面后可继续编辑。点击「保存地图」可保存到服务器，供批量评测或其他浏览器加载。"}
         </p>
-        {preview?.image && (
-          <details className="editor-camera" open>
-            <summary>起点摄像头预览</summary>
-            <img
-              alt="自定义地图摄像头预览"
-              src={`data:image/png;base64,${preview.image}`}
-            />
-          </details>
-        )}
+        <MapHintEditor
+          hint={draft.task_hint}
+          markerColor={appearance.marker_rgb}
+          camera={camera}
+          preview={valid ? preview : null}
+          onChange={(task_hint) =>
+            setDraft((old) => ({
+              ...old,
+              task_hint,
+              appearance: {
+                ...old.appearance,
+                marker_enabled: task_hint.kind === "marker",
+                marker_rgb: task_hint.marker_rgb || old.appearance.marker_rgb,
+              },
+            }))
+          }
+        />
       </section>
       <section className="panel padded-panel editor-options">
         {mode === "distractor" && (

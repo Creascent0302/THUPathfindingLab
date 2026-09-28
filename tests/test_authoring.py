@@ -388,3 +388,124 @@ def test_editor_layers_roundtrip_save_reload_and_real_run(client):
 
 
 pytestmark = pytest.mark.usefixtures("test_plugins")
+
+
+@pytest.mark.parametrize(
+    "hint",
+    [
+        {"kind": "marker", "marker_rgb": [195, 45, 155], "direction": "arrow"},
+        {"kind": "point", "point_px": [320, 170], "direction": "unspecified"},
+        {
+            "kind": "region",
+            "region_px": [290, 150, 350, 200],
+            "direction": "unspecified",
+        },
+        {"kind": "none", "direction": "unspecified"},
+    ],
+)
+def test_authored_hint_survives_save_import_and_algorithm_input(client, hint):
+    payload = {"design": {"waypoints": [[0, 0], [7, 0]]}, "task_hint": hint}
+    response = client.post("/api/maps/build", json=payload)
+    assert response.status_code == 200, response.text
+    built = response.json()
+    scene = built["scene"]
+    expected = scene["task_hint"]
+    assert all(expected[key] == value for key, value in hint.items())
+    assert scene["appearance"]["marker_enabled"] == (hint["kind"] == "marker")
+    if hint["kind"] == "marker":
+        assert scene["appearance"]["marker_rgb"] == hint["marker_rgb"]
+    if hint["kind"] == "none":
+        assert scene["category"] == "stress"
+    response = client.post("/api/maps", json=scene)
+    assert response.status_code == 201, response.text
+    loaded = client.get("/api/maps").json()[0]["scene"]
+    rebuilt = client.post(
+        "/api/maps/build", json={"design": loaded["design"], "source_scene": loaded}
+    )
+    assert rebuilt.status_code == 200, rebuilt.text
+    assert rebuilt.json()["scene"]["task_hint"] == expected
+    assert rebuilt.json()["image"] == built["image"]
+
+    # Exercise the real uploaded-code worker, including reset and both steps.
+    code = """
+from pathlab.sdk import Action, AlgorithmOutput
+class StudentAlgorithm:
+    def initialize(self, config, public_context): pass
+    def reset(self, initial_observation, task_hint):
+        self.hint = task_hint.model_dump(mode="json")
+    def step(self, observation):
+        return AlgorithmOutput(status="UNINITIALIZED",
+            action=Action(steering_angle_rad=0, speed_mps=0),
+            debug={"reset_hint": self.hint,
+                   "step_hint": observation.task_hint.model_dump(mode="json")})
+    def close(self): pass
+"""
+    upload = client.post(
+        "/api/submissions",
+        files={"file": ("hint_probe.zip", archive({"algorithm.py": code}))},
+        data={"name": "提示接口检查", "capability": "action"},
+    )
+    assert upload.status_code == 201, upload.text
+    run_id = run_complete(
+        client,
+        {
+            "algorithm": upload.json()["id"],
+            "scene": loaded,
+            "max_steps": 2,
+            "realtime": False,
+        },
+    )
+    record = client.get(f"/api/results/{run_id}").json()
+    assert not record["manifest"]["failures"]
+    assert len(record["frames"]) == 2
+    for frame in record["frames"]:
+        assert frame["output"]["debug"] == {
+            "reset_hint": expected,
+            "step_hint": expected,
+        }
+    assert (
+        client.get(f"/api/results/{run_id}/frames/0").json()["image"] == built["image"]
+    )
+
+
+@pytest.mark.parametrize(
+    "hint",
+    [
+        {"kind": "point"},
+        {"kind": "point", "point_px": [640, 180]},
+        {"kind": "point", "point_px": [320, -1]},
+        {"kind": "region", "region_px": [300, 100, 300, 200]},
+        {"kind": "region", "region_px": [0, 0, 641, 360]},
+        {"kind": "region", "region_px": [-1, 0, 640, 360]},
+        {"kind": "marker", "marker_rgb": [256, 0, 0]},
+    ],
+)
+def test_invalid_hint_cannot_be_built_or_saved(client, hint):
+    payload = {"design": {"waypoints": [[0, 0], [7, 0]]}, "task_hint": hint}
+    assert client.post("/api/maps/build", json=payload).status_code in (400, 422)
+    # Stress classification must not bypass pixel bounds during direct import.
+    scene = generate("straight").model_dump(mode="json")
+    scene.update(task_hint=hint, category="stress")
+    assert client.post("/api/maps", json=scene).status_code in (400, 422)
+
+
+def test_pixel_hints_are_metadata_not_painted_into_algorithm_images():
+    from pathlab.sdk import TaskHint
+
+    request = MapRequest(design=MapDesign(waypoints=[(0, 0), (7, 0)]))
+    images = []
+    for hint in [
+        TaskHint(kind="point", point_px=(320, 170), direction="unspecified"),
+        TaskHint(kind="region", region_px=(0, 0, 640, 360), direction="unspecified"),
+        TaskHint(kind="none", direction="unspecified"),
+    ]:
+        scene = build_scene(request.model_copy(update={"task_hint": hint}))
+        images.append(Renderer(scene).render(scene.initial_pose, 0))
+    assert all(np.array_equal(images[0], image) for image in images[1:])
+    marker = build_scene(request)
+    assert not np.array_equal(
+        images[0], Renderer(marker).render(marker.initial_pose, 0)
+    )
+    assert (
+        request.appearance.marker_enabled
+    )  # Authoring doesn't mutate caller settings.

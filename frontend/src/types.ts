@@ -93,6 +93,8 @@ export type Scene = {
     horizontal_fov_deg: number;
   };
   appearance: {
+    marker_rgb: [number, number, number];
+    marker_enabled: boolean;
     line_width_m: number;
     line_rgb: [number, number, number];
     ground_rgb: [number, number, number];

@@ -18,6 +18,7 @@ from .config import (
     SceneObject,
     VehicleConfig,
 )
+from .sdk import TaskHint
 from .scene_objects import scatter_objects
 from .scenarios import validate_scene
 from .config import Model
@@ -35,6 +36,7 @@ class MapRequest(Model):
     objects: list[SceneObject] | None = Field(default=None, max_length=80)
     scatter: ObjectScatter | None = None
     source_scene: Scene | None = None
+    task_hint: TaskHint | None = None
 
     @model_validator(mode="before")
     @classmethod
@@ -188,6 +190,21 @@ def build_scene(request: MapRequest) -> Scene:
         if source
         else [],
     )
+    if request.task_hint is not None:
+        hint = request.task_hint
+        metadata["task_hint"] = hint
+        metadata["appearance"] = request.appearance.model_copy(
+            update={
+                "marker_enabled": hint.kind == "marker",
+                "marker_rgb": hint.marker_rgb
+                if hint.kind == "marker"
+                else request.appearance.marker_rgb,
+            }
+        )
+        # No cue means target identity can be ambiguous among nearby lines.
+        # Keep the existing distinction between core and stress evaluations.
+        if hint.kind == "none":
+            metadata["category"] = "stress"
     scene = Scene.model_validate(metadata)
     if request.scatter:
         generated = scatter_objects(scene, request.scatter)

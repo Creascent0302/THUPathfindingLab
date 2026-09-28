@@ -155,14 +155,18 @@
 .waypoint-row button {
   padding: 5px;
 }
-.editor-camera {
-  padding: 16px 18px;
+.editor-hints {
   border-top: 1px solid var(--border);
 }
-.editor-camera img {
-  width: 100%;
-  margin-top: 14px;
-  border-radius: 5px;
+.editor-hints > label {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.editor-hints input[type="color"] {
+  width: 80px;
+  height: 36px;
+  padding: 3px;
 }
 .world-view {
   display: block;
