@@ -1,22 +1,50 @@
 [
   {
-    "file": "close-lines.json",
-    "challenge": "套圈路径、0.18 m 平行干扰线，无占道物件"
+    "file": "01-straight.json",
+    "challenge": "01 · 直线入门；无障碍物"
   },
   {
-    "file": "steep-camera.json",
-    "challenge": "0.55 rad 相机俯角、近邻干扰线，无占道物件"
+    "file": "02-bend.json",
+    "challenge": "02 · 单弯；无障碍物"
   },
   {
-    "file": "block-coil.json",
-    "challenge": "0920 套圈路段中央交通锥，绕障后不得接入返回段"
+    "file": "03-s_curve.json",
+    "challenge": "03 · 连续 S 弯；无障碍物"
   },
   {
-    "file": "block-neighbor.json",
-    "challenge": "纸箱完全遮挡目标线，旁侧 0.55 m 有干扰线"
+    "file": "04-sharp.json",
+    "challenge": "04 · 大角度急弯；无障碍物"
   },
   {
-    "file": "block-double.json",
-    "challenge": "连续交通锥与纸箱，旁侧 0.65 m 有干扰线"
+    "file": "05-hairpin.json",
+    "challenge": "05 · 紧凑回头弯；无障碍物"
+  },
+  {
+    "file": "06-parallel.json",
+    "challenge": "06 · 双侧平行干扰；无障碍物"
+  },
+  {
+    "file": "07-close_lines.json",
+    "challenge": "07 · 近贴断续干扰；无障碍物"
+  },
+  {
+    "file": "08-repeated.json",
+    "challenge": "08 · 密集往返路段；无障碍物"
+  },
+  {
+    "file": "09-tight_s.json",
+    "challenge": "09 · 极限连续反向弯；无障碍物"
+  },
+  {
+    "file": "10-spiral.json",
+    "challenge": "10 · 内收螺旋；无障碍物"
+  },
+  {
+    "file": "11-spiral_reverse.json",
+    "challenge": "11 · 外展螺旋与伴随干扰；无障碍物"
+  },
+  {
+    "file": "12-spiral_dense.json",
+    "challenge": "12 · 密绕螺旋与双侧干扰；无障碍物"
   }
 ]

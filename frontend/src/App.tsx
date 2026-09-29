@@ -196,7 +196,9 @@ export default function App() {
       : "UNINITIALIZED");
   const currentHint = snapshot
     ? snapshot.config.task_hint
-    : hint || preview.scene?.task_hint || null;
+    : mode === "simulation"
+      ? preview.scene?.task_hint || null
+      : hint;
   const speedLimit = scene?.vehicle.max_speed_mps || 1.5;
   const steerLimit = scene?.vehicle.max_steering_rad || 0.52;
   const reverseLimit = scene?.vehicle.reverse_allowed
@@ -384,7 +386,7 @@ export default function App() {
       execution,
       source_id: source?.id || null,
       parameters: parsed,
-      task_hint: hint,
+      task_hint: mode === "simulation" ? null : hint,
       scene: customScene,
       max_steps: maxSteps,
       timeout_s: timeout,

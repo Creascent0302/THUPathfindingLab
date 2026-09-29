@@ -160,6 +160,7 @@ def test_collision_during_terminal_coasting_overrides_success_without_route_prog
 def test_external_timeout_coasting_cannot_acquire_or_add_progress():
     scene = generate("straight", 7)
     scene.objects = []
+    scene.start_mode = "approach"  # Historical off-path start.
     scene.initial_pose = Pose(x_m=-0.25)
     evaluator = Evaluator(scene)
     evaluator.update(VehicleState(x_m=-0.24), 0.05)
@@ -287,7 +288,8 @@ def test_batch_api_runs_real_workers_and_exports_replayable_records(tmp_path):
         assert batch["summary"]["comparable"]
         assert len(batch["items"]) == 2
         for item in batch["items"]:
-            assert item["run_id"] and item["metrics"]["score"]["total"] == 0
+            assert item["run_id"] and item["metrics"]["score"]["total"] < 1
+            assert not item["metrics"]["success"]
             manifest = client.get(f"/api/results/{item['run_id']}").json()["manifest"]
             assert manifest["benchmark_id"] == identifier
             assert manifest["config"]["realtime"] is False

@@ -66,7 +66,7 @@ export function BenchmarkPanel({
   ]);
   const [mapIds, setMapIds] = useState<string[]>([]);
   const [maps, setMaps] = useState<{ id: string; scene: Scene }[]>([]);
-  const [execution, setExecution] = useState<Capability>("action");
+  const [execution, setExecution] = useState<Capability>("path");
   const [name, setName] = useState("多方法对比");
   const [seeds, setSeeds] = useState("101, 102, 103");
   const [steps, setSteps] = useState(4000);

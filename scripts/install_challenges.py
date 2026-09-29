@@ -1,4 +1,4 @@
-"""Install the frozen 0920 challenge set without overwriting any saved map."""
+"""Install the obstacle-free classroom set without overwriting any saved map."""
 
 # ruff: noqa: E402
 
@@ -31,7 +31,7 @@ def install(root: Path) -> list[dict]:
         if errors:
             raise ValueError(f"{source.name}: {'; '.join(errors)}")
         digest = hashlib.sha256(source.read_bytes()).hexdigest()
-        identity = uuid.uuid5(uuid.NAMESPACE_URL, f"pathlab:0920:{digest}").hex
+        identity = uuid.uuid5(uuid.NAMESPACE_URL, f"pathlab:classroom-v1:{digest}").hex
         scenes.append((identity, scene))
     (root / "maps").mkdir(parents=True, exist_ok=True)
     normalize_names(root)

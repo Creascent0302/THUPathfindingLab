@@ -99,6 +99,7 @@ def test_scene_rejects_infeasible_core_and_missing_hint():
     scene.target_path = [(0, 0), (0.04, 0), (0.04, 0.04)]
     assert any("曲率" in e for e in validate_scene(scene))
     scene = generate("straight")
+    scene.start_mode = "approach"
     scene.task_hint = TaskHint(kind="none")
     assert any("提示" in e for e in validate_scene(scene))
 
@@ -165,6 +166,8 @@ def test_output_and_parameters_are_bounded():
 
 def test_marker_color_mismatch_is_not_hidden():
     scene = generate("straight")
+    scene.start_mode = "approach"
+    scene.task_hint = TaskHint()
     scene.appearance.marker_rgb = (250, 0, 250)
     assert any("颜色" in message for message in validate_scene(scene))
 

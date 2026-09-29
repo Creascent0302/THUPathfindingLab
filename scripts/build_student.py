@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import platform
+import re
 import shutil
 import subprocess
 import sys
@@ -25,7 +26,13 @@ TOOLS = [
     "altgraph==0.17.5",
 ]
 PUBLIC = {"__init__", "sdk"}
-STUDENT_DOCS = ("student-local.md", "student-guide.md", "protocol.md", "evaluation.md")
+STUDENT_DOCS = (
+    "student-local.md",
+    "student-guide.md",
+    "protocol.md",
+    "evaluation.md",
+    "classroom-demo.md",
+)
 
 
 def run(*command, cwd=ROOT, env=None):
@@ -75,6 +82,11 @@ def main():
                 hidden.update(alias.name for alias in node.names)
             elif isinstance(node, ast.ImportFrom) and not node.level and node.module:
                 hidden.add(node.module)
+    examples = sorted((ROOT / "algorithms").glob("*.py"))
+    (stage / "algorithms").mkdir()
+    for example in examples:
+        shutil.copy2(example, stage / "algorithms" / example.name)
+    hidden.update(f"algorithms.{p.stem}" for p in (ROOT / "algorithms").glob("*.py"))
     hidden.discard("__future__")
     hidden.discard("collections.abc")  # Alias supplied by the collections package.
     hidden.update(
@@ -141,6 +153,8 @@ def main():
         command.extend(["--copy-metadata", name])
     for source, destination in [
         ("frontend/dist", "frontend/dist"),
+        ("algorithms.json", "."),
+        *[(str(p.relative_to(ROOT)), "algorithms") for p in examples],
         ("student_template/algorithm.py", "student_template"),
         *[(f"docs/{name}", "docs") for name in STUDENT_DOCS],
     ]:
@@ -153,6 +167,8 @@ def main():
         / f"PathLab-{platform.system().lower()}-{platform.machine().lower()}"
     )
     release.parent.mkdir(exist_ok=True)
+    if (release / "artifacts").exists():
+        raise SystemExit("发行目录已有实验数据，请先移动整个旧发行目录，再构建新包。")
     if release.exists():
         shutil.rmtree(release)
     shutil.copytree(CACHE / "dist" / "PathLab", release)
@@ -167,12 +183,18 @@ def main():
         release / "student_template",
         ignore=shutil.ignore_patterns("__pycache__", "stdio.py"),
     )
+    (release / "examples").mkdir()
+    for example in examples:
+        shutil.copy2(example, release / "examples" / example.name)
     sdk = release / "sdk" / "pathlab"
     sdk.mkdir(parents=True)
     for name in PUBLIC:
         shutil.copy2(ROOT / "pathlab" / f"{name}.py", sdk / f"{name}.py")
     for name in STUDENT_DOCS:
-        shutil.copy2(ROOT / "docs" / name, release / name)
+        text = (ROOT / "docs" / name).read_text(encoding="utf-8")
+        text = text.replace("../algorithms/", "examples/")
+        text = re.sub(r"\[([^\]]+)\]\(\.\./pathlab/[^)]+\)", r"`pathlab/\1`", text)
+        (release / name).write_text(text, encoding="utf-8")
     # Distribute required third-party attribution, including vendored wheels.
     notices = release / "licenses"
     notices.mkdir()
@@ -217,6 +239,11 @@ def main():
     for path in (release / "_internal" / "pathlab").rglob("*"):
         if path.suffix in {".py", ".pyc", ".c", ".cpp"} and path.stem not in PUBLIC:
             raise RuntimeError(f"发行包意外包含后端源码：{path}")
+    shipped_examples = {
+        p.name for p in (release / "_internal/algorithms").rglob("*") if p.is_file()
+    }
+    if shipped_examples != {p.name for p in examples}:
+        raise RuntimeError("教学示例资源包含额外文件或缺失文件")
     files = {
         str(p.relative_to(release)): hashlib.sha256(p.read_bytes()).hexdigest()
         for p in sorted(release.rglob("*"))
@@ -229,7 +256,13 @@ def main():
                 "python": sys.version,
                 "source_sha256": {
                     str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest()
-                    for p in sorted((ROOT / "pathlab").glob("*.py"))
+                    for p in sorted(
+                        [
+                            *(ROOT / "pathlab").glob("*.py"),
+                            *(ROOT / "algorithms").glob("*.py"),
+                            ROOT / "algorithms.json",
+                        ]
+                    )
                 },
                 "private_modules": private,
                 "files": files,

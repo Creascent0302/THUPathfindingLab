@@ -1,6 +1,6 @@
 """Implement StudentAlgorithm, zip algorithm.py, and upload in the workbench."""
 
-from pathlab.sdk import Action, AlgorithmOutput, Observation, TaskHint
+from pathlab.sdk import AlgorithmOutput, Observation, TaskHint
 
 
 class StudentAlgorithm:
@@ -14,10 +14,9 @@ class StudentAlgorithm:
     def step(self, observation: Observation) -> AlgorithmOutput:
         rgb = observation.rgb()
         self.frames += 1
-        # Replace the safe stop with your own visual logic.
+        # Detect the guide line, then return local_path_m=[(x, y), ...].
         return AlgorithmOutput(
             status="UNINITIALIZED",
-            action=Action(steering_angle_rad=0, speed_mps=0),
             debug={
                 "frames_seen": self.frames,
                 "mean_rgb": rgb.mean(axis=(0, 1)).tolist(),

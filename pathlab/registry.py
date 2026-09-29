@@ -49,8 +49,8 @@ def registry(
     path: Path | None = None, *, artifact_root: Path | None = None
 ) -> dict[str, PluginSpec]:
     # Explicit manifests support framework tests and external protocol clients.
-    # A new student installation has no preinstalled algorithms.
-    rows = json.loads(path.read_text(encoding="utf-8")) if path else []
+    manifest = path or ROOT / "algorithms.json"
+    rows = json.loads(manifest.read_text(encoding="utf-8"))
     specs = [PluginSpec.model_validate(row) for row in rows]
     for manifest in ((artifact_root or DATA_ROOT) / "submissions").glob(
         "upload_*/plugin.json"

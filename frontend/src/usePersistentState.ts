@@ -33,10 +33,22 @@ export function usePersistentState<T>(
   const [loaded] = useState(() => {
     try {
       const raw = localStorage.getItem(key);
-      return {
-        value: raw === null ? initial() : restore(JSON.parse(raw)),
-        error: "",
-      };
+      const value = raw === null ? initial() : restore(JSON.parse(raw));
+      let error = "";
+      // Persist schema migrations too, so retired fields cannot reappear after
+      // another refresh. A quota failure must keep the restored map in memory.
+      if (raw !== null) {
+        const normalized = JSON.stringify(serialize(value));
+        if (normalized !== raw) {
+          try {
+            localStorage.setItem(key, normalized);
+          } catch {
+            error =
+              "草稿已恢复，但浏览器无法保存更新后的格式；请保存地图或导出 JSON。";
+          }
+        }
+      }
+      return { value, error };
     } catch {
       return {
         value: initial(),

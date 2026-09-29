@@ -15,7 +15,7 @@ export function SubmissionPanel({
   busy: boolean;
 }) {
   const [name, setName] = useState("");
-  const [capability, setCapability] = useState<Capability>("action");
+  const [capability, setCapability] = useState<Capability>("path");
   const [file, setFile] = useState<File | null>(null);
   const uploaded = algorithms.filter((a) => a.id.startsWith("upload_"));
   return (

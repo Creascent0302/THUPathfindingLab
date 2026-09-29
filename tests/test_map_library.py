@@ -57,14 +57,14 @@ def test_challenge_install_is_valid_repeatable_and_preserves_user_maps(tmp_path)
     maps = tmp_path / "maps"
     maps.mkdir()
     user = generate("straight").model_dump()
-    user["name"] = "0920挑战·套圈占道"
+    user["name"] = generate("spiral").name
     destination = maps / "user.json"
     write_json(destination, user)
     original = destination.read_bytes()
     result = install(tmp_path)
-    assert len(result) == 5
+    assert len(result) == 12
     assert all(row["status"] == "installed" for row in result)
     assert any(row["name"] == user["name"] + "(1)" for row in result)
     assert destination.read_bytes() == original
     assert all(row["status"] == "already_installed" for row in install(tmp_path))
-    assert len(list(maps.glob("*.json"))) == 6
+    assert len(list(maps.glob("*.json"))) == 13

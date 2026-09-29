@@ -46,7 +46,7 @@ def run_complete(client, config):
 
 def test_api_simulation_export_and_reconstruction(client):
     assert client.get("/api/health").json()["status"] == "ok"
-    assert len(client.get("/api/catalog").json()["families"]) == 8
+    assert len(client.get("/api/catalog").json()["families"]) == 12
     preview = client.get("/api/scenes/straight?seed=7").json()
     assert preview["image"]
     run_id = run_complete(

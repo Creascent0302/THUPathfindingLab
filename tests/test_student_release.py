@@ -1,4 +1,4 @@
-"""The shipped framework starts empty and accepts a student's own template."""
+"""The two classroom path examples and uploaded plugins work independently."""
 
 from fastapi.testclient import TestClient
 
@@ -8,11 +8,13 @@ from pathlab.submissions import template_zip
 from .test_api import run_complete
 
 
-def test_fresh_install_has_only_manual_and_upload_works(tmp_path):
-    assert registry(artifact_root=tmp_path) == {}
+def test_fresh_install_has_path_examples_and_upload_works(tmp_path):
+    assert set(registry(artifact_root=tmp_path)) == {"straight_path", "temporal_path"}
     with TestClient(create_app(tmp_path)) as client:
         assert [p["id"] for p in client.get("/api/catalog").json()["algorithms"]] == [
-            "manual"
+            "manual",
+            "straight_path",
+            "temporal_path",
         ]
         assert client.get("/api/hosting").status_code == 404
         assert client.get("/api/workspace").status_code == 404
@@ -30,7 +32,11 @@ def test_fresh_install_has_only_manual_and_upload_works(tmp_path):
         assert all(
             frame["applied"]["actual"]["speed_mps"] == 0 for frame in record["frames"]
         )
-    assert list(registry(artifact_root=tmp_path)) == [identifier]
+    assert list(registry(artifact_root=tmp_path)) == [
+        "straight_path",
+        "temporal_path",
+        identifier,
+    ]
 
 
 def test_native_worker_uses_executable_dispatch(monkeypatch):

@@ -12,8 +12,8 @@ import cv2
 from .config import Scene
 from .simulation import VehicleState, wrap_angle
 
-EVALUATOR_VERSION = "5.0"
-SCORE_VERSION = "5.0"
+EVALUATOR_VERSION = "6.0"
+SCORE_VERSION = "6.0"
 SCORE_WEIGHTS = {
     "tracking": 35,
     "efficiency": 20,
@@ -95,7 +95,7 @@ class Evaluator:
         self.reverse_time_s = 0.0
         self.reverse_count = 0
         self.reversing = False
-        self.acquired_at = None
+        self.acquired_at = 0.0 if scene.start_mode == "on_path" else None
         self.offtrack_s = 0.0
         self.switch_s = 0.0
         self.switched = False

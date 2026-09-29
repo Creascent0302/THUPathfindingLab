@@ -24,11 +24,11 @@ def test_stop_cannot_succeed():
 def test_continuous_ordered_path_can_succeed():
     score = evaluator()
     for i, x in enumerate(np.arange(0.04, score.path.total, 0.04)):
-        row = score.update(VehicleState(x_m=float(x), speed_mps=0.8), (i + 1) * 0.05)
+        score.update(VehicleState(x_m=float(x), speed_mps=0.8), (i + 1) * 0.05)
         if score.done_reason:
             break
     assert score.done_reason == "success"
-    assert row["completion"] > 0.98
+    assert score.progress >= score.path.total - 0.18
 
 
 def test_endpoint_teleport_and_hairpin_jump_fail():
@@ -42,7 +42,9 @@ def test_endpoint_teleport_and_hairpin_jump_fail():
 
 
 def test_distractor_switch_is_sustained_and_recorded():
-    score = evaluator("parallel")
+    scene = generate("straight")
+    scene.distractors = [[(-1, -0.43), (6, -0.43)]]
+    score = Evaluator(scene)
     score.update(VehicleState(x_m=0.01), 0.05)
     for i in range(1, 40):
         score.update(VehicleState(x_m=0.01, y_m=-min(0.43, i * 0.03)), (i + 1) * 0.05)
@@ -54,7 +56,9 @@ def test_distractor_switch_is_sustained_and_recorded():
 
 
 def test_near_endpoint_without_acquisition_never_succeeds():
-    score = evaluator("hairpin")
+    scene = generate("hairpin")
+    scene.start_mode = "approach"  # Historical acquisition semantics.
+    score = Evaluator(scene)
     endpoint = score.path.points[-1]
     score.previous = endpoint.copy()
     for i in range(20):

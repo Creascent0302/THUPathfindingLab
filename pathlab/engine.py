@@ -47,21 +47,17 @@ class Run:
         if config.algorithm != "manual":
             self.spec = spec or registry(artifact_root=root).get(config.algorithm)
             if self.spec is None:
-                raise ValueError("算法尚未注册，请先上传算法 ZIP")
+                raise ValueError("算法尚未注册，请先上传算法 ZIP 或配置本地插件")
             if config.execution not in self.spec.capabilities:
                 raise ValueError("所选算法不支持这个执行模式")
         elif config.mode != "simulation" or config.execution != "action":
             raise ValueError("手动驾驶仅适用于闭环仿真的 action 模式")
         self.scene = (
-            (config.scene or generate(config.family, config.seed))
+            (config.scene or generate(config.family, config.seed)).at_start()
             if config.mode == "simulation"
             else None
         )
         if self.scene:
-            if config.task_hint is not None:
-                self.scene = self.scene.model_copy(
-                    update={"task_hint": config.task_hint}
-                )
             errors = validate_scene(self.scene)
             if errors:
                 raise ValueError("; ".join(errors))
@@ -69,12 +65,14 @@ class Run:
             read_source(root, config.source_id or "") if not self.scene else None
         )
         self.dt = self.scene.dt_s if self.scene else 1 / self.source["fps"]
-        self.hint = config.task_hint or (
+        self.hint = (
             self.scene.task_hint
             if self.scene
-            else TaskHint(kind="none", direction="unspecified")
+            else (config.task_hint or TaskHint(kind="none", direction="unspecified"))
         )
-        self.config = config.model_copy(update={"task_hint": self.hint})
+        self.config = config.model_copy(
+            update={"task_hint": self.hint, "scene": self.scene}
+        )
         self.state, self.paused, self.reason = "queued", True, None
         self.lock = threading.RLock()
         self.wake, self.cancelled = threading.Event(), threading.Event()
@@ -92,7 +90,9 @@ class Run:
         self.evaluator = Evaluator(self.scene) if self.scene else None
         self.adapter = (
             PurePursuit(
-                self.scene.vehicle.wheelbase_m, self.scene.vehicle.max_speed_mps
+                self.scene.vehicle.wheelbase_m,
+                self.scene.vehicle.max_speed_mps,
+                max_steering_rad=self.scene.vehicle.max_steering_rad,
             )
             if self.scene
             else None
@@ -211,6 +211,8 @@ class Run:
                 context = {
                     "protocol_version": VERSION,
                     "observation_track": "pure_visual",
+                    "start_on_path": self.scene is not None
+                    and self.scene.start_mode == "on_path",
                     "execution": self.config.execution,
                     "coordinates": "rear axle: x forward, y left; steering positive left; m, rad, s",
                     "vehicle_limits": self.scene.vehicle.model_dump()

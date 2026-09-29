@@ -11,116 +11,83 @@ from browser_support import ROOT, serve_test, until
 from check_release import server
 
 
-def check_map_hints(page, http, output):
-    """Exercise picking in displayed-image coordinates, persistence and loading."""
+def check_start_and_maps(page, http, output):
     apply = page.get_by_role("button", name="应用到实验", exact=True)
-    selector = page.get_by_label("起点提示类型", exact=True)
-    panel = page.get_by_role("region", name="起点提示设置")
-
-    def build_after(change):
-        with page.expect_response(
-            lambda r: r.url.endswith("/api/maps/build") and r.request.method == "POST"
-        ) as result:
-            change()
-        assert result.value.ok, result.value.text()
+    expect(page.get_by_label("起点提示类型", exact=True)).to_have_count(0)
+    expect(
+        page.get_by_text(
+            "车辆直接从路线起点出发，朝向起点箭头，无需设置或识别起点提示。", exact=True
+        )
+    ).to_be_visible()
+    saved = []
+    for suffix in ("", "(1)"):
         expect(apply).to_be_enabled()
-
-    def pick(points):
-        svg = panel.locator(".camera svg")
-        svg.scroll_into_view_if_needed()
-        coordinates = [
-            svg.evaluate(
-                """(el, xy) => {
-            const p = new DOMPoint(...xy).matrixTransform(el.getScreenCTM());
-            return {x: p.x, y: p.y};
-        }""",
-                point,
-            )
-            for point in points
-        ]
-        page.mouse.move(**coordinates[0])
-        page.mouse.down()
-        page.mouse.move(**coordinates[-1])
-        page.mouse.up()
-
-    for kind in ["marker", "point", "region", "none"]:
+        page.get_by_label("地图名称", exact=True).fill("课堂地图")
         expect(apply).to_be_enabled()
-        if kind == "marker":
-            build_after(
-                lambda: page.get_by_label("起点标记颜色", exact=True).fill("#b52090")
-            )
-        else:
-            build_after(lambda: selector.select_option(kind))
-        if kind == "point":
-            build_after(lambda: pick([[315, 180]]))
-        elif kind == "region":
-            build_after(lambda: pick([[295, 155], [345, 205]]))
-        name = f"起点提示-{kind}"
-        build_after(lambda: page.get_by_label("地图名称", exact=True).fill(name))
         with page.expect_response(
             lambda r: r.url.endswith("/api/maps") and r.request.method == "POST"
-        ) as saved_response:
+        ) as response:
             page.get_by_role("button", name="保存地图", exact=True).click()
-        assert saved_response.value.status == 201
-        saved = saved_response.value.json()
-        hint = saved["scene"]["task_hint"]
-        assert hint["kind"] == kind
-        if kind == "point":
-            assert all(abs(a - b) < 0.1 for a, b in zip(hint["point_px"], [315, 180]))
-        elif kind == "region":
-            assert all(
-                abs(a - b) < 0.1
-                for a, b in zip(hint["region_px"], [295, 155, 345, 205])
-            )
-        elif kind == "marker":
-            assert hint["marker_rgb"] == [181, 32, 144]
-        assert saved["scene"]["appearance"]["marker_enabled"] == (kind == "marker")
-        expect(apply).to_be_enabled()
-        with page.expect_download() as download:
-            page.get_by_role("button", name="导出 JSON", exact=True).click()
-        exported = Path(download.value.path()).read_bytes()
-        assert json.loads(exported)["task_hint"] == hint
-        if kind == "marker":
-            # Migrate a browser draft made before task_hint was an editor field.
-            page.evaluate("""() => {
-                const draft = JSON.parse(localStorage.getItem('pathlab.map-draft.v1'));
-                delete draft.task_hint;
-                localStorage.setItem('pathlab.map-draft.v1', JSON.stringify(draft));
-            }""")
-        page.reload()
-        # Navigation need not persist, but the editor draft must.
-        page.get_by_role("button", name="自定义地图", exact=False).click()
-        expect(selector).to_have_value(kind)
-        expect(page.get_by_label("地图名称", exact=True)).to_have_value(name)
-        expect(apply).to_be_enabled(timeout=15000)
-        if kind == "region":
-            page.set_viewport_size({"width": 390, "height": 844})
-            expect(panel.locator(".camera rect")).to_have_count(1)
-            assert page.evaluate(
-                "document.documentElement.scrollWidth <= window.innerWidth + 1"
-            )
-            panel.screenshot(path=str(output / "map-hints-mobile.png"))
-            page.set_viewport_size({"width": 1440, "height": 1080})
-        build_after(
-            lambda: selector.select_option("none" if kind == "marker" else "marker")
+        assert response.value.status == 201
+        item = response.value.json()
+        assert item["scene"]["name"] == "课堂地图" + suffix
+        assert item["scene"]["task_hint"]["kind"] == "none"
+        assert item["scene"]["start_mode"] == "on_path"
+        assert [item["scene"]["initial_pose"][key] for key in ("x_m", "y_m")] == item[
+            "scene"
+        ]["target_path"][0]
+        saved.append(item)
+    with page.expect_download() as download:
+        page.get_by_role("button", name="导出 JSON", exact=True).click()
+    exported = Path(download.value.path()).read_bytes()
+    assert json.loads(exported)["start_mode"] == "on_path"
+    page.reload()
+    page.get_by_role("button", name="自定义地图", exact=False).click()
+    expect(apply).to_be_enabled(timeout=15000)
+    with page.expect_response(lambda r: r.url.endswith("/api/maps/build")):
+        page.get_by_label("导入地图", exact=True).set_input_files(
+            {"name": "map.json", "mimeType": "application/json", "buffer": exported}
         )
-        build_after(
-            lambda: page.get_by_label("导入地图", exact=True).set_input_files(
-                {
-                    "name": "map.json",
-                    "mimeType": "application/json",
-                    "buffer": exported,
-                }
-            )
+    expect(apply).to_be_enabled()
+    apply.click()
+    with page.expect_response(lambda r: r.url.endswith("/api/preview")) as preview:
+        page.get_by_label("场景", exact=True).select_option("map:" + saved[0]["id"])
+    assert preview.value.json()["scene"]["start_mode"] == "on_path"
+    page.get_by_role("button", name="自定义地图", exact=False).click()
+    expect(apply).to_be_enabled(timeout=15000)
+
+
+def check_demo_algorithms(page, http):
+    page.get_by_text("时限与压力测试", exact=True).click()
+    page.get_by_label("最大步数", exact=True).fill("4")
+    for algorithm in ("straight_path", "temporal_path"):
+        page.get_by_label("算法", exact=True).select_option(algorithm)
+        expect(page.get_by_label("执行依据", exact=False)).to_have_value("path")
+        with page.expect_response(
+            lambda r: r.url.endswith("/api/runs") and r.request.method == "POST"
+        ) as response:
+            page.get_by_role("button", name="▶ 启动实验", exact=True).click()
+        identifier = response.value.json()["id"]
+        until(
+            lambda: http.get(f"/api/runs/{identifier}").json()["state"]
+            in {"completed", "failed"}
         )
-        expect(selector).to_have_value(kind)
-        apply.click()
-        with page.expect_response(lambda r: r.url.endswith("/api/preview")) as loaded:
-            page.get_by_label("场景", exact=True).select_option("map:" + saved["id"])
-        assert loaded.value.json()["scene"]["task_hint"] == hint
-        page.get_by_role("button", name="自定义地图", exact=False).click()
-        expect(apply).to_be_enabled(timeout=15000)
-    assert len(http.get("/api/maps").json()) == 4
+        record = http.get(f"/api/results/{identifier}").json()
+        assert not record["manifest"]["failures"], record["manifest"]
+        assert record["manifest"]["config"]["execution"] == "path"
+        frames = [frame for frame in record["frames"] if frame["output"] is not None]
+        assert len(frames) == 4
+        assert all(
+            frame["output"]["action"] is None and frame["output"]["local_path_m"]
+            for frame in frames
+        )
+        assert frames[-1]["pose"]["speed_mps"] > 0
+        expect(
+            page.get_by_role("button", name="▶ 启动实验", exact=True)
+        ).to_be_enabled()
+    page.get_by_label("算法", exact=True).select_option("manual")
+    page.get_by_label("最大步数", exact=True).fill("4000")
+    page.get_by_text("时限与压力测试", exact=True).click()
 
 
 def main():
@@ -142,12 +109,15 @@ def main():
             page.get_by_alt_text("原始摄像头图像").wait_for()
             expect(
                 page.get_by_label("算法", exact=True).locator("option")
-            ).to_have_count(1)
+            ).to_have_count(3)
             expect(page.get_by_label("算法", exact=True)).to_have_value("manual")
-            page.get_by_role("button", name="▶ 启动实验", exact=True).click()
+            check_demo_algorithms(page, http)
+            with page.expect_response(
+                lambda r: r.url.endswith("/api/runs") and r.request.method == "POST"
+            ) as response:
+                page.get_by_role("button", name="▶ 启动实验", exact=True).click()
+            run_id = response.value.json()["id"]
             page.get_by_role("button", name="Ⅱ 暂停", exact=True).wait_for()
-            until(lambda: http.get("/api/results").json())
-            run_id = http.get("/api/results").json()[0]["episode_id"]
 
             def snapshot():
                 return http.get(f"/api/runs/{run_id}").json()
@@ -183,8 +153,8 @@ def main():
             page.get_by_label("回放帧", exact=True).wait_for()
             page.get_by_role("button", name="批量评测", exact=False).click()
             expect(
-                page.get_by_text(
-                    "请先在「算法提交」上传对应输出类型的代码。", exact=True
+                page.get_by_role(
+                    "checkbox", name="课堂演示 · 时序拓扑轨迹", exact=False
                 )
             ).to_be_visible()
             page.get_by_role("button", name="算法提交", exact=False).click()
@@ -219,7 +189,7 @@ def main():
             expect(
                 page.get_by_role("button", name="应用到实验", exact=True)
             ).to_be_enabled(timeout=15000)
-            check_map_hints(page, http, output)
+            check_start_and_maps(page, http, output)
             page.get_by_label("圆角半径", exact=True).fill("0.2")
             expect(page.get_by_role("status", name="地图几何检查")).to_contain_text(
                 "圆角半径至少"
@@ -246,7 +216,7 @@ def main():
             assert not errors, errors
             browser.close()
     print(
-        "学生浏览器验收通过：空目录、手动前进/倒车/制动、单步/回放、上传运行、地图约束、四种起点提示、刷新/导入导出/主页加载、窄屏；0 页面异常。"
+        "学生浏览器验收通过：空目录、手动前进/倒车/制动、单步/回放、上传运行、地图约束、直接起步、两种轨迹示例、刷新/导入导出/主页加载、窄屏；0 页面异常。"
     )
 
 

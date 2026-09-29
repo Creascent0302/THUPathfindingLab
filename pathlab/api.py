@@ -175,6 +175,7 @@ def create_app(artifact_root: Path | None = None) -> FastAPI:
         }
 
     def preview_data(generated: Scene):
+        generated = generated.at_start()
         renderer = Renderer(generated)
         return {
             "scene": generated.model_dump(),
@@ -198,6 +199,7 @@ def create_app(artifact_root: Path | None = None) -> FastAPI:
 
     @app.post("/api/maps", status_code=201)
     def save_map(scene: Scene):
+        scene = scene.at_start()
         errors = validate_scene(scene)
         if errors:
             raise ValueError("；".join(errors))
@@ -255,10 +257,11 @@ def create_app(artifact_root: Path | None = None) -> FastAPI:
 
     @app.post("/api/scenes/validate")
     def scene_validation(scene: Scene):
-        return {"errors": validate_scene(scene)}
+        return {"errors": validate_scene(scene.at_start())}
 
     @app.post("/api/preview")
     def preview(scene: Scene):
+        scene = scene.at_start()
         errors = validate_scene(scene)
         if errors:
             raise ValueError("; ".join(errors))

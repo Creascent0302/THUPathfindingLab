@@ -120,13 +120,49 @@ def main(executable):
         with server(executable, folder) as client:
             assert client.get("/").is_success
             catalog = checked(client.get("/api/catalog"))
-            assert [item["id"] for item in catalog["algorithms"]] == ["manual"]
-            assert len(catalog["families"]) == 8
+            assert [item["id"] for item in catalog["algorithms"]] == [
+                "manual",
+                "straight_path",
+                "temporal_path",
+            ]
+            assert len(catalog["families"]) == 12
             template = client.get("/api/submissions/template")
             assert template.is_success
             with zipfile.ZipFile(io.BytesIO(template.content)) as archive:
                 assert "algorithm.py" in archive.namelist()
             scene = checked(client.get("/api/scenes/straight"))["scene"]
+            assert scene["start_mode"] == "on_path" and not scene["objects"]
+            for algorithm, family in [
+                ("straight_path", "straight"),
+                ("temporal_path", "sharp"),
+            ]:
+                demo = checked(
+                    client.post(
+                        "/api/runs",
+                        json={
+                            "algorithm": algorithm,
+                            "execution": "path",
+                            "family": family,
+                            "max_steps": 1500,
+                            "realtime": False,
+                        },
+                    ),
+                    201,
+                )["id"]
+                checked(
+                    client.post(f"/api/runs/{demo}/control", json={"command": "resume"})
+                )
+                until(
+                    lambda: checked(client.get(f"/api/runs/{demo}"))["state"]
+                    in {"completed", "failed"},
+                    timeout=90,
+                )
+                record = checked(client.get(f"/api/results/{demo}"))
+                assert record["manifest"]["metrics"]["success"], record["manifest"]
+                assert all(
+                    frame["output"] is None or frame["output"]["action"] is None
+                    for frame in record["frames"]
+                )
             first = checked(client.post("/api/maps", json=scene), 201)
             second = checked(client.post("/api/maps", json=scene), 201)
             assert second["scene"]["name"] == first["scene"]["name"] + "(1)"
@@ -208,13 +244,13 @@ def main(executable):
         # Restart verifies actual disk persistence, independent of browser storage.
         with server(executable, folder) as client:
             assert len(checked(client.get("/api/maps"))) == 2
-            assert len(checked(client.get("/api/catalog"))["algorithms"]) == 3
+            assert len(checked(client.get("/api/catalog"))["algorithms"]) == 5
             assert (
                 checked(client.get(f"/api/benchmarks/{batch['id']}"))["state"]
                 == "completed"
             )
         print(
-            "发行包验收通过：无内置算法、地图与重名、ZIP/辅助模块/资源、Worker、WebSocket、回放、批量评分、删除和重启持久化。"
+            "发行包验收通过：两种轨迹示例、地图与重名、ZIP/辅助模块/资源、Worker、WebSocket、回放、批量评分、删除和重启持久化。"
         )
 
 

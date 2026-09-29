@@ -227,7 +227,7 @@ def test_terminal_braking_preserves_identity_evidence():
 def test_identity_revision_changes_fair_comparison_version(monkeypatch):
     scene = scene_with_return().model_dump()
     current = comparison_key({}, scene, "inertial_v2")
-    assert EVALUATOR_VERSION == SCORE_VERSION == "5.0"
+    assert EVALUATOR_VERSION == SCORE_VERSION == "6.0"
     monkeypatch.setattr("pathlab.evaluation.EVALUATOR_VERSION", "2.0")
     monkeypatch.setattr("pathlab.evaluation.SCORE_VERSION", "2.0")
     assert comparison_key({}, scene, "inertial_v2") != current

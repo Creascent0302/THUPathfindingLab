@@ -30,7 +30,7 @@ class MapRequest(Model):
     design: MapDesign
     vehicle: VehicleConfig = Field(default_factory=VehicleConfig)
     camera: CameraConfig = Field(
-        default_factory=lambda: CameraConfig(pitch_down_rad=0.38)
+        default_factory=lambda: CameraConfig(pitch_down_rad=0.65, horizontal_fov_deg=95)
     )
     appearance: Appearance = Field(default_factory=Appearance)
     objects: list[SceneObject] | None = Field(default=None, max_length=80)
@@ -190,22 +190,7 @@ def build_scene(request: MapRequest) -> Scene:
         if source
         else [],
     )
-    if request.task_hint is not None:
-        hint = request.task_hint
-        metadata["task_hint"] = hint
-        metadata["appearance"] = request.appearance.model_copy(
-            update={
-                "marker_enabled": hint.kind == "marker",
-                "marker_rgb": hint.marker_rgb
-                if hint.kind == "marker"
-                else request.appearance.marker_rgb,
-            }
-        )
-        # No cue means target identity can be ambiguous among nearby lines.
-        # Keep the existing distinction between core and stress evaluations.
-        if hint.kind == "none":
-            metadata["category"] = "stress"
-    scene = Scene.model_validate(metadata)
+    scene = Scene.model_validate(metadata).at_start()
     if request.scatter:
         generated = scatter_objects(scene, request.scatter)
         if len(scene.objects) + len(generated) > 80:
@@ -216,23 +201,6 @@ def build_scene(request: MapRequest) -> Scene:
         if note not in scene.notes:
             scene.notes.append(note)
     errors = validate_scene(scene)
-    # Exclude nearby points along the same arc; check distinct stretches against
-    # the body width so crossing or overlapping routes cannot pass this editor.
-    sample = np.asarray(path)[::3]
-    arc = np.r_[0, np.cumsum(np.linalg.norm(np.diff(sample, axis=0), axis=1))]
-    clearance = request.vehicle.width_m + 0.08
-    for offset in range(0, len(sample), 128):
-        distance = np.linalg.norm(
-            sample[offset : offset + 128, None] - sample[None], axis=2
-        )
-        separated = np.abs(arc[offset : offset + 128, None] - arc[None]) > max(
-            1, clearance * 3
-        )
-        if np.any(separated & (distance < clearance)):
-            errors.append(
-                "路径存在交叉或间距小于车宽 + 0.08 m 的非相邻路段，请移动控制点"
-            )
-            break
     if errors:
         raise ValueError("；".join(errors))
     return scene

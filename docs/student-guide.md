@@ -27,7 +27,7 @@
 | 方法 | 调用时机 | 用途 |
 |---|---|---|
 | `initialize(config, public_context)` | 每次实验创建实例后 | 读取算法参数和车辆限制 |
-| `reset(initial_observation, task_hint)` | 实验开始时 | 确定初始目标，清空历史状态 |
+| `reset(initial_observation, task_hint)` | 实验开始时 | 清空历史状态，准备第一帧识别 |
 | `step(observation)` | 每收到一帧图像 | 识别引导线并返回 `AlgorithmOutput` |
 | `close()` | 实验结束时尝试调用 | 释放资源，无资源可写 `pass` |
 
@@ -42,17 +42,13 @@
 | 帧号和时间 | `frame_id`、`timestamp_s`、`dt_s` | 掉帧时帧号可能跳变，实际时间间隔用相邻时间戳之差 |
 | 相机内参 | `observation.calibration.intrinsic` | 3×3 矩阵，可用于相机几何计算 |
 | 地面投影 | `observation.calibration.ground_to_image` | 3×3 矩阵，把车辆地面坐标投影到图像；逆矩阵用于还原地面点 |
-| 目标初始化提示 | `reset` 的 `task_hint`，或 `observation.task_hint` | 指定首帧应该接入哪条线，见下文 |
+| 起步约定 | `public_context["start_on_path"]` | 仿真为 `True`，车已位于起点并朝向路线首段 |
 | 车辆参数 | `public_context.get("vehicle_limits")` | 在 `initialize` 中保存；含轴距、转角、速度、制动和倒车限制 |
 | 算法参数 | `initialize` 的 `config` | 来自工作台填写的参数字典，可能为空，使用 `config.get(...)` 给默认值 |
 
 `calibration` 在图片、视频输入中可能为 `None`，`vehicle_limits` 也可能不存在。必须先检查再访问。图像若需要转灰度，使用 `cv2.COLOR_RGB2GRAY`，不是 `COLOR_BGR2GRAY`。
 
-`task_hint.kind` 标注轨迹起点的特征或位置，设有四种参数：
-- `marker`：用 `marker_rgb` 指定起点标记颜色，`direction="arrow"` 表示图像中有方向箭头；
-- `point`：用 `point_px=(u,v)` 指定首帧目标点；
-- `region`：用 `region_px=(left,top,right,bottom)` 指定首帧区域；
-- `none`：表示没有提示。
+仿真直接从起点沿箭头出发，初始速度为零，`task_hint.kind` 固定为 `none`，不需要寻找或点击起点。第一帧关联车前可连续到达的路线，后续保持目标身份。图片、视频实验仍可使用首帧点或区域提示；它们不能当成车辆移动后的固定像素目标。
 
 **公开输入不含完整地图、目标线真值、真实车辆位置、实际车速或障碍物坐标。** 算法需要的道路位置只能从图像中估计；车辆参数是模型限制，不是实时遥测。网页中的场景俯视图、真实轨迹和评测值供人调试，不能当作算法输入。
 
@@ -65,7 +61,7 @@
 
 例如，`[(0.4,0.0),(0.8,0.1),(1.2,0.25)]` 表示路径逐渐向左弯，**不是图像像素坐标**。通常同时返回两种线：像素线便于检查识别位置，米制路径用于行驶。
 
-`local_path_m` 至少两个点，按本次车体坐标中的行驶顺序，从近到远排列，局部点离后轴中心不超过 30 m。首次实验只输出前方一小段可靠路线，例如 0.4～1.5 m，长度应随可见范围调整；不要为了凑长度虚构远处路线。平台默认前视距离约 0.65 m；路径过短时控制效果可能变差。
+`local_path_m` 至少两个点，按本次车体坐标中的行驶顺序，从近到远排列，局部点离后轴中心不超过 30 m。首次实验只输出前方一小段可靠路线，例如 0.4～1.5 m，长度应随可见范围调整；不要为了凑长度虚构远处路线。平台默认前视距离约 0.57 m，在线段上插值选点；路径过短时控制效果可能变差。
 
 `status="TRACK"` 表示可以沿路径行驶；获取或对齐阶段也可以返回 `ACQUIRE` / `ALIGN` 并提供有效路径。没有可靠线时返回 `LOST`，多条线无法确定目标时返回 `AMBIGUOUS`；这些状态会请求制动，可以不提供路径。`FINISHED` 是算法主动结束信号，不等于平台评测成功。
 
@@ -75,7 +71,7 @@
 
 ## 3. 可运行的接口示例：输出车前直线
 
-下面代码完整展示输入读取、图像处理入口、路径输出与像素叠加。**这是一条人为设定的车前直线，不是从图像识别出来的结果，也不是完整巡线答案。** 它只会让车辆沿当前朝向前进，不能修正偏离、转弯或避障。
+算法栏中的「教学示例 · 车前直线」运行的就是下面的代码（源码 `algorithms/straight.py`），选择 01 直线地图和局部路径模式即可测试。下面代码完整展示输入读取、图像处理入口、路径输出与像素叠加。**这是一条人为设定的车前直线，不是从图像识别出来的结果，也不是完整巡线答案。** 它只会让车辆沿当前朝向前进，不能修正偏离、转弯或避障。
 
 ```python
 import cv2
@@ -95,8 +91,11 @@ class StudentAlgorithm:
     def step(self, observation):
         rgb = observation.rgb()  # 输入：uint8 RGB 图像
         gray = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
-        dt = (observation.dt_s if self.last_time is None
-              else observation.timestamp_s - self.last_time)
+        dt = (
+            observation.dt_s
+            if self.last_time is None
+            else observation.timestamp_s - self.last_time
+        )
         self.last_time = observation.timestamp_s
 
         calibration = observation.calibration
@@ -115,12 +114,16 @@ class StudentAlgorithm:
         projected = ground @ homography.T
         projected = projected[projected[:, 2] > 1e-6]
         pixels = projected[:, :2] / projected[:, 2:3]
-        visible = ((pixels[:, 0] >= 0) & (pixels[:, 0] < observation.width)
-                   & (pixels[:, 1] >= 0) & (pixels[:, 1] < observation.height))
+        visible = (
+            (pixels[:, 0] >= 0)
+            & (pixels[:, 0] < observation.width)
+            & (pixels[:, 1] >= 0)
+            & (pixels[:, 1] < observation.height)
+        )
 
         return AlgorithmOutput(
             status="TRACK",
-            local_path_m=path.tolist(),       # 输出给路径执行器
+            local_path_m=path.tolist(),  # 输出给路径执行器
             centerline_px=pixels[visible].tolist(),  # 输出给画面叠加
             debug={
                 "frame_id": observation.frame_id,
@@ -208,11 +211,11 @@ x = q₀ / q₂，y = q₁ / q₂
 | 两条路之间生成了一条假线 | 是否把同一扫描带的所有暗像素混在一起平均 |
 | 画面中的线正确，但车辆反向转弯 | y 向左为正的约定、像素坐标还原、标定逆变换 |
 | 路径出现很远的尖刺 | 是否使用了接近地平线的点，齐次除数是否接近零 |
-| 邻线一出现就切换目标 | 是否使用起点提示，是否关联上一帧目标 |
+| 邻线一出现就切换目标 | 首帧是否选中从车下方延续的目标，是否关联上一帧目标 |
 | 小车左右摆动 | 路径是否抖动、点序是否正确、可见路径是否过短 |
 | 输出了线但车辆不动 | 是否选择局部路径模式、是否提供 `local_path_m`、状态是否允许行驶 |
 
-批量评测时保留失败记录，给不同版本使用相同场景和种子；重点观察合法接入、完成度、偏离、碰撞和综合评分，而不只看自报的 `TRACK`。这个基础方法并不自动解决路口拓扑、连续遮挡或避障，先把输入到路径输出的每一层做对，再逐步扩展。
+批量评测时保留失败记录，给不同版本使用相同场景和种子；重点观察完成度、偏离、非法换线和综合评分，而不只看自报的 `TRACK`。这个基础方法并不自动解决路口拓扑、连续遮挡或避障，先把输入到路径输出的每一层做对，再逐步扩展。
 
 ## 5. 提交时的最小约定
 

@@ -30,6 +30,7 @@ def template_zip() -> bytes:
             "student-guide.md",
             "protocol.md",
             "evaluation.md",
+            "classroom-demo.md",
         ):
             archive.write(ROOT / "docs" / name, name)
     return buffer.getvalue()

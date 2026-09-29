@@ -107,7 +107,7 @@ def test_set_key(cases: list[dict], versions: dict, request: BenchmarkRequest) -
 
 def implementation_hash(spec: PluginSpec) -> str:
     """Detect changed code/weights while a queued batch waits to execute."""
-    paths: list[Path] = []
+    paths = list((ROOT / "algorithms").rglob("*.py"))
     if spec.working_directory:
         paths += [
             p
@@ -266,6 +266,7 @@ class BenchmarkManager:
                 scenes.append((identifier, scene.model_copy(update={"seed": seed})))
         cases = []
         for source, scene in scenes:
+            scene = scene.at_start()
             if errors := validate_scene(scene):
                 raise ValueError("；".join(errors))
             cases.append(

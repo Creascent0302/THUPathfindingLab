@@ -308,10 +308,11 @@ def test_old_scene_upgrade_preserves_exact_geometry_pose_and_visual_layers():
         "objects",
         "vehicle",
         "camera",
-        "initial_pose",
         "task_hint",
     ):
         assert getattr(upgraded, field) == getattr(old, field)
+    assert upgraded.initial_pose == old.at_start().initial_pose
+    assert old.initial_pose.y_m == 0.12
     assert old.render_version == "2"
     # Importers expose the original dense points as editable polyline controls.
     # Even a legacy line sampled at 20 cm keeps its exact stored coordinates.
@@ -403,19 +404,16 @@ pytestmark = pytest.mark.usefixtures("test_plugins")
         {"kind": "none", "direction": "unspecified"},
     ],
 )
-def test_authored_hint_survives_save_import_and_algorithm_input(client, hint):
+def test_retired_hint_is_normalized_in_map_and_real_worker(client, hint):
     payload = {"design": {"waypoints": [[0, 0], [7, 0]]}, "task_hint": hint}
     response = client.post("/api/maps/build", json=payload)
     assert response.status_code == 200, response.text
     built = response.json()
     scene = built["scene"]
     expected = scene["task_hint"]
-    assert all(expected[key] == value for key, value in hint.items())
-    assert scene["appearance"]["marker_enabled"] == (hint["kind"] == "marker")
-    if hint["kind"] == "marker":
-        assert scene["appearance"]["marker_rgb"] == hint["marker_rgb"]
-    if hint["kind"] == "none":
-        assert scene["category"] == "stress"
+    assert expected["kind"] == "none"
+    assert scene["start_mode"] == "on_path"
+    assert scene["category"] == "core"
     response = client.post("/api/maps", json=scene)
     assert response.status_code == 201, response.text
     loaded = client.get("/api/maps").json()[0]["scene"]
@@ -472,11 +470,7 @@ class StudentAlgorithm:
     "hint",
     [
         {"kind": "point"},
-        {"kind": "point", "point_px": [640, 180]},
-        {"kind": "point", "point_px": [320, -1]},
         {"kind": "region", "region_px": [300, 100, 300, 200]},
-        {"kind": "region", "region_px": [0, 0, 641, 360]},
-        {"kind": "region", "region_px": [-1, 0, 640, 360]},
         {"kind": "marker", "marker_rgb": [256, 0, 0]},
     ],
 )
@@ -503,9 +497,7 @@ def test_pixel_hints_are_metadata_not_painted_into_algorithm_images():
         images.append(Renderer(scene).render(scene.initial_pose, 0))
     assert all(np.array_equal(images[0], image) for image in images[1:])
     marker = build_scene(request)
-    assert not np.array_equal(
-        images[0], Renderer(marker).render(marker.initial_pose, 0)
-    )
+    assert np.array_equal(images[0], Renderer(marker).render(marker.initial_pose, 0))
     assert (
         request.appearance.marker_enabled
     )  # Authoring doesn't mutate caller settings.

@@ -1,0 +1,4 @@
+[
+  {"id":"straight_path","name":"教学示例 · 车前直线","version":"1.0","capabilities":["path","perception"],"entrypoint":"algorithms.straight:StudentAlgorithm","description":"与学生文档相同：读取图像，输出人为设定的车前直线。仅用于接口演示，不识别弯道。"},
+  {"id":"temporal_path","name":"课堂演示 · 时序拓扑轨迹","version":"1.0","capabilities":["path","perception"],"entrypoint":"algorithms.temporal:StudentAlgorithm","description":"鸟瞰分割、骨架拓扑和时序关联；只输出局部轨迹点，由平台统一控制车辆。无避障。"}
+]

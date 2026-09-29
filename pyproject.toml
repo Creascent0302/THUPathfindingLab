@@ -20,7 +20,7 @@ test = ["pytest==8.3.5", "httpx==0.28.1"]
 pathlab = "pathlab.cli:main"
 
 [tool.setuptools.packages.find]
-include = ["pathlab*"]
+include = ["pathlab*", "algorithms*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

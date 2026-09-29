@@ -2,9 +2,9 @@
 
 ## 交付结构
 
-`student/local-lab` 是教师维护的框架分支，没有现成视觉寻迹或避障方法，也没有训练模型或部署网关。学生拿到匹配系统与架构的 `release/PathLab-<系统>-<架构>.zip`，解压启动即可，不需要安装 Python、Node.js 或服务器。课程学生使用 Linux / macOS；Windows 同学通过 WSL 2 或 Ubuntu 虚拟机使用 Linux 版。当前已验收的发行包只有 Linux x86_64。
+`student/local-lab` 是教师维护的框架分支，包含直线接口与时序拓扑轨迹两个课堂示例，没有避障方法、训练模型或部署网关。学生拿到匹配系统与架构的 `release/PathLab-<系统>-<架构>.zip`，解压启动即可，不需要安装 Python、Node.js 或服务器。课程学生使用 Linux / macOS；Windows 同学通过 WSL 2 或 Ubuntu 虚拟机使用 Linux 版。当前已验收的发行包只有 Linux x86_64。
 
-发行包包含原生后端、Python 运行时、NumPy/OpenCV、构建后的网页、公开 SDK、空白算法模板和学生说明。`artifacts/` 在首次启动时创建，不从教师工作区复制。源码与生成的 C 文件留在教师 `.cache/student-build/` 中，不放入发行包。
+发行包包含原生后端、Python 运行时、NumPy/OpenCV、构建后的网页、公开 SDK、空白算法模板、两个课堂示例源码和学生说明。`artifacts/` 在首次启动时创建，不从教师工作区复制。源码与生成的 C 文件留在教师 `.cache/student-build/` 中，不放入发行包。
 
 ## 怎样构建
 
@@ -15,7 +15,7 @@
 
 构建需要联网；运行不需要。构建工具版本固定在脚本中，运行依赖在 `requirements.lock`。不从日常开发环境复制 Torch 等无关依赖。构建包按系统和架构区分，Linux 建议在希望支持的最旧发行版上构建，再在目标机器实测。
 
-脚本自动检查 18 个后端模块已编译，并检查 PyInstaller 归档不含这些模块的 Python 字节码；SDK 特意公开，不计入私有模块。`manifest.json` 记录文件摘要及构建环境，用于交付核对，不是防篡改签名。
+脚本自动检查所有私有后端模块已编译，并检查 PyInstaller 归档不含这些模块的 Python 字节码；SDK 特意公开，不计入私有模块。`manifest.json` 记录文件摘要及构建环境，用于交付核对，不是防篡改签名。
 
 ## 黑盒能力的边界
 

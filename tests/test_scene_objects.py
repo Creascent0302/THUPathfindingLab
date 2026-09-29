@@ -100,6 +100,7 @@ def test_near_plane_clipping_and_objects_behind_camera_are_well_defined():
 
 def test_render_and_shadow_replay_are_deterministic_and_editable():
     scene = generate("bend", 19)
+    scene.objects = [SceneObject(kind="box", x_m=1.2, y_m=0.5)]
     before = image(scene)
     restored = Scene.model_validate_json(scene.model_dump_json())
     np.testing.assert_array_equal(before, image(restored))
