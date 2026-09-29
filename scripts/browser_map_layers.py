@@ -10,7 +10,7 @@ from browser_support import ROOT, serve_test, until
 
 
 def main():
-    output = ROOT / "artifacts" / "browser-map-layers"
+    output = ROOT / ".cache" / "browser-map-layers"
     output.mkdir(parents=True, exist_ok=True)
     checks, errors = [], []
     original = ROOT / "scenarios/challenges/user-original.json"
@@ -55,14 +55,14 @@ def main():
 
                 upgraded = export()
                 assert upgraded["target_path"] == legacy["target_path"]
-                assert upgraded["initial_pose"] == legacy["initial_pose"]
+                assert [upgraded["initial_pose"]["x_m"], upgraded["initial_pose"]["y_m"]] == legacy["target_path"][0]
                 for key, value in legacy["vehicle"].items():
                     assert upgraded["vehicle"][key] == value
                 assert upgraded["vehicle"]["motion_model"] == legacy["vehicle"].get(
                     "motion_model", "kinematic_v1"
                 )
                 checks.append(
-                    "real legacy map upgrades rendering without moving car or target geometry"
+                    "real legacy map upgrades rendering preserving target geometry and placing car at its start"
                 )
 
                 page.get_by_role("button", name="障碍物", exact=True).click()

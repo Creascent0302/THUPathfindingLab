@@ -12,7 +12,7 @@ from browser_support import ROOT, serve_test, until
 
 
 def main():
-    output = ROOT / "artifacts" / "browser-authoring"
+    output = ROOT / ".cache" / "browser-authoring"
     output.mkdir(parents=True, exist_ok=True)
     checks, errors = [], []
     with tempfile.TemporaryDirectory(prefix="pathlab-browser-") as data:

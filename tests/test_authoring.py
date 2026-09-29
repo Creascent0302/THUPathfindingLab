@@ -308,10 +308,11 @@ def test_old_scene_upgrade_preserves_exact_geometry_pose_and_visual_layers():
         "objects",
         "vehicle",
         "camera",
-        "initial_pose",
         "task_hint",
     ):
         assert getattr(upgraded, field) == getattr(old, field)
+    assert upgraded.initial_pose == old.at_start().initial_pose
+    assert old.initial_pose.y_m == 0.12
     assert old.render_version == "2"
     # Importers expose the original dense points as editable polyline controls.
     # Even a legacy line sampled at 20 cm keeps its exact stored coordinates.

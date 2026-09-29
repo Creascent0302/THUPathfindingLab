@@ -196,7 +196,9 @@ export default function App() {
       : "UNINITIALIZED");
   const currentHint = snapshot
     ? snapshot.config.task_hint
-    : hint || preview.scene?.task_hint || null;
+    : mode === "simulation"
+      ? preview.scene?.task_hint || null
+      : hint;
   const speedLimit = scene?.vehicle.max_speed_mps || 1.5;
   const steerLimit = scene?.vehicle.max_steering_rad || 0.52;
   const reverseLimit = scene?.vehicle.reverse_allowed
@@ -226,24 +228,15 @@ export default function App() {
     }
   };
   useEffect(() => {
-    const controller = new AbortController();
-    api<{ id: string | null }>("/workspace/active-run", {
-      signal: controller.signal,
-    })
-      .then(({ id }) => {
-        if (id) {
-          setLiveId(id);
-          setTab("lab");
-        }
-      })
-      .catch((error) => {
-        if (error.name !== "AbortError") setError(String(error));
-      });
-    return () => controller.abort();
-  }, [setTab]);
-  useEffect(() => {
     api<typeof catalog>("/catalog")
-      .then(setCatalog)
+      .then((next) => {
+        setCatalog(next);
+        setSettings((current) =>
+          next.algorithms.some((item) => item.id === current.algorithm)
+            ? current
+            : { ...current, algorithm: "manual", execution: "action" },
+        );
+      })
       .catch((e) => setError(String(e)));
   }, []);
   useEffect(() => {
@@ -393,7 +386,7 @@ export default function App() {
       execution,
       source_id: source?.id || null,
       parameters: parsed,
-      task_hint: hint,
+      task_hint: mode === "simulation" ? null : hint,
       scene: customScene,
       max_steps: maxSteps,
       timeout_s: timeout,
@@ -705,7 +698,11 @@ export default function App() {
                   snapshot ? snapshot.calibration : preview.calibration
                 }
                 hint={currentHint}
-                hintMode={!active && !replayId ? hintMode : null}
+                hintMode={
+                  mode !== "simulation" && !active && !replayId
+                    ? hintMode
+                    : null
+                }
                 onHint={(value) => {
                   updateSettings({ hint: value });
                   updateSettings({ hintMode: null });

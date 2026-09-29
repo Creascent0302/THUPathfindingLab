@@ -13,6 +13,7 @@ class VisualDriver:
 
     def initialize(self, config, public_context):
         self.config = config
+        self.start_on_path = public_context.get("start_on_path", False)
         self.limits = public_context.get("vehicle_limits")
         if not self.limits:
             self.limits = dict(
@@ -30,6 +31,9 @@ class VisualDriver:
             topology=self.config.get("topology", True),
             association_gate=float(self.config.get("association_gate_m", 0.16)),
             memory_s=float(self.config.get("memory_s", 0.45)),
+            start_on_path=self.start_on_path,
+            minimum_radius=self.limits["wheelbase_m"]
+            / math.tan(self.limits["max_steering_rad"]),
         )
         self.motion = MotionEstimate(self.limits)
         self.controller = self.controller_type(

@@ -1,17 +1,16 @@
 """Real Chromium acceptance. Optional maintainer dependency: playwright==1.52.0."""
 
-import json
 import tempfile
 
 import cv2
 import numpy as np
-from playwright.sync_api import sync_playwright
+from playwright.sync_api import expect, sync_playwright
 
 from browser_support import ROOT, serve_test, until
 
 
 def main():
-    output = ROOT / "artifacts" / "browser"
+    output = ROOT / ".cache" / "browser"
     output.mkdir(parents=True, exist_ok=True)
     errors = []
     with (
@@ -28,24 +27,10 @@ def main():
             page.get_by_alt_text("原始摄像头图像").wait_for()
             page.evaluate("document.fonts.ready")
             page.set_viewport_size({"width": 1920, "height": 1080})
-            page.get_by_text("参数与初始化提示", exact=True).click()
-            page.get_by_role("button", name="点击目标", exact=True).click()
-            page.locator(".camera-panel svg").first.scroll_into_view_if_needed()
-            location = page.locator(".camera-panel svg").first.evaluate(
-                "el => { const p = new DOMPoint(200, 120).matrixTransform(el.getScreenCTM()); return {x:p.x,y:p.y}; }"
-            )
-            page.mouse.click(location["x"], location["y"])
-            selected_hint = json.loads(
-                page.locator(".sidebar small.field-note")
-                .filter(has_text='"kind":"point"')
-                .inner_text()
-            )
-            assert (
-                max(abs(a - b) for a, b in zip(selected_hint["point_px"], [200, 120]))
-                < 0.75
-            )
-            page.get_by_role("button", name="默认提示", exact=True).click()
-            page.get_by_text("参数与初始化提示", exact=True).click()
+            page.get_by_text("算法参数", exact=True).click()
+            assert page.get_by_role("button", name="点击目标", exact=True).count() == 0
+            expect(page.get_by_text("车辆直接位于路线起点", exact=False)).to_be_visible()
+            page.get_by_text("算法参数", exact=True).click()
             page.set_viewport_size({"width": 1440, "height": 1080})
             page.get_by_text("车辆惯性与制动", exact=True).click()
             page.get_by_label("允许倒车", exact=True).check()

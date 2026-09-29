@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 from typing import Annotated, Literal
 
 from pydantic import Field, model_validator
@@ -143,6 +144,8 @@ class Scene(Model):
         Field(default_factory=list, max_length=20)
     )
     initial_pose: Pose
+    # Missing in historical scenes: retain their original replay/acquisition semantics.
+    start_mode: Literal["approach", "on_path"] = "approach"
     vehicle: VehicleConfig = Field(default_factory=VehicleConfig)
     camera: CameraConfig = Field(default_factory=CameraConfig)
     appearance: Appearance = Field(default_factory=Appearance)
@@ -151,6 +154,22 @@ class Scene(Model):
     notes: list[str] = Field(default_factory=list)
     design: MapDesign | None = None
     objects: list[SceneObject] = Field(default_factory=list, max_length=80)
+
+    def at_start(self) -> Scene:
+        """Prepare a new run without changing saved maps or historical records."""
+        first, second = self.target_path[:2]
+        pose = Pose(
+            x_m=first[0],
+            y_m=first[1],
+            yaw_rad=math.atan2(second[1] - first[1], second[0] - first[0]),
+        )
+        return self.model_copy(
+            update={
+                "initial_pose": pose,
+                "start_mode": "on_path",
+                "task_hint": TaskHint(kind="none", direction="unspecified"),
+            }
+        )
 
     @model_validator(mode="before")
     @classmethod

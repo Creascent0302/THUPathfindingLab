@@ -29,7 +29,7 @@ class MapRequest(Model):
     design: MapDesign
     vehicle: VehicleConfig = Field(default_factory=VehicleConfig)
     camera: CameraConfig = Field(
-        default_factory=lambda: CameraConfig(pitch_down_rad=0.38)
+        default_factory=lambda: CameraConfig(pitch_down_rad=0.65, horizontal_fov_deg=95)
     )
     appearance: Appearance = Field(default_factory=Appearance)
     objects: list[SceneObject] | None = Field(default=None, max_length=80)
@@ -188,7 +188,7 @@ def build_scene(request: MapRequest) -> Scene:
         if source
         else [],
     )
-    scene = Scene.model_validate(metadata)
+    scene = Scene.model_validate(metadata).at_start()
     if request.scatter:
         generated = scatter_objects(scene, request.scatter)
         if len(scene.objects) + len(generated) > 80:

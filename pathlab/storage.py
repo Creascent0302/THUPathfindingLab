@@ -33,13 +33,6 @@ def directory_bytes(directory: Path) -> int:
 
 
 def check_run_storage(root: Path):
-    if (
-        os.environ.get("PATHLAB_EPHEMERAL") == "1"
-        and directory_bytes(root) >= 60 * 1024**2
-    ):
-        raise ValueError(
-            "在线临时工作区已达到启动实验的空间预算，请先保存到本地并删除旧实验，或结束会话后使用新目录"
-        )
     used = directory_bytes(root / "runs")
     if used >= RUN_STORAGE_LIMIT_BYTES:
         raise ValueError(

@@ -287,7 +287,10 @@ def test_batch_api_runs_real_workers_and_exports_replayable_records(tmp_path):
         assert batch["summary"]["comparable"]
         assert len(batch["items"]) == 2
         for item in batch["items"]:
-            assert item["run_id"] and item["metrics"]["score"]["total"] == 0
+            assert item["run_id"]
+            assert not item["metrics"]["success"]
+            assert 0 <= item["metrics"]["score"]["total"] < 1
+            assert item["metrics"]["acquisition_time_s"] == 0
             manifest = client.get(f"/api/results/{item['run_id']}").json()["manifest"]
             assert manifest["benchmark_id"] == identifier
             assert manifest["config"]["realtime"] is False

@@ -10,7 +10,7 @@ from browser_support import ROOT, serve_test, until
 
 
 def main():
-    output = ROOT / "artifacts" / "browser-persistence"
+    output = ROOT / ".cache" / "browser-persistence"
     output.mkdir(parents=True, exist_ok=True)
     checks, errors = [], []
     with tempfile.TemporaryDirectory(prefix="pathlab-persistence-") as data:
@@ -72,6 +72,12 @@ def main():
                 assert before["camera"]["height_m"] == 0.38
                 assert len(before["objects"]) == 1
                 assert len(before["design"]["distractors"][0]["waypoints"]) == 1
+                page.evaluate("""() => {
+                    const key = 'pathlab.map-draft.v1';
+                    const draft = JSON.parse(localStorage.getItem(key));
+                    draft.task_hint = {kind: 'point', point_px: [999, 999]};
+                    localStorage.setItem(key, JSON.stringify(draft));
+                }""")
                 page.reload()
                 expect(name).to_have_value("刷新恢复验收", timeout=15000)
                 assert draft() == before

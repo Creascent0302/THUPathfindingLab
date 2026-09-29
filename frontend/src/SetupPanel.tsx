@@ -87,6 +87,7 @@ export function restoreSetup(value: unknown): Setup {
     throw new Error("Invalid experiment settings");
   return {
     ...settings,
+    hint: settings.mode === "simulation" ? null : settings.hint,
     savedMapId:
       typeof settings.savedMapId === "string" ? settings.savedMapId : null,
     preview: initialSetup.preview,
@@ -299,7 +300,7 @@ export function SetupPanel({
         </select>
       </label>
       <details>
-        <summary>参数与初始化提示</summary>
+        <summary>算法参数</summary>
         <label>
           算法参数 JSON
           <textarea
@@ -310,38 +311,42 @@ export function SetupPanel({
             rows={5}
           />
         </label>
-        <div className="mini-buttons">
-          <button
-            disabled={active}
-            className={hintMode === "point" ? "chosen" : ""}
-            onClick={() => updateSettings({ hintMode: "point" })}
-          >
-            点击目标
-          </button>
-          <button
-            disabled={active}
-            className={hintMode === "region" ? "chosen" : ""}
-            onClick={() => updateSettings({ hintMode: "region" })}
-          >
-            框选起点
-          </button>
-          <button
-            disabled={active}
-            onClick={() => {
-              updateSettings({ hint: null });
-              updateSettings({ hintMode: null });
-            }}
-          >
-            默认提示
-          </button>
-        </div>
-        <small className="field-note">
-          {hint
-            ? JSON.stringify(hint)
-            : mode === "simulation"
-              ? "绿色起点圆环 + 行进箭头"
-              : "无默认提示；可在首帧手动指定"}
-        </small>
+        {mode === "simulation" ? (
+          <p className="field-note">
+            车辆直接位于路线起点，朝向起点箭头方向。无需点选、框选或寻找起点。
+          </p>
+        ) : (
+          <>
+            <div className="mini-buttons">
+              <button
+                disabled={active}
+                className={hintMode === "point" ? "chosen" : ""}
+                onClick={() => updateSettings({ hintMode: "point" })}
+              >
+                点击目标
+              </button>
+              <button
+                disabled={active}
+                className={hintMode === "region" ? "chosen" : ""}
+                onClick={() => updateSettings({ hintMode: "region" })}
+              >
+                框选起点
+              </button>
+              <button
+                disabled={active}
+                onClick={() => {
+                  updateSettings({ hint: null });
+                  updateSettings({ hintMode: null });
+                }}
+              >
+                默认提示
+              </button>
+            </div>
+            <small className="field-note">
+              {hint ? JSON.stringify(hint) : "无默认提示；可在首帧手动指定"}
+            </small>
+          </>
+        )}
       </details>
       <details>
         <summary>时限与压力测试</summary>

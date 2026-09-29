@@ -12,7 +12,7 @@ from browser_support import ROOT, serve_test, until
 
 
 def main():
-    output = ROOT / "artifacts" / "browser-route-identity"
+    output = ROOT / ".cache" / "browser-route-identity"
     output.mkdir(parents=True, exist_ok=True)
     checks, errors = [], []
     with tempfile.TemporaryDirectory(prefix="pathlab-identity-ui-") as data:
@@ -57,12 +57,12 @@ def main():
                 ) as created:
                     page.get_by_role("button", name="单步", exact=True).click()
                 run_id = created.value.json()["id"]
-                expect(assessment).to_contain_text("尚未合法接入起点")
+                expect(assessment).to_contain_text("已合法接入 · 有序跟踪")
                 expect(page.locator(".metrics-strip > div").first).to_contain_text(
                     "TRACK"
                 )
-                expect(assessment).to_contain_text("距起点")
-                checks.append("live TRACK remains separate from unacquired route")
+                expect(assessment).to_contain_text("当前参考段")
+                checks.append("first frame starts ordered tracking immediately")
                 page.screenshot(path=str(output / "unacquired.png"), full_page=True)
 
                 page.get_by_role("button", name="▶ 继续运行", exact=True).click()
@@ -77,7 +77,7 @@ def main():
                     == "cancelled"
                 )
                 page.get_by_role("button", name="进入结果回放", exact=True).click()
-                expect(assessment).to_contain_text("尚未合法接入起点")
+                expect(assessment).to_contain_text("已合法接入 · 有序跟踪")
                 expect(page.locator(".notice")).to_contain_text("该次运行最终结果")
                 checks.append(
                     "replay shows frame acquisition separately from final result"
@@ -102,7 +102,10 @@ def main():
                         json={
                             "algorithm": "constant",
                             "scene": test_scene,
-                            "parameters": {"speed_mps": speed},
+                            "parameters": {
+                                "speed_mps": speed,
+                                "steering_angle_rad": 0.15 if speed else 0,
+                            },
                             "realtime": False,
                             "max_steps": 200,
                         },
@@ -138,11 +141,12 @@ def main():
                 scene["initial_pose"] = {"x_m": -1.5, "y_m": 0, "yaw_rad": 0}
                 scene["distractors"] = []
                 stopped_id, stopped = simulate(scene, 0)
-                assert stopped["reason"] == "acquisition_failed", stopped["reason"]
+                assert stopped["reason"] == "episode_timeout", stopped["reason"]
                 open_replay(stopped_id)
-                expect(assessment).to_contain_text("未从起点合法接入")
+                expect(assessment).to_contain_text("已合法接入 · 有序跟踪")
+                expect(page.locator(".notice")).to_contain_text("达到回合时限")
                 checks.append(
-                    "acquisition failure uses explicit Chinese assessment reason"
+                    "stationary start times out without an acquisition requirement"
                 )
 
                 # Compatibility fixture only: copy a real new run inside

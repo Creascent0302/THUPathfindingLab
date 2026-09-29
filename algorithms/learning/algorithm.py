@@ -20,6 +20,7 @@ class RecurrentPolicy:
             raise RuntimeError(
                 "学习算法需要可选 PyTorch：python scripts/setup_learning.py"
             ) from error
+        self.start_on_path = public_context.get("start_on_path", False)
         self.torch = torch
         torch.set_num_threads(1)
         self.limits = public_context.get("vehicle_limits") or {
@@ -55,9 +56,12 @@ class RecurrentPolicy:
         self.interval = float(data.get("control_interval_s", 0.1))
 
     def reset(self, initial_observation, task_hint):
-        if task_hint.kind not in self.supported_hints or (
-            task_hint.kind == "marker"
-            and tuple(task_hint.marker_rgb) != self.marker_rgb
+        if not self.start_on_path and (
+            task_hint.kind not in self.supported_hints
+            or (
+                task_hint.kind == "marker"
+                and tuple(task_hint.marker_rgb) != self.marker_rgb
+            )
         ):
             raise ValueError(
                 "当前学习权重仅验证默认绿色标记初始化；其他提示请使用模块化算法或重新训练"

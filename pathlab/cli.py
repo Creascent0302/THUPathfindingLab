@@ -40,7 +40,7 @@ def benchmark(args):
         "disclaimer": "实际独立进程闭环评测；保留失败，性能结论仅适用于列出的场景集合。",
     }
     scenes = {
-        (family, seed): generate(family, seed, split=args.split)
+        (family, seed): generate(family, seed, split=args.split).at_start()
         for family in args.families
         for seed in args.seeds
     }
@@ -176,8 +176,6 @@ def main():
     serve = sub.add_parser("serve", help="启动本地工作台")
     serve.add_argument("--port", type=int, default=8000)
     serve.add_argument("--host", default="127.0.0.1")
-    online = sub.add_parser("online", help="启动 HTTPS 反向代理后的隔离课堂网关")
-    online.add_argument("--port", type=int, default=8000)
     sub.add_parser("doctor", help="检查运行环境")
     sub.add_parser("test", help="运行平台回归测试")
     scenes = sub.add_parser("scenes", help="生成八类场景 JSON")
@@ -215,13 +213,6 @@ def main():
             port=getattr(args, "port", 8000),
             log_level="info",
         )
-    elif args.command == "online":
-        import uvicorn
-        from .public import create_public_app
-
-        uvicorn.run(create_public_app(), host="127.0.0.1", port=args.port,
-                    limit_concurrency=128, ws_max_size=1024, ws_max_queue=1,
-                    proxy_headers=False, timeout_keep_alive=5)
     elif args.command == "doctor":
         print(
             json.dumps(
@@ -247,7 +238,7 @@ def main():
             for seed in args.seeds:
                 write_json(
                     folder / f"{family}-{seed}.json",
-                    generate(family, seed).model_dump(),
+                    generate(family, seed).at_start().model_dump(),
                 )
         print(f"已生成 {len(FAMILIES) * len(args.seeds)} 个合法场景：{folder}")
     elif args.command == "learning":

@@ -6,7 +6,7 @@
 
 ## 1. 先明确：我们要找的是哪条线
 
-假设地面上有两条平行黑线，起点标记指向左边那条。车辆偏向右边后，右线可能离车更近。如果每帧都选最近的黑线，算法就会悄悄换线。
+假设地面上有两条平行黑线，车辆最初位于左边那条线的起点，并沿它的方向摆正。车辆偏向右边后，右线可能离车更近。如果每帧都选最近的黑线，算法就会悄悄换线。
 
 因此，识别任务分为三个问题：
 
@@ -27,7 +27,7 @@ local_path_m = [(0.5, 0.02), (0.8, 0.06), (1.1, 0.15)]
 ```text
 当前图像 → 鸟瞰图 → 暗线掩膜 → 骨架候选
                                      ↓
-起点提示 / 上帧路径的运动预测 → 选择原线 → 沿骨架排序 → 局部路径
+已知起步条件 / 上帧路径的运动预测 → 选择原线 → 沿骨架排序 → 局部路径
 ```
 
 对应代码集中在 [vision.py](../algorithms/modular/vision.py)：`BirdEye` 处理图像，`TargetTracker` 保持身份，`trace_component` 生成有序路径。
@@ -99,21 +99,26 @@ metric：同一批点的车体米制坐标，用来算距离和方向。
 
 动手检查：先把每个连通域画成不同颜色。两条断开的邻线应保持两个候选；细化不应该替你把它们连起来。
 
-## 4. 第三步：用起点提示确定原目标
+## 4. 第三步：从已知起步条件建立路线身份
 
-第一次观察时没有历史路径，要借助 `task_hint` 建立身份。
+平台把后轴中心放在路线首点，车头沿首段方向摆正，`public_context["start_on_path"] = True`。算法知道的是“路线从本车原点朝前延伸”，不知道全局地图、后续路线或真实位姿。因此不要等待起点标记，也不能读取地图选择目标。
 
-对于彩色标记，当前代码对标记地面点做主方向分析：将点减去均值，再用 SVD 找延伸最明显的方向。由于主轴有正反两个方向，`principal_direction()` 选择与参考方向点积为正的一端，初始参考方向为车辆前方。
+直线时，应优先找到沿本车前向延伸、横向偏移接近零的骨架。起步即急弯时，正确骨架可能已经偏向左侧或右侧，不能一律选择最接近前方某个固定点的线。
 
-接着取标记点的中位数中心，沿主轴找到投影的第 97 百分位位置，再向前移 0.06 m，作为**锚点**。锚点是“预计路线从这里接出去”的位置，后续用它寻找候选。
+`TargetTracker.initial_connection_cost()` 用一个简单的几何假设检查首帧候选：起点之后可以先走一小段直线，再沿可行圆弧连接到可见候选。设候选局部方向为 θ、转弯半径为 R、前置直线长为 L，则左弯满足：
 
-这是一种适配当前标记和起步朝向的几何启发式，并不是完整的箭头语义识别。任意旋转、形状变化的标记不一定能正确初始化。
+```text
+x = L + R sin(θ)
+y = R (1 - cos(θ))
+```
 
-对于点提示，将首帧 `point_px` 反投影到地面；对于区域提示，取框中心再反投影。没有可辨识提示且出现多个候选时，返回 `AMBIGUOUS`；标记提示尚不可用时，可能保持 `UNINITIALIZED`。
+右弯对 y 取负。R 受轴距和最大转角限制，L 不能为负。代码用观测位置与局部切向估计 R、L，计算几何残差，再加少量距离代价。平行干扰线虽然可能很近，但其方向没有变化却存在横向偏移，残差会较大。
 
-初始化成功后，后续帧主要使用历史路径。首帧点击位置和框不会随车移动，不能一直拿固定像素重新选线。
+最佳代价必须小于门限，且与第二名有足够差距，才建立身份。该拟合是短距离起步的近似，不是根据隐藏地图生成路径；真正输出的路径仍来自图像骨架。相机完全看不到起点之后的路线时，不应盲猜。平台会检查起点之后 1.5 m 内至少有一小段路线投影在首帧中；新地图默认俯角 0.65 rad、水平视场角 95°，导入旧地图则保留相机参数，并提示修正不可见的起步视野。
 
-动手检查：让车离干扰线更近，但起点标记仍指向目标线。算法应跟随提示指向的线，而不是距离车辆最近的线。
+`task_hint` 的标记、点和区域初始化分支仅保留给素材输入或旧协议兼容。新仿真从第一帧直接输出 `TRACK`，之后始终根据历史路线维持身份。
+
+动手检查：比较无标记直线、起点即左/右急弯、带近邻干扰线三种情况，并记录首帧候选代价。
 
 ## 5. 第四步：预测旧路线，再和当前候选匹配
 
@@ -135,7 +140,7 @@ path_now = (path_previous - translation) @ rotation
 
 ### 5.2 用一小段路径匹配，而不只比较一个点
 
-在预测路径中，当前代码选取 `x > 0.65 m` 且距车小于 2.5 m 的点，从中生成锚点、少量支持点及参考切向。
+在预测路径中，代码将旧路径重新投影到当前相机，只保留相机前方、图像范围内、`x > 0.05 m` 且距车小于 2.5 m 的点，再生成锚点、支持点及参考切向。不能用固定的 `x > 0.65 m` 代替视野判断：急弯时，所有正确的近处路线可能都在这个阈值以内。
 
 对于每个候选：
 
@@ -159,7 +164,7 @@ score = median(历史支持点到当前候选的最近距离)
 
 `TargetTracker.observe()` 同时检查两个条件：
 
-- 最佳代价是否足够小：正常跟踪默认门限 0.16；标记初始化放宽到 0.42，其他未初始化情况为 0.5。
+- 最佳代价是否足够小：正常跟踪默认门限 0.16；直接起步的几何拟合门限为 0.20。素材的标记初始化门限为 0.42，其他提示为 0.5。
 - 最佳与次佳是否分得开：代价差小于 0.035 时，返回 `AMBIGUOUS`。
 
 例如，两个候选代价为 0.02 和 0.25，可以接受第一个；若为 0.02 和 0.045，虽然第一个更小，但优势太小，应停车保留身份。
@@ -230,6 +235,8 @@ return AlgorithmOutput(
 这个示例可在**当前完整平台**中保存为 `algorithm.py` 并上传，模式选「局部路径」。它复用现有 `TargetTracker`，用于先跑通流程；随后按前面的步骤实现自己的 `vision.py`，把对应导入改为 `from vision import TargetTracker`，并一起打包。`algorithms.modular` 和 `pathlab.adapters` 是本仓库模块，不属于任意环境都自带的公共 SDK。
 
 ```python
+import math
+
 from algorithms.modular.control import MotionEstimate
 from algorithms.modular.vision import TargetTracker
 from pathlab.adapters import PurePursuit, execution_action
@@ -239,11 +246,16 @@ from pathlab.sdk import Action, AlgorithmOutput
 class StudentAlgorithm:
     def initialize(self, config, public_context):
         self.limits = public_context.get("vehicle_limits")
+        self.start_on_path = public_context.get("start_on_path", False)
         if self.limits is None or public_context.get("execution") != "path":
             raise ValueError("请在仿真中选择局部路径模式")
 
     def reset(self, initial_observation, task_hint):
-        self.tracker = TargetTracker()
+        self.tracker = TargetTracker(
+            start_on_path=self.start_on_path,
+            minimum_radius=self.limits["wheelbase_m"]
+            / math.tan(self.limits["max_steering_rad"]),
+        )
         self.motion = MotionEstimate(self.limits)
         self.adapter = PurePursuit(
             self.limits["wheelbase_m"], self.limits["max_speed_mps"]

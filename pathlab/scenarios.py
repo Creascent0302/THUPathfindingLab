@@ -100,7 +100,7 @@ def generate(family: str, seed: int = 7, split: str = "development") -> Scene:
             y_m=float(rng.uniform(-0.32, 0.25)),
             yaw_rad=float(rng.uniform(-0.14, 0.14)),
         ),
-        camera=CameraConfig(pitch_down_rad=0.38),
+        camera=CameraConfig(pitch_down_rad=0.65, horizontal_fov_deg=95),
         appearance=Appearance(
             line_width_m=float(rng.uniform(0.045, 0.08)),
             illumination=float(rng.uniform(0.85, 1.08)),
@@ -161,8 +161,23 @@ def validate_scene(scene: Scene) -> list[str]:
             and minimum_clearance < scene.appearance.line_width_m * 1.5
         ):
             errors.append("核心场景的干扰线与目标线过近或相交")
+    if scene.start_mode == "on_path":
+        arc = np.r_[0, np.cumsum(lengths)]
+        local = world_to_vehicle(path[arc <= 1.5], scene.initial_pose)
+        pixels, front = Camera(scene.camera).project(local)
+        visible = (
+            front
+            & (pixels[:, 0] >= 4)
+            & (pixels[:, 0] < scene.camera.width - 4)
+            & (pixels[:, 1] >= 4)
+            & (pixels[:, 1] < scene.camera.height - 4)
+        )
+        if np.count_nonzero(visible) < 3:
+            errors.append(
+                "相机看不到起点之后 1.5 m 内的路线；请增大俯角/视场角或降低相机高度，再预览确认。车辆不会盲驶去猜测隐藏路线"
+            )
     hint = scene.task_hint
-    if scene.category == "core":
+    if scene.category == "core" and scene.start_mode == "approach":
         if hint.kind == "none" or (
             hint.kind == "marker" and not scene.appearance.marker_enabled
         ):

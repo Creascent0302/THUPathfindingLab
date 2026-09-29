@@ -392,6 +392,7 @@ def test_cropped_cone_is_masked_even_when_its_ground_contact_is_unknown():
 
     scene = obstacle_scene()
     scene.camera.pitch_down_rad = 0.38
+    scene.camera.horizontal_fov_deg = 80  # Keep the deliberate cropped-camera fixture.
     scene.objects = [SceneObject(kind="cone", x_m=3.5)]
     pose = Pose(x_m=1.3, y_m=0.25, yaw_rad=0.486)
     renderer = Renderer(scene)

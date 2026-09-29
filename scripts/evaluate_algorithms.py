@@ -40,7 +40,7 @@ def evaluation_scene(family, seed, split, suite, scene_file=None, reverse=None):
         scene = Scene.model_validate_json(Path(scene_file).read_text(encoding="utf-8"))
         if reverse is not None:
             scene.vehicle.reverse_allowed = reverse == "on"
-        return scene.model_copy(update={"seed": seed, "split": split})
+        return scene.model_copy(update={"seed": seed, "split": split}).at_start()
     scene = generate("straight" if suite == "custom" else family, seed, split=split)
     rng = np.random.default_rng(seed)
     if suite == "appearance":
@@ -81,7 +81,7 @@ def evaluation_scene(family, seed, split, suite, scene_file=None, reverse=None):
         scene.split = split
     if reverse is not None:
         scene.vehicle.reverse_allowed = reverse == "on"
-    return scene
+    return scene.at_start()
 
 
 def evaluate(job):
@@ -118,6 +118,7 @@ def evaluate(job):
     context = {
         "protocol_version": "1.0",
         "observation_track": "pure_visual",
+        "start_on_path": scene.start_mode == "on_path",
         "execution": "action",
         "vehicle_limits": scene.vehicle.model_dump(),
     }

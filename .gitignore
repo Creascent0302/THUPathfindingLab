@@ -9,6 +9,7 @@ frontend/dist/
 frontend/*.tsbuildinfo
 artifacts/
 
-# Deployment credentials
-access-codes*.json
-online.env
+# Generated student distributions from the separate student branch
+release/
+build/
+*.spec

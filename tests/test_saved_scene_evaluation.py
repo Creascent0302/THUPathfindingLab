@@ -14,6 +14,6 @@ def test_saved_scene_preserves_geometry_camera_and_legacy_physics(tmp_path):
     source = tmp_path / "saved.json"
     source.write_text(original)
     case = evaluation_scene("custom", 6001, "test", "core", source)
-    expected = scene.model_copy(update={"seed": 6001, "split": "test"})
+    expected = scene.model_copy(update={"seed": 6001, "split": "test"}).at_start()
     assert case == expected
     assert source.read_text() == original

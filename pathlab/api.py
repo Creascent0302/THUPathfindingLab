@@ -3,15 +3,13 @@
 from __future__ import annotations
 
 import asyncio
-from contextlib import asynccontextmanager, contextmanager
+from contextlib import asynccontextmanager
 import json
 import os
 from pathlib import Path
 import re
 import shutil
 import threading
-import tempfile
-import zipfile
 import uuid
 
 from fastapi import (
@@ -26,9 +24,7 @@ from fastapi import (
 )
 from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
-from starlette.background import BackgroundTask
 
-from . import workspace
 from .config import RunConfig, Scene
 from .benchmark import BenchmarkManager, BenchmarkRequest, export_benchmark_csv
 from .engine import RunManager, TERMINAL
@@ -39,13 +35,7 @@ from .scenarios import FAMILIES, generate, validate_scene
 from .sdk import Action, Capability, Model, encode_png
 from .simulation import Pose, Renderer
 from .sources import MAX_UPLOAD_BYTES, import_media
-from .storage import (
-    directory_bytes,
-    export_csv,
-    read_records,
-    storage_usage,
-    write_json,
-)
+from .storage import export_csv, read_records, storage_usage, write_json
 from .submissions import MAX_ARCHIVE_BYTES, import_submission, template_zip
 
 
@@ -94,7 +84,6 @@ def create_app(artifact_root: Path | None = None) -> FastAPI:
     benchmarks = BenchmarkManager(manager)
     submission_lock = threading.Lock()
     scene_lock = threading.Lock()
-    ephemeral = os.environ.get("PATHLAB_EPHEMERAL") == "1"
 
     @asynccontextmanager
     async def lifespan(app):
@@ -153,104 +142,6 @@ def create_app(artifact_root: Path | None = None) -> FastAPI:
     def health():
         return {"status": "ok", "protocol_version": "1.0"}
 
-    @app.get("/api/hosting")
-    def hosting():
-        return {"mode": "local"}
-
-    @contextmanager
-    def workspace_access(idle=True):
-        if not ephemeral:
-            raise HTTPException(404, "本地模式无需在线工作区同步")
-        with benchmarks.lock, manager.lock, scene_lock, submission_lock:
-            active = any(run.thread.is_alive() for run in manager.runs.values())
-            active |= any(
-                batch["state"] not in TERMINAL for batch in benchmarks.batches.values()
-            )
-            if idle and active:
-                raise HTTPException(409, "请先结束运行和批量测试，再保存或恢复工作区")
-            yield active
-
-    @app.get("/api/workspace")
-    def workspace_status():
-        with workspace_access(idle=False) as active:
-            return {**workspace.inventory(root), "busy": active}
-
-    @app.get("/api/workspace/active-run")
-    def workspace_active_run():
-        with manager.lock:
-            active = (
-                next(
-                    (run.id for run in manager.runs.values() if run.thread.is_alive()),
-                    None,
-                )
-                if ephemeral
-                else None
-            )
-            return {"id": active}
-
-    @app.get("/api/workspace/archive")
-    def workspace_export():
-        with workspace_access():
-            handle, name = tempfile.mkstemp(suffix=".zip")
-            os.close(handle)
-            path = Path(name)
-            try:
-                workspace.export_workspace(root, path)
-            except Exception:
-                path.unlink(missing_ok=True)
-                raise
-        return FileResponse(
-            path,
-            media_type="application/zip",
-            filename="workspace.zip",
-            background=BackgroundTask(path.unlink, missing_ok=True),
-        )
-
-    @app.post("/api/workspace/archive")
-    async def workspace_restore(request: Request):
-        if not ephemeral:
-            raise HTTPException(404)
-        with tempfile.NamedTemporaryFile(suffix=".zip") as incoming:
-            total = 0
-            async for chunk in request.stream():
-                total += len(chunk)
-                if total > workspace.LIMIT + 2 * 1024**2:
-                    raise HTTPException(413, "工作区压缩包过大")
-                incoming.write(chunk)
-            incoming.flush()
-
-            def restore():
-                with workspace_access():
-                    try:
-                        workspace.restore_workspace(root, Path(incoming.name))
-                    except (zipfile.BadZipFile, KeyError, OSError) as error:
-                        raise ValueError("工作区损坏或缺少必要文件") from error
-                    manager.runs.clear()
-                    benchmarks.batches = {
-                        path.stem: json.loads(path.read_text(encoding="utf-8"))
-                        for path in (root / "benchmarks").glob("*.json")
-                    }
-                    return workspace.inventory(root)
-
-            return await asyncio.to_thread(restore)
-
-    def check_online_import(created: Path):
-        if (
-            ephemeral
-            and sum(
-                directory_bytes(root / name)
-                for name in ("maps", "submissions", "uploads")
-            )
-            > 48 * 1024**2
-        ):
-            if created.is_dir():
-                shutil.rmtree(created)
-            else:
-                created.unlink(missing_ok=True)
-            raise ValueError(
-                "在线地图、算法和素材合计最多 48 MiB；请缩小上传内容，为实验记录保留空间"
-            )
-
     @app.get("/api/storage")
     def storage():
         return storage_usage(root)
@@ -277,7 +168,7 @@ def create_app(artifact_root: Path | None = None) -> FastAPI:
             ],
             "families": FAMILIES,
             "limits": {
-                "active_runs": manager.max_active,
+                "active_runs": 3,
                 "upload_mb": 32,
                 "source_frames": 600,
                 "run_steps": 6000,
@@ -285,6 +176,7 @@ def create_app(artifact_root: Path | None = None) -> FastAPI:
         }
 
     def preview_data(generated: Scene):
+        generated = generated.at_start()
         renderer = Renderer(generated)
         return {
             "scene": generated.model_dump(),
@@ -308,6 +200,7 @@ def create_app(artifact_root: Path | None = None) -> FastAPI:
 
     @app.post("/api/maps", status_code=201)
     def save_map(scene: Scene):
+        scene = scene.at_start()
         errors = validate_scene(scene)
         if errors:
             raise ValueError("；".join(errors))
@@ -322,7 +215,6 @@ def create_app(artifact_root: Path | None = None) -> FastAPI:
             scene = scene.model_copy(update={"name": name})
             identifier = uuid.uuid4().hex
             write_json(folder / f"{identifier}.json", scene.model_dump())
-            check_online_import(folder / f"{identifier}.json")
         return {"id": identifier, "scene": scene.model_dump()}
 
     @app.delete("/api/maps/{map_id}")
@@ -359,18 +251,17 @@ def create_app(artifact_root: Path | None = None) -> FastAPI:
 
         def install():
             with submission_lock:
-                spec = import_submission(root, raw, name, capability)
-                check_online_import(root / "submissions" / spec.id)
-                return spec.model_dump()
+                return import_submission(root, raw, name, capability).model_dump()
 
         return await asyncio.to_thread(install)
 
     @app.post("/api/scenes/validate")
     def scene_validation(scene: Scene):
-        return {"errors": validate_scene(scene)}
+        return {"errors": validate_scene(scene.at_start())}
 
     @app.post("/api/preview")
     def preview(scene: Scene):
+        scene = scene.at_start()
         errors = validate_scene(scene)
         if errors:
             raise ValueError("; ".join(errors))
@@ -392,14 +283,7 @@ def create_app(artifact_root: Path | None = None) -> FastAPI:
             await file.close()
         if len(list((root / "uploads").glob("*/source.json"))) >= 50:
             raise HTTPException(409, "已有 50 份素材，请归档并清理 artifacts/uploads")
-
-        def install_source():
-            with submission_lock:
-                source = import_media(root, contents, fps)
-                check_online_import(root / "uploads" / source["id"])
-                return source
-
-        return await asyncio.to_thread(install_source)
+        return await asyncio.to_thread(import_media, root, contents, fps)
 
     @app.get("/api/sources/{source_id}/preview")
     def source_preview(source_id: str):

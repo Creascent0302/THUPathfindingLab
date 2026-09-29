@@ -269,6 +269,7 @@ class BenchmarkManager:
                 scenes.append((identifier, scene.model_copy(update={"seed": seed})))
         cases = []
         for source, scene in scenes:
+            scene = scene.at_start()
             if errors := validate_scene(scene):
                 raise ValueError("；".join(errors))
             cases.append(

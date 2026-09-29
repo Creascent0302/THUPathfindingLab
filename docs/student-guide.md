@@ -38,6 +38,8 @@
 
 这些是模型参数，不是实时车速或位姿。图片、视频实验中的 `vehicle_limits` 可能为 `None`。
 
+仿真实验会直接把车辆放在路线起点，并朝向起点箭头，初始速度为零。`public_context["start_on_path"]` 为 `True`；不需要寻找起点或点击目标。第一帧识别车前路线，后续帧持续跟踪原线即可。仿真 `task_hint.kind` 为 `none`；点、区域和标记提示保留给图片、视频实验使用。
+
 ## 3. 输入：每帧能读到什么
 
 最常用的是 `observation.rgb()`：
@@ -55,10 +57,10 @@ gray = cv2.cvtColor(rgb, cv2.COLOR_RGB2GRAY)
 | `observation.frame_id` | 帧号，从 0 开始，掉帧时可能跳号 |
 | `observation.timestamp_s` | 当前观测时间，单位 s |
 | `observation.dt_s` | 基础帧间隔；计算实际间隔优先用相邻时间戳之差 |
-| `observation.task_hint` | 目标初始化提示，见下文 |
+| `observation.task_hint` | 仿真为 `none`；图片、视频可提供以下初始化提示 |
 | `observation.calibration` | 相机标定，可能为 `None`；简单像素控制可以暂不使用 |
 
-`task_hint.kind` 决定提示类型：
+图片、视频实验中的 `task_hint.kind` 决定提示类型：
 
 - `marker`：按 `marker_rgb` 提供的 RGB 颜色识别起点；`direction="arrow"` 时需要从图像识别箭头方向。
 - `point`：`point_px=(u,v)` 指出首帧中的目标点。

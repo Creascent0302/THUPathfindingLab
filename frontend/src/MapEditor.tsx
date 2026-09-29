@@ -120,7 +120,27 @@ export function MapEditor({
         objects: [createSceneObject("cone", [0, 0])],
       };
       if (!matchesShape(value, shape)) throw new Error("Invalid map draft");
-      return value as Draft;
+      const {
+        name,
+        seed,
+        vehicle,
+        camera,
+        appearance,
+        design,
+        objects,
+        source_scene,
+      } = value as Draft;
+      // Retain the map, but discard fields from the retired student hint editor.
+      return {
+        name,
+        seed,
+        vehicle,
+        camera,
+        appearance,
+        design,
+        objects,
+        source_scene,
+      };
     },
   );
   const [mode, setMode] = useState<"target" | "distractor" | "object">(
@@ -298,7 +318,7 @@ export function MapEditor({
         {draft.source_scene?.render_version !== "3" && draft.source_scene && (
           <p className="editor-upgrade-note">
             旧地图将保存为场景版本
-            3，使障碍物具有真实投影和遮挡。未修改的路线、车辆、相机和初始位置保持原值；原文件不变。
+            3，使障碍物具有真实投影和遮挡。路线、车辆参数和相机保持原值；车辆改为从路线起点出发，原文件不变。
           </p>
         )}
         <div className="editor-actions">

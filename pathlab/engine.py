@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import base64
 import math
-import os
 from collections import deque
 from pathlib import Path
 import threading
@@ -54,15 +53,11 @@ class Run:
         elif config.mode != "simulation" or config.execution != "action":
             raise ValueError("手动驾驶仅适用于闭环仿真的 action 模式")
         self.scene = (
-            (config.scene or generate(config.family, config.seed))
+            (config.scene or generate(config.family, config.seed)).at_start()
             if config.mode == "simulation"
             else None
         )
         if self.scene:
-            if config.task_hint is not None:
-                self.scene = self.scene.model_copy(
-                    update={"task_hint": config.task_hint}
-                )
             errors = validate_scene(self.scene)
             if errors:
                 raise ValueError("; ".join(errors))
@@ -70,12 +65,14 @@ class Run:
             read_source(root, config.source_id or "") if not self.scene else None
         )
         self.dt = self.scene.dt_s if self.scene else 1 / self.source["fps"]
-        self.hint = config.task_hint or (
+        self.hint = (
             self.scene.task_hint
             if self.scene
-            else TaskHint(kind="none", direction="unspecified")
+            else (config.task_hint or TaskHint(kind="none", direction="unspecified"))
         )
-        self.config = config.model_copy(update={"task_hint": self.hint})
+        self.config = config.model_copy(
+            update={"task_hint": self.hint, "scene": self.scene}
+        )
         self.state, self.paused, self.reason = "queued", True, None
         self.lock = threading.RLock()
         self.wake, self.cancelled = threading.Event(), threading.Event()
@@ -212,6 +209,8 @@ class Run:
                 context = {
                     "protocol_version": VERSION,
                     "observation_track": "pure_visual",
+                    "start_on_path": self.scene is not None
+                    and self.scene.start_mode == "on_path",
                     "execution": self.config.execution,
                     "coordinates": "rear axle: x forward, y left; steering positive left; m, rad, s",
                     "vehicle_limits": self.scene.vehicle.model_dump()
@@ -505,8 +504,7 @@ class RunManager:
     def __init__(self, root: Path):
         self.root = root
         self.root.mkdir(parents=True, exist_ok=True)
-        self.ephemeral = os.environ.get("PATHLAB_EPHEMERAL") == "1"
-        self.max_active = 1 if self.ephemeral else 3
+        self.max_active = 3
         self.runs: dict[str, Run] = {}
         self.lock = threading.Lock()
 
@@ -521,8 +519,6 @@ class RunManager:
                 raise RunCapacityError(
                     f"最多同时运行 {self.max_active} 个实验，请先停止已有实验"
                 )
-            if self.ephemeral:
-                config = config.model_copy(update={"record_images": False})
             if len(list((self.root / "runs").glob("*/manifest.json"))) >= 200:
                 raise ValueError("已保存 200 次实验，请在运行记录中删除不需要的记录")
             check_run_storage(self.root)

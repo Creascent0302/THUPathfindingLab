@@ -39,7 +39,7 @@ PLAYWRIGHT_BROWSERS_PATH="$PWD/.cache/browsers" .venv/bin/python -m playwright i
 | `browser_route_identity.py` | 起点和相邻路线的有序身份判定 |
 | `browser_persistence.py` | 草稿刷新、地图重名、主页加载、独立配额 |
 
-例如：`.venv/bin/python scripts/browser_persistence.py`。输出统一在被 Git 忽略的 `artifacts/browser*/`；固定回归输入位于 `scenarios/`。浏览器脚本会启动并关闭自己的本地测试服务。
+例如：`.venv/bin/python scripts/browser_persistence.py`。输出统一在被 Git 忽略的 `.cache/browser*/`；固定回归输入位于 `scenarios/`。浏览器脚本会启动并关闭自己的本地测试服务。
 
 ## 仓库维护约定
 
@@ -86,3 +86,7 @@ PLAYWRIGHT_BROWSERS_PATH="$PWD/.cache/browsers" .venv/bin/python -m playwright i
 算法权重未重新训练；过去的成功率不作为本次重新执行的完整算法评测。
 
 实际环境为 Linux、Python 3.13、CPU。Windows / macOS、其他 Python 版本和真实车辆未实际验收。上传执行不具备恶意代码沙箱或多人权限隔离，平台默认监听本机。
+
+## 无障碍时序拓扑验收
+
+运行 `.venv/bin/python scripts/verify_tracking.py --jobs 6`。脚本冻结八类基础地图、0920 与用户地图的无障碍副本，以及最小半径弯、近邻起步、相机/光照/分辨率变体，分别运行两种时序拓扑控制器。原地图不会改写；每个失败均保留原因、轨迹、代码与场景摘要，存在失败时退出码为 1。输出默认位于 `.cache/tracking-acceptance/`。

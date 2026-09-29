@@ -249,8 +249,16 @@ class Track:
 
 class TargetTracker:
     def __init__(
-        self, temporal=True, topology=True, association_gate=0.16, memory_s=0.45
+        self,
+        temporal=True,
+        topology=True,
+        association_gate=0.16,
+        memory_s=0.45,
+        start_on_path=False,
+        minimum_radius=0.55,
     ):
+        self.start_on_path = start_on_path
+        self.minimum_radius = minimum_radius
         self.temporal, self.topology = temporal, topology
         self.gate, self.memory_s = association_gate, memory_s
         self.path = None
@@ -307,9 +315,17 @@ class TargetTracker:
         previous = self.path if self.temporal else None
         support = None
         if previous is not None and len(previous) > 3:
-            usable = previous[
-                (previous[:, 0] > 0.65) & (np.linalg.norm(previous, axis=1) < 2.5)
-            ]
+            projected = self.camera.pixels(previous)
+            in_view = (
+                (previous[:, 0] > 0.05)
+                & (previous @ self.camera.h[2, :2] + self.camera.h[2, 2] > 0.05)
+                & (np.linalg.norm(previous, axis=1) < 2.5)
+                & (projected[:, 0] >= 2)
+                & (projected[:, 0] < observation.width - 2)
+                & (projected[:, 1] >= 2)
+                & (projected[:, 1] < observation.height - 2)
+            )
+            usable = previous[in_view]
             if len(usable):
                 anchor_index = min(8, len(usable) // 2)
                 anchor = usable[anchor_index]
@@ -322,10 +338,16 @@ class TargetTracker:
                     reference = np.array([1.0, 0.0])
                 reference /= np.linalg.norm(reference)
         hint = observation.task_hint
-        marker_initialization = hint.kind == "marker" and (
-            not self.initialized or (not self.temporal and len(marker) >= 8)
+        marker_initialization = (
+            not self.start_on_path
+            and hint.kind == "marker"
+            and (not self.initialized or (not self.temporal and len(marker) >= 8))
         )
-        if anchor is None and (not self.initialized or marker_initialization):
+        if (
+            anchor is None
+            and not self.start_on_path
+            and (not self.initialized or marker_initialization)
+        ):
             if hint.kind == "marker" and len(marker) >= 8:
                 reference = principal_direction(marker)
                 center = np.median(marker, axis=0)
@@ -362,6 +384,15 @@ class TargetTracker:
             if len(local) < 4:
                 continue
             direction = principal_direction(local, reference)
+            if self.start_on_path and not self.initialized:
+                # The camera can hide the whole initial bend. A candidate must
+                # connect to the known origin/tangent with a feasible forward arc,
+                # optionally preceded by a straight segment. A parallel offset
+                # cannot explain itself as a turn with zero heading change.
+                direction = principal_direction(local, metric[index])
+                score = self.initial_connection_cost(metric[index], direction)
+                matches.append((score, pixels, metric, index, direction))
+                continue
             fit = (
                 float(
                     np.median(
@@ -377,7 +408,9 @@ class TargetTracker:
             matches.append((score, pixels, metric, index, direction))
         matches.sort(key=lambda item: item[0])
         allowed = (
-            0.42
+            0.20
+            if self.start_on_path and not self.initialized
+            else 0.42
             if marker_initialization
             else 0.5
             if not self.initialized
@@ -455,6 +488,19 @@ class TargetTracker:
             "ACQUIRE" if self.start is not None and self.start[0] > 0.15 else "TRACK"
         )
         return Track(path, candidates, confidence, status, "时序身份与局部连通性已核验")
+
+    def initial_connection_cost(self, point, direction):
+        x, y = point
+        angle = math.atan2(direction[1], direction[0])
+        sine, cosine = abs(math.sin(angle)), math.cos(angle)
+        if sine < 0.08:
+            residual = abs(y) + (0.5 if cosine < 0 else 0)
+        else:
+            radius = max(self.minimum_radius * 0.9, abs(y) / max(1 - cosine, 1e-6))
+            lead = x - radius * sine
+            expected_y = math.copysign(radius * (1 - cosine), angle)
+            residual = abs(y - expected_y) + max(0.0, -lead)
+        return float(residual + 0.04 * np.linalg.norm(point))
 
     def trace(self, pixels, metric, index, direction):
         return trace_component(pixels, metric, index, direction)

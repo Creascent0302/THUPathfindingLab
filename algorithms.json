@@ -46,22 +46,22 @@
   {
     "id": "temporal_pursuit",
     "name": "时序拓扑 + 调速 Pure Pursuit",
-    "version": "0.2",
+    "version": "0.3",
     "capabilities": [
       "action"
     ],
     "entrypoint": "algorithms.modular.algorithm:TemporalPursuit",
-    "description": "鸟瞰骨架、时序身份关联与曲率调速；按公开惯性模型预测历史路径。"
+    "description": "直接从起点跟踪；首帧曲率约束选线、相机视野内时序关联、拓扑有序路径与曲率调速 Pure Pursuit。"
   },
   {
     "id": "temporal_mpc",
     "name": "时序拓扑 + 预测控制 MPC",
-    "version": "0.2",
+    "version": "0.3",
     "capabilities": [
       "action"
     ],
     "entrypoint": "algorithms.modular.algorithm:TemporalMPC",
-    "description": "时序视觉与有限时域预测控制；按惯性、转角和横向加速度约束优化轨迹。"
+    "description": "直接从起点跟踪；首帧曲率约束选线、相机视野内时序关联、拓扑有序路径与惯性预测控制 MPC。"
   },
   {
     "id": "scanline_pid",
