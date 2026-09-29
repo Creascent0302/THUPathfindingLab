@@ -1,4 +1,7 @@
-"""The two classroom path examples and uploaded plugins work independently."""
+"""The straight-path example and uploaded plugins work independently."""
+
+import io
+import zipfile
 
 from fastapi.testclient import TestClient
 
@@ -9,13 +12,20 @@ from .test_api import run_complete
 
 
 def test_fresh_install_has_path_examples_and_upload_works(tmp_path):
-    assert set(registry(artifact_root=tmp_path)) == {"straight_path", "temporal_path"}
+    assert set(registry(artifact_root=tmp_path)) == {"straight_path"}
     with TestClient(create_app(tmp_path)) as client:
         assert [p["id"] for p in client.get("/api/catalog").json()["algorithms"]] == [
             "manual",
             "straight_path",
-            "temporal_path",
         ]
+        assert client.get("/api/maps").json() == []
+        assert client.get("/api/results").json() == []
+        with zipfile.ZipFile(io.BytesIO(template_zip())) as archive:
+            assert set(archive.namelist()) == {
+                "algorithm.py",
+                "student-guide.md",
+                "student-local.md",
+            }
         assert client.get("/api/hosting").status_code == 404
         assert client.get("/api/workspace").status_code == 404
         response = client.post(
@@ -34,7 +44,6 @@ def test_fresh_install_has_path_examples_and_upload_works(tmp_path):
         )
     assert list(registry(artifact_root=tmp_path)) == [
         "straight_path",
-        "temporal_path",
         identifier,
     ]
 

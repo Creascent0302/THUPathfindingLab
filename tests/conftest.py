@@ -67,7 +67,7 @@ def test_plugins(monkeypatch, request):
             name="stdio test",
             version="test",
             capabilities=["action"],
-            command=["{python}", "-m", "student_template.stdio"],
+            command=["{python}", "-m", "tests.stdio"],
         )
         return found
 

@@ -26,13 +26,7 @@ TOOLS = [
     "altgraph==0.17.5",
 ]
 PUBLIC = {"__init__", "sdk"}
-STUDENT_DOCS = (
-    "student-local.md",
-    "student-guide.md",
-    "protocol.md",
-    "evaluation.md",
-    "classroom-demo.md",
-)
+STUDENT_DOCS = ("student-local.md", "student-guide.md")
 
 
 def run(*command, cwd=ROOT, env=None):
@@ -172,12 +166,6 @@ def main():
     if release.exists():
         shutil.rmtree(release)
     shutil.copytree(CACHE / "dist" / "PathLab", release)
-    (release / "使用说明.md").write_text(
-        "# 学生实验平台\n\n"
-        "先阅读 [安装与运行](student-local.md)，再阅读 [算法接口与巡线教程](student-guide.md)。\n"
-        "Windows 同学请先按安装文档配置 WSL 2 或 Ubuntu 虚拟机。\n",
-        encoding="utf-8",
-    )
     shutil.copytree(
         ROOT / "student_template",
         release / "student_template",

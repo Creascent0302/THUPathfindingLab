@@ -125,7 +125,7 @@ export default function App() {
     families: Record<string, string>;
   }>({ algorithms: [], families: {} });
   const [tab, setTab, tabStorageError] = usePersistentState<Tab>(
-    "pathlab.tab.v1",
+    "pathlab.student-clean.tab.v1",
     () => "lab",
     (value) => {
       if (
@@ -139,7 +139,7 @@ export default function App() {
     },
   );
   const [settings, setSettings, setupStorageError] = usePersistentState<Setup>(
-    "pathlab.setup.v1",
+    "pathlab.student-clean.setup.v1",
     () => initialSetup,
     restoreSetup,
     storedSetup,

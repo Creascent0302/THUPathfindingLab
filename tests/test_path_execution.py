@@ -1,13 +1,12 @@
-"""Student path contracts, ordered execution and direct-start classroom maps."""
+"""Student path contracts, ordered execution and direct-start student maps."""
 
 import math
-from pathlib import Path
 
 import numpy as np
 import pytest
 
 from pathlab.adapters import PurePursuit, execution_action
-from pathlab.config import Pose, RunConfig, Scene
+from pathlab.config import Pose, RunConfig
 from pathlab.engine import Run
 from pathlab.scenarios import FAMILIES, generate, validate_scene
 from pathlab.sdk import Action, AlgorithmOutput, TaskHint
@@ -80,7 +79,7 @@ def test_behind_path_and_lost_status_request_braking_with_inertia():
 
 
 @pytest.mark.parametrize("family", FAMILIES)
-def test_classroom_maps_are_legal_obstacle_free_and_start_aligned(family):
+def test_student_maps_are_legal_obstacle_free_and_start_aligned(family):
     for seed in (7, 1009):
         scene = generate(family, seed)
         assert scene.category == "core" and scene.start_mode == "on_path"
@@ -92,8 +91,6 @@ def test_classroom_maps_are_legal_obstacle_free_and_start_aligned(family):
             math.atan2(*(second - first)[::-1])
         )
         assert scene.task_hint.kind == "none"
-    for path in Path("scenarios/challenges").glob(f"*-{family}.json"):
-        assert Scene.model_validate_json(path.read_text()) == generate(family, 7)
 
 
 def test_legacy_pose_and_hint_are_ignored_without_mutating_saved_scene(tmp_path):
@@ -116,13 +113,13 @@ def test_legacy_pose_and_hint_are_ignored_without_mutating_saved_scene(tmp_path)
 
 
 def test_camera_must_see_route_after_start():
-    scene = generate("tight_s")
+    scene = generate("bend")
     scene.camera.horizontal_fov_deg = 30
     scene.camera.pitch_down_rad = 0.15
     assert any("相机看不到" in message for message in validate_scene(scene))
 
 
 def test_imported_core_route_must_obey_same_clearance_as_editor():
-    scene = generate("spiral_dense")
-    scene.vehicle.width_m = 0.4
+    scene = generate("hairpin")
+    scene.vehicle.width_m = 1.3
     assert any("非相邻路段" in message for message in validate_scene(scene))

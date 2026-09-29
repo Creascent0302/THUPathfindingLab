@@ -49,22 +49,3 @@ def test_concurrent_save_returns_unique_names_and_restart_preserves_them(tmp_pat
         saved = client.get("/api/maps").json()
         assert {item["id"] for item in saved} == ids
         assert {item["scene"]["name"] for item in saved} == names
-
-
-def test_challenge_install_is_valid_repeatable_and_preserves_user_maps(tmp_path):
-    from scripts.install_challenges import install
-
-    maps = tmp_path / "maps"
-    maps.mkdir()
-    user = generate("straight").model_dump()
-    user["name"] = generate("spiral").name
-    destination = maps / "user.json"
-    write_json(destination, user)
-    original = destination.read_bytes()
-    result = install(tmp_path)
-    assert len(result) == 12
-    assert all(row["status"] == "installed" for row in result)
-    assert any(row["name"] == user["name"] + "(1)" for row in result)
-    assert destination.read_bytes() == original
-    assert all(row["status"] == "already_installed" for row in install(tmp_path))
-    assert len(list(maps.glob("*.json"))) == 13

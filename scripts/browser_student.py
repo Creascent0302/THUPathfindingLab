@@ -60,7 +60,7 @@ def check_start_and_maps(page, http, output):
 def check_demo_algorithms(page, http):
     page.get_by_text("时限与压力测试", exact=True).click()
     page.get_by_label("最大步数", exact=True).fill("4")
-    for algorithm in ("straight_path", "temporal_path"):
+    for algorithm in ("straight_path",):
         page.get_by_label("算法", exact=True).select_option(algorithm)
         expect(page.get_by_label("执行依据", exact=False)).to_have_value("path")
         with page.expect_response(
@@ -105,11 +105,17 @@ def main():
             page = browser.new_page(viewport={"width": 1440, "height": 1080})
             page.set_default_timeout(15000)
             page.on("pageerror", lambda error: errors.append(str(error)))
+            # Old teacher drafts at the same origin must not enter the clean edition.
+            page.add_init_script("""() => {
+                localStorage.setItem('pathlab.tab.v1', JSON.stringify('maps'));
+                localStorage.setItem('pathlab.setup.v1', JSON.stringify({algorithm: 'retired', family: 'retired'}));
+                localStorage.setItem('pathlab.map-draft.v1', JSON.stringify({name: '旧实验地图'}));
+            }""")
             page.goto(str(http.base_url))
             page.get_by_alt_text("原始摄像头图像").wait_for()
             expect(
                 page.get_by_label("算法", exact=True).locator("option")
-            ).to_have_count(3)
+            ).to_have_count(2)
             expect(page.get_by_label("算法", exact=True)).to_have_value("manual")
             check_demo_algorithms(page, http)
             with page.expect_response(
@@ -153,9 +159,7 @@ def main():
             page.get_by_label("回放帧", exact=True).wait_for()
             page.get_by_role("button", name="批量评测", exact=False).click()
             expect(
-                page.get_by_role(
-                    "checkbox", name="课堂演示 · 时序拓扑轨迹", exact=False
-                )
+                page.get_by_role("checkbox", name="教学示例 · 车前直线", exact=False)
             ).to_be_visible()
             page.get_by_role("button", name="算法提交", exact=False).click()
             page.get_by_label("算法名称", exact=True).fill("学生空白模板")
@@ -216,7 +220,7 @@ def main():
             assert not errors, errors
             browser.close()
     print(
-        "学生浏览器验收通过：空目录、手动前进/倒车/制动、单步/回放、上传运行、地图约束、直接起步、两种轨迹示例、刷新/导入导出/主页加载、窄屏；0 页面异常。"
+        "学生浏览器验收通过：空目录、手动前进/倒车/制动、单步/回放、上传运行、地图约束、直接起步、直线轨迹示例、刷新/导入导出/主页加载、窄屏；0 页面异常。"
     )
 
 

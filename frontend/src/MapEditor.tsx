@@ -106,7 +106,7 @@ export function MapEditor({
     source_scene: base.design ? base : undefined,
   });
   const [draft, setDraft, storageError] = usePersistentState<Draft>(
-    "pathlab.map-draft.v1",
+    "pathlab.student-clean.map-draft.v1",
     initialDraft,
     (value) => {
       const shape = {

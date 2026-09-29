@@ -1,4 +1,4 @@
-"""Standalone example. Other languages can implement the same JSONL protocol."""
+"""External JSONL worker fixture; never included in student distributions."""
 
 from pathlab.worker import serve_plugin
 

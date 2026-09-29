@@ -129,7 +129,7 @@ def test_legacy_pixels_ignore_new_objects_and_missing_motion_uses_legacy(version
 
 
 def test_scatter_is_repeatable_has_clear_corridor_and_handles_short_paths():
-    for family in ["straight", "hairpin", "repeated"]:
+    for family in ["straight", "hairpin", "s_curve"]:
         scene = generate(family, 9)
         first = scatter_objects(
             scene.model_copy(update={"objects": []}), ObjectScatter(count=12)

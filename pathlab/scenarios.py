@@ -13,15 +13,8 @@ FAMILIES = {
     "straight": "01 · 直线入门",
     "bend": "02 · 单弯",
     "s_curve": "03 · 连续 S 弯",
-    "sharp": "04 · 大角度急弯",
-    "hairpin": "05 · 紧凑回头弯",
-    "parallel": "06 · 双侧平行干扰",
-    "close_lines": "07 · 近贴断续干扰",
-    "repeated": "08 · 密集往返路段",
-    "tight_s": "09 · 极限连续反向弯",
-    "spiral": "10 · 内收螺旋",
-    "spiral_reverse": "11 · 外展螺旋与伴随干扰",
-    "spiral_dense": "12 · 密绕螺旋与双侧干扰",
+    "hairpin": "04 · 回头弯",
+    "parallel": "05 · 平行干扰",
 }
 
 
@@ -66,7 +59,7 @@ def generate(family: str, seed: int = 7, split: str = "development") -> Scene:
     p = PathBuilder()
     distractors = []
     notes = ["无障碍物；车辆直接从起点沿箭头出发。"]
-    if family in ("straight", "parallel", "close_lines"):
+    if family in ("straight", "parallel"):
         p.segment(6)
     elif family == "bend":
         p.segment(2).turn(sign * math.pi / 2, radius).segment(3)
@@ -74,51 +67,12 @@ def generate(family: str, seed: int = 7, split: str = "development") -> Scene:
         p.segment(1.2).turn(sign * math.pi / 3, radius).turn(
             -sign * 2 * math.pi / 3, radius
         ).turn(sign * math.pi / 3, radius).segment(2)
-    elif family == "sharp":
-        p.segment(1.2).turn(sign * 5 * math.pi / 6, 0.70).segment(2.5)
     elif family == "hairpin":
         p.segment(3).turn(sign * math.pi, 0.62).segment(3)
-    elif family == "repeated":
-        p.segment(3.5)
-        for i in range(4):
-            p.turn(sign * (-1) ** i * math.pi, 0.60).segment(3.5)
-    elif family == "tight_s":
-        for i in range(6):
-            p.turn(sign * (-1) ** i * math.pi / 2, 0.58)
-        p.segment(1.2)
-    else:
-        # Archimedean spiral: nonlocal turns are only 0.38/0.40 m apart.
-        # Smallest radius still exceeds the vehicle's physical turning radius.
-        spacing = 0.38 if family == "spiral_dense" else 0.40
-        turns = 2.6 if family == "spiral_dense" else 2.2
-        theta = np.linspace(0, turns * 2 * math.pi, 1500)
-        radii = 0.68 + spacing * theta / (2 * math.pi)
-        if family != "spiral_reverse":
-            radii = radii[::-1]
-        path = np.column_stack((radii * np.cos(theta), sign * radii * np.sin(theta)))
-        if family in {"spiral_reverse", "spiral_dense"}:
-            # Offset curves follow the target but never touch it; end sections
-            # are omitted so the first image establishes identity unambiguously.
-            tangent = np.gradient(path, axis=0)
-            tangent /= np.linalg.norm(tangent, axis=1)[:, None]
-            normal = np.column_stack((-tangent[:, 1], tangent[:, 0]))
-            for offset in [0.12, -0.12] if family == "spiral_dense" else [0.14]:
-                distractors.append((path + offset * normal)[100:-80].tolist())
-        p.points = path.tolist()
-        notes.append(f"螺旋每圈径向间距 {spacing:.2f} m；中心线最小半径 0.68 m。")
     if family == "parallel":
         distractors = [
             [[float(x), side * 0.16] for x in np.linspace(0.6, 6, 150)]
             for side in (-1, 1)
-        ]
-    elif family == "close_lines":
-        distractors = [
-            [
-                [float(x), side * (0.115 + 0.01 * math.sin(3 * x))]
-                for x in np.linspace(start, start + 1.05, 40)
-            ]
-            for side in (-1, 1)
-            for start in (0.7, 2.1, 3.5, 4.9)
         ]
     scene = Scene(
         render_version="3",

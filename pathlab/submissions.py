@@ -28,9 +28,6 @@ def template_zip() -> bytes:
         for name in (
             "student-local.md",
             "student-guide.md",
-            "protocol.md",
-            "evaluation.md",
-            "classroom-demo.md",
         ):
             archive.write(ROOT / "docs" / name, name)
     return buffer.getvalue()

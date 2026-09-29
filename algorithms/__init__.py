@@ -1,1 +1,1 @@
-"""Two path-output classroom demonstrations; no map or evaluator access."""
+"""Straight-path interface demonstration; students implement their own vision."""

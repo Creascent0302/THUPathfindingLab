@@ -241,11 +241,7 @@ def test_maps_save_load_delete_and_run(client):
     )
 
 
-def test_repeated_has_more_turns_and_texture_is_versioned():
-    scene = generate("repeated")
-    delta = np.diff(scene.target_path, axis=0)
-    heading = np.unwrap(np.arctan2(delta[:, 1], delta[:, 0]))
-    assert np.abs(np.diff(heading)).sum() > 4 * math.pi
+def test_texture_is_versioned():
     scene = generate("straight")
     new = Renderer(scene).render(scene.initial_pose, 0)
     legacy = scene.model_copy(update={"render_version": "1"})

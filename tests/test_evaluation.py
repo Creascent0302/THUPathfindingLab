@@ -32,7 +32,7 @@ def test_continuous_ordered_path_can_succeed():
 
 
 def test_endpoint_teleport_and_hairpin_jump_fail():
-    for family in ["straight", "hairpin", "repeated"]:
+    for family in ["straight", "hairpin", "s_curve"]:
         score = evaluator(family)
         score.update(VehicleState(x_m=0.01), 0.05)
         x, y = score.path.points[-1]
