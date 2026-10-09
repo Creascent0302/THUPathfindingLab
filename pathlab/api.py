@@ -78,10 +78,16 @@ def process_exists(pid: int) -> bool:
         return True
 
 
-def create_app(artifact_root: Path | None = None) -> FastAPI:
+def create_app(
+    artifact_root: Path | None = None,
+    *,
+    run_manager=None,
+    benchmark_limit_bytes=None,
+    hosted=False,
+) -> FastAPI:
     root = artifact_root or ROOT / "artifacts"
-    manager = RunManager(root)
-    benchmarks = BenchmarkManager(manager)
+    manager = run_manager or RunManager(root)
+    benchmarks = BenchmarkManager(manager, max_plan_bytes=benchmark_limit_bytes)
     submission_lock = threading.Lock()
     scene_lock = threading.Lock()
 
@@ -142,6 +148,10 @@ def create_app(artifact_root: Path | None = None) -> FastAPI:
     def health():
         return {"status": "ok", "protocol_version": "1.0"}
 
+    @app.get("/api/auth/me")
+    def local_account():
+        return {"enabled": False, "user": None}
+
     @app.get("/api/storage")
     def storage():
         return storage_usage(root)
@@ -160,15 +170,18 @@ def create_app(artifact_root: Path | None = None) -> FastAPI:
                 *[
                     {
                         **spec.model_dump(),
-                        "available": spec.unavailable_reason() is None,
-                        "unavailable_reason": spec.unavailable_reason(),
+                        "available": not (hosted and spec.runtime_requirements)
+                        and spec.unavailable_reason() is None,
+                        "unavailable_reason": "公网镜像未提供可选学习依赖"
+                        if hosted and spec.runtime_requirements
+                        else spec.unavailable_reason(),
                     }
                     for spec in registry(artifact_root=root).values()
                 ],
             ],
             "families": FAMILIES,
             "limits": {
-                "active_runs": 3,
+                "active_runs": manager.max_active,
                 "upload_mb": 32,
                 "source_frames": 600,
                 "run_steps": 6000,
@@ -255,6 +268,39 @@ def create_app(artifact_root: Path | None = None) -> FastAPI:
 
         return await asyncio.to_thread(install)
 
+    @app.get("/api/submissions")
+    def submissions():
+        return [
+            spec.model_dump()
+            for spec in registry(artifact_root=root).values()
+            if spec.submission_sha256
+        ]
+
+    @app.delete("/api/submissions/{identifier}")
+    def delete_submission(identifier: str):
+        if not re.fullmatch(r"upload_[0-9a-f]{32}", identifier):
+            raise HTTPException(404, "算法不存在")
+        # Match the dispatch lock order: benchmark queue, then run manager.
+        with benchmarks.lock, manager.lock, submission_lock:
+            if any(
+                run.thread.is_alive() and run.config.algorithm == identifier
+                for run in manager.runs.values()
+            ):
+                raise HTTPException(409, "算法仍在运行，请先停止实验")
+            if any(
+                batch["state"] not in TERMINAL
+                and any(
+                    method["algorithm"] == identifier for method in batch["methods"]
+                )
+                for batch in benchmarks.batches.values()
+            ):
+                raise HTTPException(409, "算法仍被批量任务使用，请先取消批次")
+            folder = root / "submissions" / identifier
+            if not folder.is_dir():
+                raise HTTPException(404, "算法不存在")
+            shutil.rmtree(folder)
+        return {"deleted": identifier}
+
     @app.post("/api/scenes/validate")
     def scene_validation(scene: Scene):
         return {"errors": validate_scene(scene.at_start())}
@@ -302,6 +348,29 @@ def create_app(artifact_root: Path | None = None) -> FastAPI:
             "scene": None,
             "calibration": None,
         }
+
+    @app.get("/api/sources")
+    def list_sources():
+        return [
+            json.loads(path.read_text())
+            for path in (root / "uploads").glob("*/source.json")
+        ]
+
+    @app.delete("/api/sources/{source_id}")
+    def delete_source(source_id: str):
+        if not re.fullmatch(r"[0-9a-f]{32}", source_id):
+            raise HTTPException(404, "素材不存在")
+        with manager.lock:
+            if any(
+                run.thread.is_alive() and run.config.source_id == source_id
+                for run in manager.runs.values()
+            ):
+                raise HTTPException(409, "素材仍在使用，请先停止实验")
+            folder = root / "uploads" / source_id
+            if not (folder / "source.json").exists():
+                raise HTTPException(404, "素材不存在")
+            shutil.rmtree(folder)
+        return {"deleted": source_id}
 
     @app.post("/api/runs", status_code=201)
     def create_run(config: RunConfig):

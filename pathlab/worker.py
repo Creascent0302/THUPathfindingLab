@@ -33,7 +33,7 @@ def strict_loads(text: str | bytes):
 
 
 class WorkerClient:
-    def __init__(self, spec: PluginSpec):
+    def __init__(self, spec: PluginSpec, *, command=None, working_directory=None):
         environment = os.environ.copy()
         environment.update(
             OMP_NUM_THREADS="1", OPENBLAS_NUM_THREADS="1", PYTHONUNBUFFERED="1"
@@ -43,11 +43,11 @@ class WorkerClient:
             [str(ROOT), *([spec.working_directory] if spec.working_directory else [])]
         )
         self.process = subprocess.Popen(
-            spec.argv(),
+            command if command is not None else spec.argv(),
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            cwd=spec.working_directory or ROOT,
+            cwd=working_directory or spec.working_directory or ROOT,
             env=environment,
             start_new_session=os.name != "nt",
         )

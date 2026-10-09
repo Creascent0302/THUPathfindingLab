@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { CameraPanel, Charts, MapPanel } from "./Panels";
 import { useLiveStream, useManualDrive } from "./useRunControls";
 import { ResultsPage } from "./Pages";
@@ -119,7 +119,11 @@ function RouteAssessment({
   );
 }
 
-export default function App() {
+export default function App({
+  accountControls,
+}: {
+  accountControls?: ReactNode;
+}) {
   const [catalog, setCatalog] = useState<{
     algorithms: Algorithm[];
     families: Record<string, string>;
@@ -437,6 +441,7 @@ export default function App() {
         <p className="course">
           智能交通创新实践 <span>课程实验平台</span>
         </p>
+        {accountControls}
         <nav>
           {(
             [

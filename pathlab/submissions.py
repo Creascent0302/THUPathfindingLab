@@ -114,6 +114,12 @@ def import_submission(
             raise ValueError(
                 "algorithm.py 需要定义 StudentAlgorithm 类，请使用下载的模板"
             )
+        # The containing workspace stays private. Its read-only container bind
+        # mount must still be readable by the sandbox's unprivileged UID, even
+        # when the hosting service runs with umask 0077.
+        code.chmod(0o755)
+        for path in code.rglob("*"):
+            path.chmod(0o755 if path.is_dir() else 0o644)
         # Give every upload its own version directory and original ZIP digest.
         relative = entry.relative_to(staging)
         spec = PluginSpec(

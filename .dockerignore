@@ -1,0 +1,15 @@
+.git
+.venv
+.cache
+.agents
+.codex
+.aws
+artifacts
+release
+build
+**/__pycache__
+**/node_modules
+frontend/dist
+.env
+*.pem
+*.key

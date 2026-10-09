@@ -25,7 +25,7 @@ def until(predicate, timeout=12):
 
 
 @contextmanager
-def serve_test(data, output):
+def serve_test(data, output, *, accounts=False):
     """Start a test-only API server and always reap its process on exit."""
     with socket.socket() as sock:
         sock.bind(("127.0.0.1", 0))
@@ -34,6 +34,18 @@ def serve_test(data, output):
         "from pathlib import Path; import uvicorn; from pathlab.api import create_app; "
         f"uvicorn.run(create_app(Path({str(data)!r})), host='127.0.0.1', port={port})"
     )
+    if accounts:
+        # Test-only trusted algorithms on loopback. The production CLI never
+        # exposes this injection and always uses DockerSandbox.
+        command = (
+            "from pathlib import Path; import uvicorn; "
+            "from pathlab.hosting import create_portal, HostingSettings; "
+            "from pathlab.worker import WorkerClient; "
+            f"app=create_portal(Path({str(data)!r}), HostingSettings('http://127.0.0.1:{port}'), worker_factory=WorkerClient); "
+            "[app.state.accounts.create(name, 'browser-test-password', role=role) for name,role in "
+            "[('teacher','admin'),('alice','student'),('bob','student')]]; "
+            f"uvicorn.run(app, host='127.0.0.1', port={port})"
+        )
     with (output / "server.log").open("w") as log:
         server = subprocess.Popen(
             [sys.executable, "-c", command],

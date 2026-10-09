@@ -208,8 +208,9 @@ def aggregate(batch: dict) -> dict:
 
 
 class BenchmarkManager:
-    def __init__(self, manager: RunManager):
+    def __init__(self, manager: RunManager, *, max_plan_bytes=None):
         self.manager, self.root = manager, manager.root
+        self.max_plan_bytes = max_plan_bytes
         self.folder = self.root / "benchmarks"
         self.folder.mkdir(exist_ok=True)
         self.lock = threading.RLock()
@@ -268,6 +269,7 @@ class BenchmarkManager:
             for seed in request.seeds:
                 scenes.append((identifier, scene.model_copy(update={"seed": seed})))
         cases = []
+        plan_bytes = 0
         for source, scene in scenes:
             scene = scene.at_start()
             if errors := validate_scene(scene):
@@ -281,6 +283,10 @@ class BenchmarkManager:
                     "scene": scene.model_dump(),
                 }
             )
+            if self.max_plan_bytes:
+                plan_bytes += len(json.dumps(cases[-1], indent=2).encode())
+                if plan_bytes > self.max_plan_bytes:
+                    raise ValueError("批次地图数据过大，请减少地图或种子数量")
         with self.lock:
             if self.closed.is_set():
                 raise ValueError("服务正在关闭")

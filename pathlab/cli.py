@@ -176,6 +176,36 @@ def main():
     serve = sub.add_parser("serve", help="启动本地工作台")
     serve.add_argument("--port", type=int, default=8000)
     serve.add_argument("--host", default="127.0.0.1")
+    serve.add_argument(
+        "--accounts",
+        action="store_true",
+        help="启用公网账号与用户隔离（强制 Docker 算法沙箱）",
+    )
+    serve.add_argument(
+        "--public-url", help="浏览器访问的完整地址，如 https://lab.example.edu"
+    )
+    serve.add_argument("--data-dir", type=Path, default=ROOT / "artifacts" / "portal")
+    serve.add_argument("--user-runs", type=int, default=2)
+    serve.add_argument("--total-runs", type=int, default=8)
+    serve.add_argument("--user-storage-gb", type=int, default=2)
+    serve.add_argument("--total-storage-gb", type=int, default=20)
+    serve.add_argument("--max-users", type=int, default=200)
+    serve.add_argument("--worker-image", default="pathlab-worker:local")
+    serve.add_argument(
+        "--run-timeout", type=int, default=600, help="公网单次实验最长实际运行秒数"
+    )
+    serve.add_argument(
+        "--allow-http", action="store_true", help="仅临时调试：允许公网明文 HTTP 登录"
+    )
+    for command, help_text in (
+        ("create-admin", "在服务器终端创建管理员"),
+        ("reset-password", "在服务器终端重置账号密码"),
+    ):
+        account = sub.add_parser(command, help=help_text)
+        account.add_argument("--username", required=True)
+        account.add_argument(
+            "--data-dir", type=Path, default=ROOT / "artifacts" / "portal"
+        )
     sub.add_parser("doctor", help="检查运行环境")
     sub.add_parser("test", help="运行平台回归测试")
     scenes = sub.add_parser("scenes", help="生成八类场景 JSON")
@@ -207,12 +237,51 @@ def main():
 
         if not (ROOT / "frontend" / "dist" / "index.html").exists():
             raise SystemExit("前端未构建，请先运行 python scripts/setup.py")
+        if getattr(args, "accounts", False):
+            from .hosting import HostingSettings, create_portal
+
+            if not args.public_url:
+                parser.error("--accounts 需要 --public-url 指定浏览器访问地址")
+            settings = HostingSettings(
+                public_url=args.public_url,
+                user_runs=args.user_runs,
+                total_runs=args.total_runs,
+                user_storage_gb=args.user_storage_gb,
+                total_storage_gb=args.total_storage_gb,
+                max_users=args.max_users,
+                worker_image=args.worker_image,
+                wall_timeout_s=args.run_timeout,
+                allow_http=args.allow_http,
+            )
+            application = create_portal(args.data_dir, settings)
+        else:
+            application = create_app()
         uvicorn.run(
-            create_app(),
+            application,
             host=getattr(args, "host", "127.0.0.1"),
             port=getattr(args, "port", 8000),
             log_level="info",
+            forwarded_allow_ips="127.0.0.1,::1",
         )
+    elif args.command in {"create-admin", "reset-password"}:
+        import getpass
+        from .accounts import Accounts
+
+        password = getpass.getpass("新密码（12～128 字符，不显示输入）：")
+        if password != getpass.getpass("再次输入密码："):
+            raise SystemExit("两次密码不一致，未作修改")
+        accounts = Accounts(args.data_dir.expanduser().resolve())
+        if args.command == "create-admin":
+            accounts.create(args.username, password, role="admin")
+        else:
+            user = next(
+                (u for u in accounts.users() if u["username"] == args.username.lower()),
+                None,
+            )
+            if not user:
+                raise SystemExit("账号不存在")
+            accounts.update(user["id"], actor=user["id"], reset_password=password)
+        print(f"账号 {args.username} 已更新。公网数据目录：{args.data_dir}")
     elif args.command == "doctor":
         print(
             json.dumps(

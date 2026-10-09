@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { post, type Action, type Snapshot } from "./types";
+import { post, getAccountOwner, type Action, type Snapshot } from "./types";
 
 export function useLiveStream(
   liveId: string | null,
@@ -15,7 +15,7 @@ export function useLiveStream(
     const connect = () => {
       if (stopped) return;
       socket = new WebSocket(
-        `${location.protocol === "https:" ? "wss:" : "ws:"}//${location.host}/api/runs/${liveId}/stream`,
+        `${location.protocol === "https:" ? "wss:" : "ws:"}//${location.host}/api/runs/${liveId}/stream?owner=${encodeURIComponent(getAccountOwner() || "")}`,
       );
       socket.onopen = () => {
         setConnected(true);
@@ -29,9 +29,13 @@ export function useLiveStream(
           if (socket?.readyState === WebSocket.OPEN) socket.send("snapshot");
         }, 160);
       };
-      socket.onclose = () => {
+      socket.onclose = (event) => {
         setConnected(false);
         clearTimeout(pollTimer);
+        if (event.code === 4401 || event.code === 4403) {
+          window.dispatchEvent(new Event("pathlab-session-expired"));
+          return;
+        }
         if (!stopped) reconnectTimer = window.setTimeout(connect, 1000);
       };
     };

@@ -39,10 +39,16 @@ class Run:
         *,
         headless=False,
         spec: PluginSpec | None = None,
+        worker_factory=None,
+        on_finish=None,
+        wall_timeout_s=None,
     ):
         self.id = uuid.uuid4().hex
         self.config, self.root, self.headless = config, root, headless
         self.shutdown_requested = False
+        self.worker_factory = worker_factory or WorkerClient
+        self.on_finish = on_finish
+        self.wall_timeout_s = wall_timeout_s
         self.spec = spec
         if config.algorithm != "manual":
             self.spec = spec or registry(artifact_root=root).get(config.algorithm)
@@ -120,8 +126,15 @@ class Run:
             self.scene.model_dump() if self.scene else None,
         )
         self.thread = threading.Thread(
-            target=self._run, name=f"experiment-{self.id[:8]}", daemon=True
+            target=self._execute, name=f"experiment-{self.id[:8]}", daemon=True
         )
+
+    def _execute(self):
+        try:
+            self._run()
+        finally:
+            if self.on_finish:
+                self.on_finish()
 
     def start(self):
         self.thread.start()
@@ -198,13 +211,14 @@ class Run:
 
     def _run(self):
         final_state = "completed"
+        started = time.monotonic()
         try:
             if self.scene:
                 self.renderer = Renderer(self.scene)
             self.observation = self._observe()
             self.preview = self.observation.image
             if self.spec:
-                self.worker = WorkerClient(self.spec)
+                self.worker = self.worker_factory(self.spec)
                 # Explicit public context only, never serialize a Scene into this call.
                 context = {
                     "protocol_version": VERSION,
@@ -228,6 +242,13 @@ class Run:
             self.store.manifest["state"] = self.state
             self.store.save()
             while not self.cancelled.is_set():
+                if (
+                    self.wall_timeout_s
+                    and time.monotonic() - started >= self.wall_timeout_s
+                ):
+                    self.reason = "server_time_limit"
+                    self.logs.append("达到服务器单次实验时间上限，自动停止。")
+                    break
                 if not self.headless and time.monotonic() - self.client_seen > 30:
                     self.reason = "client_disconnected"
                     self.cancelled.set()
@@ -501,10 +522,20 @@ class Run:
 
 
 class RunManager:
-    def __init__(self, root: Path):
+    def __init__(
+        self,
+        root: Path,
+        *,
+        max_active=3,
+        worker_factory=None,
+        admit=None,
+        wall_timeout_s=None,
+    ):
         self.root = root
         self.root.mkdir(parents=True, exist_ok=True)
-        self.max_active = 3
+        self.max_active = max_active
+        self.worker_factory, self.admit = worker_factory, admit
+        self.wall_timeout_s = wall_timeout_s
         self.runs: dict[str, Run] = {}
         self.lock = threading.Lock()
 
@@ -530,18 +561,34 @@ class RunManager:
             ]
             for key in finished[:-5]:
                 del self.runs[key]
-            run = Run(config, self.root, headless=headless, spec=spec)
-            if metadata:
-                run.store.manifest.update(metadata)
-                run.store.save()
-            self.runs[run.id] = run
-            run.start()
+            release = self.admit() if self.admit else None
+            try:
+                run = Run(
+                    config,
+                    self.root,
+                    headless=headless,
+                    spec=spec,
+                    worker_factory=self.worker_factory,
+                    on_finish=release,
+                    wall_timeout_s=self.wall_timeout_s,
+                )
+                if metadata:
+                    run.store.manifest.update(metadata)
+                    run.store.save()
+                self.runs[run.id] = run
+                run.start()
+            except BaseException:
+                if release:
+                    release()
+                raise
             return run
 
     def close(self):
-        for run in list(self.runs.values()):
-            if run.thread.is_alive():
-                run.shutdown_requested = True
-                run.control("stop")
-        for run in list(self.runs.values()):
+        with self.lock:
+            runs = list(self.runs.values())
+            for run in runs:
+                if run.thread.is_alive():
+                    run.shutdown_requested = True
+                    run.control("stop")
+        for run in runs:
             run.thread.join(timeout=4)

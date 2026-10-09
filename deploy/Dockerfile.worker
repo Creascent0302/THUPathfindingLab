@@ -1,0 +1,12 @@
+FROM python:3.13-slim
+WORKDIR /app
+COPY requirements.lock /app/requirements.lock
+RUN pip install --no-cache-dir --only-binary=:all: -r requirements.lock
+COPY pathlab /app/pathlab
+COPY algorithms /app/algorithms
+COPY algorithms.json /app/algorithms.json
+COPY student_template /app/student_template
+RUN chmod -R a+rX /app
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1
+USER 65534:65534
+CMD ["python", "-m", "pathlab.worker", "--help"]

@@ -24,6 +24,14 @@ python run.py
 
 端口占用时可以执行 `python run.py serve --port 8001`。无图形界面的环境可用 `python scripts/setup.py --skip-frontend --mirror`。
 
+## 公网多人使用
+
+账号模式支持教师管理账号、邀请注册、独立用户工作区和多人并行实验。每人的地图、算法、素材、记录和批次分别保存；默认每人最多同时运行 2 个实验，全站 8 个，并设置个人与全站存储上限。
+
+公网模式必须配置 Docker 算法沙箱和管理员，并使用 `serve --accounts --public-url ...` 启动。完整安装、HTTPS / 公网 IP、并发配额、持久运行及备份步骤见 [公网部署与用户管理](docs/hosting.md)。单用户模式仅修改 `--host` 不会启用账号隔离。
+
+10～30 人课堂可使用 `deploy/pathlab.env.example` 配合 systemd 模板：每人 1 个、全站最多 30 个实验，参数集中在环境文件中修改。部署前须在目标服务器验收实际算法负载。
+
 ## 本地完整版本与起点规则
 
 使用 `python run.py` 启动完整平台；内网访问可使用 `python run.py serve --host 0.0.0.0`。
@@ -89,4 +97,4 @@ python run.py benchmark --algorithms temporal_pursuit temporal_mpc --families st
 - [学习模型与训练](docs/learning.md)
 - [自动化和浏览器验收](docs/acceptance.md)
 
-这是平面场地、单目相机、静态物件与低速惯性模型的教学仿真。几何合法不保证所有算法都能完成地图；已知失败保留在 [评测摘要](docs/algorithm-results.json)。上传执行面向教师本机的受控代码，Worker 提供超时与故障清理，不是恶意代码安全沙箱。默认监听 `127.0.0.1`；Windows / macOS 尚未实际验收。
+这是平面场地、单目相机、静态物件与低速惯性模型的教学仿真。几何合法不保证所有算法都能完成地图；已知失败保留在 [评测摘要](docs/algorithm-results.json)。单用户模式的上传执行面向教师本机的受控代码，Worker 提供超时与故障清理，不是恶意代码安全沙箱；公网账号模式强制使用 Docker 隔离算法，并限制资源。默认监听 `127.0.0.1`；Windows / macOS 尚未实际验收。

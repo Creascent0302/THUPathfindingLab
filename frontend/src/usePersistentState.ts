@@ -1,4 +1,7 @@
 import { useCallback, useRef, useState, type SetStateAction } from "react";
+import { useContext, createContext } from "react";
+
+export const StorageOwner = createContext<string | null>(null);
 
 // Structural checks protect restoration from malformed/obsolete browser data.
 // Geometry limits belong to the server: unfinished, invalid drafts are saved too.
@@ -30,6 +33,8 @@ export function usePersistentState<T>(
   restore: (value: unknown) => T,
   serialize: (value: T) => unknown = (value) => value,
 ) {
+  const owner = useContext(StorageOwner);
+  key = owner ? `pathlab.user.${owner}.${key}` : key;
   const [loaded] = useState(() => {
     try {
       const raw = localStorage.getItem(key);

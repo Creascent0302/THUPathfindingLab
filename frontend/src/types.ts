@@ -323,9 +323,23 @@ export type Preview = {
   };
 };
 
+let accountOwner: string | null = null;
+export function setAccountOwner(owner: string | null) {
+  accountOwner = owner;
+}
+export function getAccountOwner() {
+  return accountOwner;
+}
+
 export async function api<T>(path: string, options?: RequestInit): Promise<T> {
-  const response = await fetch("/api" + path, options);
+  const headers = new Headers(options?.headers);
+  headers.set("X-PathLab-Request", "1");
+  if (accountOwner && !path.startsWith("/auth/"))
+    headers.set("X-PathLab-User", accountOwner);
+  const response = await fetch("/api" + path, { ...options, headers });
   if (!response.ok) {
+    if (response.status === 401 && path !== "/auth/login")
+      window.dispatchEvent(new Event("pathlab-session-expired"));
     const body = await response
       .json()
       .catch(() => ({ detail: response.statusText }));
@@ -357,6 +371,7 @@ export const stateLabel: Record<string, string> = {
 export const reasonLabel: Record<string, string> = {
   success: "连续完成目标路径",
   episode_timeout: "达到回合时限",
+  server_time_limit: "达到服务器运行时间上限",
   deviation: "持续偏离路径",
   acquisition_failed: "未从起点合法接入",
   illegal_switch: "非法换线",

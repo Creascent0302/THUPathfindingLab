@@ -1,0 +1,28 @@
+[Unit]
+Description=PathLab multi-user teaching lab
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# Replace these three paths/names with your non-root service account and checkout.
+User=pathlab
+WorkingDirectory=/opt/pathlab
+EnvironmentFile=/etc/pathlab.env
+# Classroom defaults; /etc/pathlab.env can override all four limits.
+Environment=PATHLAB_USER_RUNS=1 PATHLAB_TOTAL_RUNS=30 PATHLAB_USER_STORAGE_GB=2 PATHLAB_TOTAL_STORAGE_GB=80
+ExecStart=/opt/pathlab/.venv/bin/python /opt/pathlab/run.py serve --accounts --public-url ${PATHLAB_PUBLIC_URL} --data-dir /var/lib/pathlab --host 127.0.0.1 --port 8000 --user-runs ${PATHLAB_USER_RUNS} --total-runs ${PATHLAB_TOTAL_RUNS} --user-storage-gb ${PATHLAB_USER_STORAGE_GB} --total-storage-gb ${PATHLAB_TOTAL_STORAGE_GB}
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=120
+KillMode=control-group
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+# Includes the API's simulations and in-memory records; algorithm containers
+# additionally have their own hard limits. Tune to the server's actual memory.
+MemoryMax=6G
+TasksMax=512
+
+[Install]
+WantedBy=multi-user.target
