@@ -2,8 +2,6 @@
 
 课程统一在 **Linux 或 macOS** 上运行平台。Windows 同学先配置 **WSL 2（推荐）或 Ubuntu 虚拟机**，然后在其中按 Linux 步骤操作。浏览器仍可以使用 Windows 上的 Edge 或 Chrome。
 
-本版本只附带本手册和 `student-guide.md` 两份课程文档。
-
 阅读顺序：先按本篇启动平台，再阅读 [算法接口与基本巡线教程](student-guide.md)，完成“读取摄像头 → 输出引导线 → 驱动车辆”的第一次实验。
 
 ## 1. 先确认你拿到哪种文件
