@@ -1,0 +1,46 @@
+graph TD
+    %% 定义样式
+    classDef ros fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef core fill:#bbf,stroke:#333,stroke-width:2px;
+    classDef hardware fill:#dfd,stroke:#333,stroke-width:2px;
+
+    subgraph ROS_Layer [ROS 通信与外部感知层 - dr_detect.cpp]
+        A1[Lidar Topic: /rslidar_points] --> B1[lidarmappedCB 回调]
+        A2[Vehicle State Topic: /vehicle/vehicle_state] --> B2[read_stateCB: 位姿同步]
+        A3[Object Topic: /cav_vehicle_list] --> B3[read_vehCB: 动态障碍物掩码]
+    end
+
+    subgraph Pre_Processing [点云预处理模块]
+        B1 --> C1[filterPC: 空间裁剪/降采样]
+        C1 --> C2[ini: 局部地图滚动滚动/坐标对齐]
+        C2 --> C3[mapping: 多帧点云融合/时间滑窗]
+    end
+
+    subgraph Geometry_Analysis [几何特征分析模块 - drivable_detect.cpp]
+        C3 --> D1[movePC2Grid: 点云投射至栅格单元]
+        D1 --> D2[checkFlatness: 核心分析逻辑]
+        
+        subgraph Internal_PCA [栅格细节提取]
+            D2 --> E1[PCA 协方差分析]
+            E1 --> E2[Slope 坡度计算]
+            E1 --> E3[Roughness 粗糙度分析]
+            E1 --> E4[Height Diff 高度差检测]
+        end
+    end
+
+    subgraph Risk_Decision [风险评估与融合模块]
+        E2 & E3 & E4 --> F1[checkUnocclusion: 射线检测可见性]
+        F1 --> F2[compute_cvar: 基于 CUDA 的风险价值计算]
+        B3 --> F3[make_final_decision: 结合外部感知掩码]
+    end
+
+    subgraph Output_Layer [输出层]
+        F2 & F3 --> G1[grid_map: 多图层环境模型]
+        F2 & F3 --> G2[occ_map: 占据栅格地图]
+        F2 & F3 --> G3[LocalMap: 路径规划专用格式]
+    end
+
+    %% 应用样式
+    class A1,A2,A3,G1,G2,G3 ros;
+    class C1,C2,C3,D1,D2 core;
+    class F2 hardware;

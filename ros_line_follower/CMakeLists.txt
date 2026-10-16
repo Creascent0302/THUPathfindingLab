@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.0.2)
+project(ros_line_follower)
+find_package(catkin REQUIRED COMPONENTS rospy roslib sensor_msgs geometry_msgs nav_msgs std_msgs cv_bridge tf2_ros)
+catkin_python_setup()
+catkin_package()
+catkin_install_python(PROGRAMS scripts/line_follower_node DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+install(DIRECTORY config launch DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})

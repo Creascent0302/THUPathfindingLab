@@ -1,0 +1,34 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/jimmy/drivable/devel/include/**",
+        "/opt/ros/melodic/include/**",
+        "/home/jimmy/drivable/src/drivable_ros_ws/src/drivable/include/**",
+        "/home/jimmy/drivable/src/grid_map/grid_map_core/include/**",
+        "/home/jimmy/drivable/src/grid_map/grid_map_costmap_2d/include/**",
+        "/home/jimmy/drivable/src/grid_map/grid_map_cv/include/**",
+        "/home/jimmy/drivable/src/grid_map/grid_map_demos/include/**",
+        "/home/jimmy/drivable/src/grid_map/grid_map_filters/include/**",
+        "/home/jimmy/drivable/src/grid_map/grid_map_loader/include/**",
+        "/home/jimmy/drivable/src/grid_map/grid_map_octomap/include/**",
+        "/home/jimmy/drivable/src/grid_map/grid_map_pcl/include/**",
+        "/home/jimmy/drivable/src/grid_map/grid_map_ros/include/**",
+        "/home/jimmy/drivable/src/grid_map/grid_map_rviz_plugin/include/**",
+        "/home/jimmy/drivable/src/grid_map/grid_map_sdf/include/**",
+        "/home/jimmy/drivable/src/grid_map/grid_map_visualization/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

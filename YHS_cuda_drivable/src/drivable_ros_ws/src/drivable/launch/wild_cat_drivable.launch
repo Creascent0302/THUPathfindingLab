@@ -1,0 +1,25 @@
+<launch>
+    
+    <param name="scan_line" type="int" value="80" />
+    <param name="mapping_frame_num" type="int" value="1" />
+    <param name="map_size" type="int" value="15-3" />
+    <param name="grid_size" type="double" value="0.4" />
+    <param name="down_sample" type="double" value="0.1"/>
+    <param name="X_LOW" type="double" value="3.0" />
+    <param name="X_HIGH" type="double" value="3.0" />
+    <param name="Y_LOW" type="double" value="3.0" />
+    <param name="Y_HIGH" type="double" value="3.0" />
+    <!-- if 1, do mapping 10 Hz, if 2, do mapping 5 Hz. Suggest to use 1, it will adjust frequence automaticlly -->
+    <param name="RANGE" type="double" value="40.0" />
+    <param name="mapping_skip_frame" type="int" value="1" />
+
+
+    <node pkg="drivable_area_detection" type="clear_test" name="ground_point_cloud" output="screen"/>
+    
+   
+    <arg name="rviz" default="true" />
+    <group if="$(arg rviz)">
+        <node launch-prefix="nice" pkg="rviz" type="rviz" name="rviz" args="-d $(find drivable_area_detection)/rviz_cfg/rtk_pc_map.rviz" />
+    </group>
+
+</launch>

@@ -1,0 +1,8 @@
+prefix=/home/yhs/user_shaobing/YHS_cuda_drivable/devel
+
+Name: perception_ros_msg
+Description: Description of perception_ros_msg
+Version: 0.0.0
+Cflags: -I/home/yhs/user_shaobing/YHS_cuda_drivable/devel/include
+Libs: -L${prefix}/lib 
+Requires: 

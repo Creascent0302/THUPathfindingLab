@@ -1,0 +1,6 @@
+<launch>
+  <arg name="config" default="$(find ros_line_follower)/config/line_follower.yaml" />
+  <node pkg="ros_line_follower" type="line_follower_node" name="line_follower" output="screen">
+    <rosparam command="load" file="$(arg config)" />
+  </node>
+</launch>

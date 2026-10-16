@@ -1,0 +1,35 @@
+<launch>
+    
+    <param name="scan_line" type="int" value="32" />
+    <param name="mapping_frame_num" type="int" value="1" />
+    <param name="map_size" type="int" value="307" />
+    <param name="grid_size" type="double" value="0.4" />
+    <param name="down_sample" type="double" value="0.1"/>
+    <param name="X_LOW" type="double" value="1.5" />
+    <param name="X_HIGH" type="double" value="0.8" />
+    <param name="Y_LOW" type="double" value="0.6" />
+    <param name="Y_HIGH" type="double" value="0.6" />
+    <param name="Z_THD" type="double" value="0.2"/>
+    <!-- 雷达外参：车辆中心在雷达坐标系下的偏移（x 前，y 左，单位 m） -->
+    <param name="lidar_offset_x" type="double" value="-0.6"/>
+    <param name="lidar_offset_y" type="double" value="0.0"/>
+    <!-- 障碍记忆保留时长（秒）；直行时墙/障碍在此时间内保持 -->
+    <param name="obstacle_ttl_sec" type="double" value="5.0"/>
+    <!-- true: 点云在自车坐标系处理，用 VehicleState.heading 旋到 ENU，再输出 UTM（默认）
+         false: 点云已是相对车辆的 ENU，只做 UTM 平移 -->
+    <param name="lidar_in_body_frame" type="bool" value="true"/>
+    <!-- if 1, do mapping 10 Hz, if 2, do mapping 5 Hz. Suggest to use 1, it will adjust frequence automaticlly -->
+    <param name="RANGE" type="double" value="40.0" />
+    <param name="mapping_skip_frame" type="int" value="1" />
+
+
+    <node pkg="drivable_area_detection" type="clear_test" name="ground_point_cloud" output="screen"/>
+    
+   
+    <arg name="rviz" default="true" />
+    <group if="$(arg rviz)">
+        <node launch-prefix="nice" pkg="rviz" type="rviz" name="rviz" args="-d $(find drivable_area_detection)/rviz_cfg/rtk_pc_map.rviz" />
+    </group>
+
+</launch>
+

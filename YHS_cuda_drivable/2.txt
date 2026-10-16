@@ -1,0 +1,1284 @@
+enter drivable area
+main function 1
+[0m[ INFO] [1784882268.628940348]: Lidar pose sync: heading=1.654 rad (94.8 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 41.254683 ms *************
+using mapped frame, time 41.064856 ms *************
+using mapped frame, time 49.813670 ms *************
+using mapped frame, time 41.327877 ms *************
+using mapped frame, time 38.622342 ms *************
+using mapped frame, time 36.992642 ms *************
+using mapped frame, time 41.244488 ms *************
+using mapped frame, time 39.231763 ms *************
+using mapped frame, time 43.245559 ms *************
+using mapped frame, time 44.771118 ms *************
+using mapped frame, time 45.729124 ms *************
+[0m[ INFO] [1784882269.727673659]: Lidar pose sync: heading=1.654 rad (94.8 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 41.461490 ms *************
+using mapped frame, time 40.928292 ms *************
+using mapped frame, time 41.609950 ms *************
+using mapped frame, time 43.910864 ms *************
+using mapped frame, time 38.792342 ms *************
+using mapped frame, time 42.149059 ms *************
+using mapped frame, time 41.548297 ms *************
+using mapped frame, time 40.940284 ms *************
+using mapped frame, time 40.485000 ms *************
+using mapped frame, time 40.820265 ms *************
+[0m[ INFO] [1784882270.727810152]: Lidar pose sync: heading=1.654 rad (94.8 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 42.094458 ms *************
+using mapped frame, time 40.009102 ms *************
+using mapped frame, time 40.011785 ms *************
+using mapped frame, time 40.950144 ms *************
+using mapped frame, time 40.409089 ms *************
+using mapped frame, time 41.293651 ms *************
+using mapped frame, time 44.109590 ms *************
+using mapped frame, time 40.483841 ms *************
+using mapped frame, time 40.556373 ms *************
+using mapped frame, time 40.691357 ms *************
+using mapped frame, time 40.362803 ms *************
+[0m[ INFO] [1784882271.827761637]: Lidar pose sync: heading=1.657 rad (95.0 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 40.201193 ms *************
+using mapped frame, time 42.617471 ms *************
+using mapped frame, time 43.207885 ms *************
+using mapped frame, time 45.867914 ms *************
+using mapped frame, time 43.289595 ms *************
+using mapped frame, time 41.604027 ms *************
+using mapped frame, time 44.624985 ms *************
+using mapped frame, time 41.892256 ms *************
+using mapped frame, time 43.863464 ms *************
+using mapped frame, time 43.059899 ms *************
+using mapped frame, time 45.230201 ms *************
+[0m[ INFO] [1784882272.927671240]: Lidar pose sync: heading=1.658 rad (95.0 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 43.328372 ms *************
+using mapped frame, time 50.989585 ms *************
+using mapped frame, time 46.263438 ms *************
+using mapped frame, time 44.241382 ms *************
+using mapped frame, time 42.715844 ms *************
+using mapped frame, time 44.280330 ms *************
+using mapped frame, time 40.545426 ms *************
+using mapped frame, time 39.515044 ms *************
+using mapped frame, time 41.475175 ms *************
+using mapped frame, time 45.316318 ms *************
+using mapped frame, time 43.156490 ms *************
+[0m[ INFO] [1784882274.027616364]: Lidar pose sync: heading=1.660 rad (95.1 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 40.163383 ms *************
+using mapped frame, time 41.064686 ms *************
+using mapped frame, time 42.980099 ms *************
+using mapped frame, time 40.793095 ms *************
+using mapped frame, time 40.356054 ms *************
+using mapped frame, time 46.062601 ms *************
+using mapped frame, time 41.684715 ms *************
+using mapped frame, time 41.889930 ms *************
+using mapped frame, time 44.435568 ms *************
+using mapped frame, time 40.538658 ms *************
+[0m[ INFO] [1784882275.027734471]: Lidar pose sync: heading=1.660 rad (95.1 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 41.243356 ms *************
+using mapped frame, time 42.482360 ms *************
+using mapped frame, time 43.820002 ms *************
+using mapped frame, time 41.662200 ms *************
+using mapped frame, time 41.601855 ms *************
+using mapped frame, time 45.706717 ms *************
+using mapped frame, time 44.474542 ms *************
+using mapped frame, time 38.795600 ms *************
+using mapped frame, time 43.243752 ms *************
+using mapped frame, time 40.106951 ms *************
+using mapped frame, time 40.968534 ms *************
+[0m[ INFO] [1784882276.127739017]: Lidar pose sync: heading=1.658 rad (95.0 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 43.687264 ms *************
+using mapped frame, time 40.432779 ms *************
+using mapped frame, time 45.583399 ms *************
+using mapped frame, time 39.885456 ms *************
+using mapped frame, time 40.683078 ms *************
+using mapped frame, time 44.331705 ms *************
+using mapped frame, time 41.009412 ms *************
+using mapped frame, time 40.968044 ms *************
+using mapped frame, time 44.362395 ms *************
+using mapped frame, time 39.831997 ms *************
+using mapped frame, time 42.000270 ms *************
+[0m[ INFO] [1784882277.227770028]: Lidar pose sync: heading=1.660 rad (95.1 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 44.079767 ms *************
+using mapped frame, time 47.900735 ms *************
+using mapped frame, time 41.244342 ms *************
+using mapped frame, time 43.203147 ms *************
+using mapped frame, time 42.121348 ms *************
+using mapped frame, time 42.098901 ms *************
+using mapped frame, time 41.394520 ms *************
+using mapped frame, time 39.635852 ms *************
+using mapped frame, time 45.405938 ms *************
+using mapped frame, time 44.067902 ms *************
+using mapped frame, time 40.132513 ms *************
+[0m[ INFO] [1784882278.327734948]: Lidar pose sync: heading=1.660 rad (95.1 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 41.003946 ms *************
+using mapped frame, time 45.471169 ms *************
+using mapped frame, time 43.209123 ms *************
+using mapped frame, time 40.535599 ms *************
+using mapped frame, time 45.074849 ms *************
+using mapped frame, time 41.464068 ms *************
+using mapped frame, time 44.585459 ms *************
+using mapped frame, time 42.040190 ms *************
+using mapped frame, time 40.116322 ms *************
+using mapped frame, time 43.935421 ms *************
+[0m[ INFO] [1784882279.327859282]: Lidar pose sync: heading=1.648 rad (94.4 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 43.107622 ms *************
+using mapped frame, time 41.678624 ms *************
+using mapped frame, time 40.099283 ms *************
+using mapped frame, time 44.986912 ms *************
+using mapped frame, time 41.983034 ms *************
+using mapped frame, time 41.945515 ms *************
+using mapped frame, time 46.061708 ms *************
+using mapped frame, time 46.375571 ms *************
+using mapped frame, time 41.533567 ms *************
+using mapped frame, time 40.643943 ms *************
+using mapped frame, time 39.924731 ms *************
+[0m[ INFO] [1784882280.427735780]: Lidar pose sync: heading=1.645 rad (94.3 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 44.718026 ms *************
+using mapped frame, time 42.588818 ms *************
+using mapped frame, time 42.941672 ms *************
+using mapped frame, time 43.132175 ms *************
+using mapped frame, time 41.820074 ms *************
+using mapped frame, time 42.313909 ms *************
+using mapped frame, time 45.958354 ms *************
+using mapped frame, time 41.457852 ms *************
+using mapped frame, time 39.456509 ms *************
+using mapped frame, time 41.040053 ms *************
+using mapped frame, time 42.921568 ms *************
+[0m[ INFO] [1784882281.527858293]: Lidar pose sync: heading=1.644 rad (94.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 40.402188 ms *************
+using mapped frame, time 40.321865 ms *************
+using mapped frame, time 40.551150 ms *************
+using mapped frame, time 43.911037 ms *************
+using mapped frame, time 38.666703 ms *************
+using mapped frame, time 41.627998 ms *************
+using mapped frame, time 40.602343 ms *************
+using mapped frame, time 41.158433 ms *************
+using mapped frame, time 47.677802 ms *************
+using mapped frame, time 41.944686 ms *************
+using mapped frame, time 40.281732 ms *************
+[0m[ INFO] [1784882282.627734926]: Lidar pose sync: heading=1.652 rad (94.7 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 39.647204 ms *************
+using mapped frame, time 41.257547 ms *************
+using mapped frame, time 40.224432 ms *************
+using mapped frame, time 42.867530 ms *************
+using mapped frame, time 41.376430 ms *************
+using mapped frame, time 41.811226 ms *************
+using mapped frame, time 46.429276 ms *************
+using mapped frame, time 41.256510 ms *************
+using mapped frame, time 40.216218 ms *************
+using mapped frame, time 41.565745 ms *************
+[0m[ INFO] [1784882283.627775830]: Lidar pose sync: heading=1.660 rad (95.1 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 40.957404 ms *************
+using mapped frame, time 39.334642 ms *************
+using mapped frame, time 46.753604 ms *************
+using mapped frame, time 44.508614 ms *************
+using mapped frame, time 41.931892 ms *************
+using mapped frame, time 43.331566 ms *************
+using mapped frame, time 44.435185 ms *************
+using mapped frame, time 43.332690 ms *************
+using mapped frame, time 42.601181 ms *************
+using mapped frame, time 41.295928 ms *************
+using mapped frame, time 42.385307 ms *************
+[0m[ INFO] [1784882284.727805033]: Lidar pose sync: heading=1.659 rad (95.0 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 43.837728 ms *************
+using mapped frame, time 45.508618 ms *************
+using mapped frame, time 41.938019 ms *************
+using mapped frame, time 46.896751 ms *************
+using mapped frame, time 42.086405 ms *************
+using mapped frame, time 41.268222 ms *************
+using mapped frame, time 43.024930 ms *************
+using mapped frame, time 43.187028 ms *************
+using mapped frame, time 41.630142 ms *************
+using mapped frame, time 54.326397 ms *************
+using mapped frame, time 40.400842 ms *************
+[0m[ INFO] [1784882285.827749044]: Lidar pose sync: heading=1.662 rad (95.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 42.393256 ms *************
+using mapped frame, time 41.141260 ms *************
+using mapped frame, time 44.173055 ms *************
+using mapped frame, time 40.698702 ms *************
+using mapped frame, time 41.176042 ms *************
+using mapped frame, time 40.527069 ms *************
+using mapped frame, time 44.908401 ms *************
+using mapped frame, time 39.742515 ms *************
+using mapped frame, time 42.611513 ms *************
+using mapped frame, time 43.236032 ms *************
+using mapped frame, time 46.101523 ms *************
+[0m[ INFO] [1784882286.927684789]: Lidar pose sync: heading=1.663 rad (95.3 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 42.124188 ms *************
+using mapped frame, time 44.682966 ms *************
+using mapped frame, time 45.102532 ms *************
+using mapped frame, time 41.989596 ms *************
+using mapped frame, time 42.445730 ms *************
+using mapped frame, time 42.888318 ms *************
+using mapped frame, time 40.410692 ms *************
+using mapped frame, time 43.209447 ms *************
+using mapped frame, time 45.454510 ms *************
+using mapped frame, time 43.671582 ms *************
+using mapped frame, time 45.558591 ms *************
+[0m[ INFO] [1784882288.027850057]: Lidar pose sync: heading=1.662 rad (95.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 42.717631 ms *************
+using mapped frame, time 47.053427 ms *************
+using mapped frame, time 44.945390 ms *************
+using mapped frame, time 43.894008 ms *************
+using mapped frame, time 43.486703 ms *************
+using mapped frame, time 44.313623 ms *************
+using mapped frame, time 40.956980 ms *************
+using mapped frame, time 44.627171 ms *************
+using mapped frame, time 44.457581 ms *************
+using mapped frame, time 44.212009 ms *************
+[0m[ INFO] [1784882289.028342108]: Lidar pose sync: heading=1.662 rad (95.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 42.389044 ms *************
+using mapped frame, time 40.696644 ms *************
+using mapped frame, time 45.676490 ms *************
+using mapped frame, time 41.691939 ms *************
+using mapped frame, time 41.640223 ms *************
+using mapped frame, time 41.258403 ms *************
+using mapped frame, time 44.087938 ms *************
+using mapped frame, time 40.624894 ms *************
+using mapped frame, time 39.533436 ms *************
+using mapped frame, time 44.964743 ms *************
+using mapped frame, time 41.859641 ms *************
+[0m[ INFO] [1784882290.127694404]: Lidar pose sync: heading=1.664 rad (95.3 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 41.376144 ms *************
+using mapped frame, time 41.345663 ms *************
+using mapped frame, time 45.640438 ms *************
+using mapped frame, time 41.522539 ms *************
+using mapped frame, time 41.761023 ms *************
+using mapped frame, time 42.391428 ms *************
+using mapped frame, time 45.269282 ms *************
+using mapped frame, time 47.110274 ms *************
+using mapped frame, time 42.070613 ms *************
+using mapped frame, time 44.809147 ms *************
+[0m[ INFO] [1784882291.127696014]: Lidar pose sync: heading=1.661 rad (95.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 40.840211 ms *************
+using mapped frame, time 44.853014 ms *************
+using mapped frame, time 40.557032 ms *************
+using mapped frame, time 45.309490 ms *************
+using mapped frame, time 45.510312 ms *************
+using mapped frame, time 41.083215 ms *************
+using mapped frame, time 42.773773 ms *************
+using mapped frame, time 44.748468 ms *************
+using mapped frame, time 42.312300 ms *************
+using mapped frame, time 42.283504 ms *************
+[0m[ INFO] [1784882292.127961133]: Lidar pose sync: heading=1.662 rad (95.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 45.019818 ms *************
+using mapped frame, time 45.044839 ms *************
+using mapped frame, time 41.513535 ms *************
+using mapped frame, time 42.039379 ms *************
+using mapped frame, time 45.979931 ms *************
+using mapped frame, time 42.381001 ms *************
+using mapped frame, time 42.777409 ms *************
+using mapped frame, time 43.970727 ms *************
+using mapped frame, time 44.325663 ms *************
+using mapped frame, time 44.366213 ms *************
+using mapped frame, time 41.880833 ms *************
+[0m[ INFO] [1784882293.227698411]: Lidar pose sync: heading=1.662 rad (95.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 48.113776 ms *************
+using mapped frame, time 48.527730 ms *************
+using mapped frame, time 43.038358 ms *************
+using mapped frame, time 41.938328 ms *************
+using mapped frame, time 48.048343 ms *************
+using mapped frame, time 43.746536 ms *************
+using mapped frame, time 41.783999 ms *************
+using mapped frame, time 45.438352 ms *************
+using mapped frame, time 47.584232 ms *************
+using mapped frame, time 41.308968 ms *************
+[0m[ INFO] [1784882294.227780935]: Lidar pose sync: heading=1.662 rad (95.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 42.166386 ms *************
+using mapped frame, time 42.775675 ms *************
+using mapped frame, time 46.126515 ms *************
+using mapped frame, time 41.886043 ms *************
+using mapped frame, time 41.296214 ms *************
+using mapped frame, time 51.890340 ms *************
+using mapped frame, time 43.199475 ms *************
+using mapped frame, time 45.895566 ms *************
+using mapped frame, time 44.602354 ms *************
+using mapped frame, time 43.537599 ms *************
+using mapped frame, time 45.099681 ms *************
+[0m[ INFO] [1784882295.327690241]: Lidar pose sync: heading=1.662 rad (95.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 41.326966 ms *************
+using mapped frame, time 44.416419 ms *************
+using mapped frame, time 46.952537 ms *************
+using mapped frame, time 39.784709 ms *************
+using mapped frame, time 46.140803 ms *************
+using mapped frame, time 42.661648 ms *************
+using mapped frame, time 46.278691 ms *************
+using mapped frame, time 49.405765 ms *************
+using mapped frame, time 41.364507 ms *************
+using mapped frame, time 44.686821 ms *************
+[0m[ INFO] [1784882296.327818338]: Lidar pose sync: heading=1.662 rad (95.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 41.796865 ms *************
+using mapped frame, time 43.283380 ms *************
+using mapped frame, time 42.980177 ms *************
+using mapped frame, time 43.020681 ms *************
+using mapped frame, time 44.196964 ms *************
+using mapped frame, time 44.382708 ms *************
+using mapped frame, time 45.470526 ms *************
+using mapped frame, time 45.806822 ms *************
+using mapped frame, time 41.775661 ms *************
+using mapped frame, time 43.195805 ms *************
+using mapped frame, time 46.945415 ms *************
+[0m[ INFO] [1784882297.427744860]: Lidar pose sync: heading=1.662 rad (95.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 43.791139 ms *************
+using mapped frame, time 41.946693 ms *************
+using mapped frame, time 44.367018 ms *************
+using mapped frame, time 43.878186 ms *************
+using mapped frame, time 42.544305 ms *************
+using mapped frame, time 41.148073 ms *************
+using mapped frame, time 42.735223 ms *************
+using mapped frame, time 45.987352 ms *************
+using mapped frame, time 44.658820 ms *************
+using mapped frame, time 42.967267 ms *************
+using mapped frame, time 45.406962 ms *************
+[0m[ INFO] [1784882298.527759362]: Lidar pose sync: heading=1.663 rad (95.3 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 45.892312 ms *************
+using mapped frame, time 50.273203 ms *************
+using mapped frame, time 42.071471 ms *************
+using mapped frame, time 41.648186 ms *************
+using mapped frame, time 41.415987 ms *************
+using mapped frame, time 45.520639 ms *************
+using mapped frame, time 41.947365 ms *************
+using mapped frame, time 45.129095 ms *************
+using mapped frame, time 41.151131 ms *************
+using mapped frame, time 44.434952 ms *************
+using mapped frame, time 46.438658 ms *************
+[0m[ INFO] [1784882299.627731505]: Lidar pose sync: heading=1.662 rad (95.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 45.710448 ms *************
+using mapped frame, time 45.713791 ms *************
+using mapped frame, time 43.931556 ms *************
+using mapped frame, time 43.531040 ms *************
+using mapped frame, time 42.057405 ms *************
+using mapped frame, time 47.305675 ms *************
+using mapped frame, time 44.647657 ms *************
+using mapped frame, time 40.604946 ms *************
+using mapped frame, time 45.537079 ms *************
+using mapped frame, time 41.323171 ms *************
+[0m[ INFO] [1784882300.627784803]: Lidar pose sync: heading=1.663 rad (95.3 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 41.290760 ms *************
+using mapped frame, time 41.288037 ms *************
+using mapped frame, time 44.219987 ms *************
+using mapped frame, time 43.839860 ms *************
+using mapped frame, time 44.741145 ms *************
+using mapped frame, time 40.426433 ms *************
+using mapped frame, time 40.742045 ms *************
+using mapped frame, time 45.919035 ms *************
+using mapped frame, time 43.848572 ms *************
+using mapped frame, time 45.123176 ms *************
+using mapped frame, time 47.145311 ms *************
+[0m[ INFO] [1784882301.727914992]: Lidar pose sync: heading=1.664 rad (95.3 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 46.382182 ms *************
+using mapped frame, time 42.449698 ms *************
+using mapped frame, time 40.736494 ms *************
+using mapped frame, time 43.061056 ms *************
+using mapped frame, time 45.342822 ms *************
+using mapped frame, time 51.490918 ms *************
+using mapped frame, time 42.386871 ms *************
+using mapped frame, time 42.192086 ms *************
+using mapped frame, time 40.479392 ms *************
+using mapped frame, time 45.417229 ms *************
+[0m[ INFO] [1784882302.727939207]: Lidar pose sync: heading=1.662 rad (95.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 41.894947 ms *************
+using mapped frame, time 43.971397 ms *************
+using mapped frame, time 70.201111 ms *************
+using mapped frame, time 48.712903 ms *************
+using mapped frame, time 44.458515 ms *************
+using mapped frame, time 43.267492 ms *************
+using mapped frame, time 48.830637 ms *************
+using mapped frame, time 44.362365 ms *************
+using mapped frame, time 45.151590 ms *************
+using mapped frame, time 48.999104 ms *************
+using mapped frame, time 45.939409 ms *************
+[0m[ INFO] [1784882303.827869824]: Lidar pose sync: heading=1.661 rad (95.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 54.670145 ms *************
+using mapped frame, time 44.104027 ms *************
+using mapped frame, time 43.783018 ms *************
+using mapped frame, time 48.420178 ms *************
+using mapped frame, time 46.903250 ms *************
+using mapped frame, time 45.528580 ms *************
+using mapped frame, time 44.971924 ms *************
+using mapped frame, time 48.568425 ms *************
+using mapped frame, time 43.803902 ms *************
+using mapped frame, time 49.327564 ms *************
+using mapped frame, time 43.304793 ms *************
+[0m[ INFO] [1784882304.928089976]: Lidar pose sync: heading=1.661 rad (95.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 47.183913 ms *************
+using mapped frame, time 41.062876 ms *************
+using mapped frame, time 40.406588 ms *************
+using mapped frame, time 41.512584 ms *************
+using mapped frame, time 45.067170 ms *************
+using mapped frame, time 39.621968 ms *************
+using mapped frame, time 40.943966 ms *************
+using mapped frame, time 40.445117 ms *************
+using mapped frame, time 41.790241 ms *************
+using mapped frame, time 47.780850 ms *************
+using mapped frame, time 45.440916 ms *************
+[0m[ INFO] [1784882306.027828151]: Lidar pose sync: heading=1.654 rad (94.8 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 44.124976 ms *************
+using mapped frame, time 44.413283 ms *************
+using mapped frame, time 48.905136 ms *************
+using mapped frame, time 44.609690 ms *************
+using mapped frame, time 46.651749 ms *************
+using mapped frame, time 41.744971 ms *************
+using mapped frame, time 45.783655 ms *************
+using mapped frame, time 47.220665 ms *************
+using mapped frame, time 43.016210 ms *************
+using mapped frame, time 44.812971 ms *************
+using mapped frame, time 39.997855 ms *************
+[0m[ INFO] [1784882307.127675812]: Lidar pose sync: heading=1.635 rad (93.7 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 40.813773 ms *************
+using mapped frame, time 41.833961 ms *************
+using mapped frame, time 40.272612 ms *************
+using mapped frame, time 39.945809 ms *************
+using mapped frame, time 44.534842 ms *************
+using mapped frame, time 41.559216 ms *************
+using mapped frame, time 39.574509 ms *************
+using mapped frame, time 38.352607 ms *************
+using mapped frame, time 41.250025 ms *************
+using mapped frame, time 42.182785 ms *************
+[0m[ INFO] [1784882308.127861044]: Lidar pose sync: heading=1.605 rad (92.0 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 41.504259 ms *************
+using mapped frame, time 38.776006 ms *************
+using mapped frame, time 41.988173 ms *************
+using mapped frame, time 43.740559 ms *************
+using mapped frame, time 44.673103 ms *************
+using mapped frame, time 46.984469 ms *************
+using mapped frame, time 41.317242 ms *************
+using mapped frame, time 44.523700 ms *************
+using mapped frame, time 44.334020 ms *************
+using mapped frame, time 41.051429 ms *************
+[0m[ INFO] [1784882309.128012344]: Lidar pose sync: heading=1.604 rad (91.9 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 48.812364 ms *************
+using mapped frame, time 41.860741 ms *************
+using mapped frame, time 43.624871 ms *************
+using mapped frame, time 40.718814 ms *************
+using mapped frame, time 39.931148 ms *************
+using mapped frame, time 45.500234 ms *************
+using mapped frame, time 45.282274 ms *************
+using mapped frame, time 44.976677 ms *************
+using mapped frame, time 42.618046 ms *************
+using mapped frame, time 44.056939 ms *************
+using mapped frame, time 48.154246 ms *************
+[0m[ INFO] [1784882310.227755644]: Lidar pose sync: heading=1.604 rad (91.9 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 43.998816 ms *************
+using mapped frame, time 49.003278 ms *************
+using mapped frame, time 43.875027 ms *************
+using mapped frame, time 45.041248 ms *************
+using mapped frame, time 44.077174 ms *************
+using mapped frame, time 43.549900 ms *************
+using mapped frame, time 46.033346 ms *************
+using mapped frame, time 42.693082 ms *************
+using mapped frame, time 39.311052 ms *************
+using mapped frame, time 41.974928 ms *************
+[0m[ INFO] [1784882311.227769417]: Lidar pose sync: heading=1.604 rad (91.9 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 44.101720 ms *************
+using mapped frame, time 43.581979 ms *************
+using mapped frame, time 43.937888 ms *************
+using mapped frame, time 42.218840 ms *************
+using mapped frame, time 39.137643 ms *************
+using mapped frame, time 39.008609 ms *************
+using mapped frame, time 42.091566 ms *************
+using mapped frame, time 39.191458 ms *************
+using mapped frame, time 47.372261 ms *************
+using mapped frame, time 44.634751 ms *************
+[0m[ INFO] [1784882312.227801212]: Lidar pose sync: heading=1.604 rad (91.9 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 43.624070 ms *************
+using mapped frame, time 40.607012 ms *************
+using mapped frame, time 43.329547 ms *************
+using mapped frame, time 45.575510 ms *************
+using mapped frame, time 51.974438 ms *************
+using mapped frame, time 42.466553 ms *************
+using mapped frame, time 43.950097 ms *************
+using mapped frame, time 42.458497 ms *************
+using mapped frame, time 41.634296 ms *************
+using mapped frame, time 47.313335 ms *************
+using mapped frame, time 43.925596 ms *************
+[0m[ INFO] [1784882313.327686502]: Lidar pose sync: heading=1.604 rad (91.9 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 43.006358 ms *************
+using mapped frame, time 44.794761 ms *************
+using mapped frame, time 42.621074 ms *************
+using mapped frame, time 45.103446 ms *************
+using mapped frame, time 44.504456 ms *************
+using mapped frame, time 44.981779 ms *************
+using mapped frame, time 43.336501 ms *************
+using mapped frame, time 44.014282 ms *************
+using mapped frame, time 40.890533 ms *************
+using mapped frame, time 44.422158 ms *************
+[0m[ INFO] [1784882314.327744949]: Lidar pose sync: heading=1.603 rad (91.8 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 40.227734 ms *************
+using mapped frame, time 46.853658 ms *************
+using mapped frame, time 42.047055 ms *************
+using mapped frame, time 45.039628 ms *************
+using mapped frame, time 43.624572 ms *************
+using mapped frame, time 39.990303 ms *************
+using mapped frame, time 41.999292 ms *************
+using mapped frame, time 44.043299 ms *************
+using mapped frame, time 42.507467 ms *************
+using mapped frame, time 41.249209 ms *************
+[0m[ INFO] [1784882315.327753593]: Lidar pose sync: heading=1.603 rad (91.8 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 44.120998 ms *************
+using mapped frame, time 44.633165 ms *************
+using mapped frame, time 40.759522 ms *************
+using mapped frame, time 40.938953 ms *************
+using mapped frame, time 40.816056 ms *************
+using mapped frame, time 42.716637 ms *************
+using mapped frame, time 44.479648 ms *************
+using mapped frame, time 40.307514 ms *************
+using mapped frame, time 41.053464 ms *************
+using mapped frame, time 39.302538 ms *************
+[0m[ INFO] [1784882316.327851264]: Lidar pose sync: heading=1.603 rad (91.8 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 45.120004 ms *************
+using mapped frame, time 39.407730 ms *************
+using mapped frame, time 41.929855 ms *************
+using mapped frame, time 39.478035 ms *************
+using mapped frame, time 43.970916 ms *************
+using mapped frame, time 38.964784 ms *************
+using mapped frame, time 42.257737 ms *************
+using mapped frame, time 38.562765 ms *************
+using mapped frame, time 43.211777 ms *************
+using mapped frame, time 38.628371 ms *************
+using mapped frame, time 40.153887 ms *************
+[0m[ INFO] [1784882317.427685354]: Lidar pose sync: heading=1.606 rad (92.0 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 40.487909 ms *************
+using mapped frame, time 45.509339 ms *************
+using mapped frame, time 44.385954 ms *************
+using mapped frame, time 41.522641 ms *************
+using mapped frame, time 40.022004 ms *************
+using mapped frame, time 41.632748 ms *************
+using mapped frame, time 43.593263 ms *************
+using mapped frame, time 39.933510 ms *************
+using mapped frame, time 45.290631 ms *************
+using mapped frame, time 40.894827 ms *************
+using mapped frame, time 41.412454 ms *************
+[0m[ INFO] [1784882318.527662855]: Lidar pose sync: heading=1.593 rad (91.3 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 42.304188 ms *************
+using mapped frame, time 44.311279 ms *************
+using mapped frame, time 40.962207 ms *************
+using mapped frame, time 41.141263 ms *************
+using mapped frame, time 45.971936 ms *************
+using mapped frame, time 42.513932 ms *************
+using mapped frame, time 40.506624 ms *************
+using mapped frame, time 41.395748 ms *************
+using mapped frame, time 41.718054 ms *************
+using mapped frame, time 42.114895 ms *************
+[0m[ INFO] [1784882319.527730725]: Lidar pose sync: heading=1.595 rad (91.4 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 43.780687 ms *************
+using mapped frame, time 42.549533 ms *************
+using mapped frame, time 45.150139 ms *************
+using mapped frame, time 49.091838 ms *************
+using mapped frame, time 42.757577 ms *************
+using mapped frame, time 45.849577 ms *************
+using mapped frame, time 42.135991 ms *************
+using mapped frame, time 41.845054 ms *************
+using mapped frame, time 41.418094 ms *************
+using mapped frame, time 43.053009 ms *************
+[0m[ INFO] [1784882320.527996853]: Lidar pose sync: heading=1.597 rad (91.5 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 46.431082 ms *************
+using mapped frame, time 40.511652 ms *************
+using mapped frame, time 44.327659 ms *************
+using mapped frame, time 43.476318 ms *************
+using mapped frame, time 41.117032 ms *************
+using mapped frame, time 41.485164 ms *************
+using mapped frame, time 45.572639 ms *************
+using mapped frame, time 42.252555 ms *************
+using mapped frame, time 40.819748 ms *************
+using mapped frame, time 43.494686 ms *************
+using mapped frame, time 47.353782 ms *************
+[0m[ INFO] [1784882321.627854434]: Lidar pose sync: heading=1.596 rad (91.5 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 42.017113 ms *************
+using mapped frame, time 43.411096 ms *************
+using mapped frame, time 41.782722 ms *************
+using mapped frame, time 45.103856 ms *************
+using mapped frame, time 41.552091 ms *************
+using mapped frame, time 41.717601 ms *************
+using mapped frame, time 42.434437 ms *************
+using mapped frame, time 44.721556 ms *************
+using mapped frame, time 41.549872 ms *************
+using mapped frame, time 41.450923 ms *************
+using mapped frame, time 41.588819 ms *************
+[0m[ INFO] [1784882322.727755684]: Lidar pose sync: heading=1.596 rad (91.4 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 41.172565 ms *************
+using mapped frame, time 43.420622 ms *************
+using mapped frame, time 42.118440 ms *************
+using mapped frame, time 45.062092 ms *************
+using mapped frame, time 41.050548 ms *************
+using mapped frame, time 41.517262 ms *************
+using mapped frame, time 43.759368 ms *************
+using mapped frame, time 47.548308 ms *************
+using mapped frame, time 40.135615 ms *************
+using mapped frame, time 40.775560 ms *************
+[0m[ INFO] [1784882323.727834928]: Lidar pose sync: heading=1.595 rad (91.4 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 44.134486 ms *************
+using mapped frame, time 42.748108 ms *************
+using mapped frame, time 41.771489 ms *************
+using mapped frame, time 46.442435 ms *************
+using mapped frame, time 42.650655 ms *************
+using mapped frame, time 40.681899 ms *************
+using mapped frame, time 41.195048 ms *************
+using mapped frame, time 45.218607 ms *************
+using mapped frame, time 49.999690 ms *************
+using mapped frame, time 44.320003 ms *************
+using mapped frame, time 41.751622 ms *************
+[0m[ INFO] [1784882324.827706858]: Lidar pose sync: heading=1.595 rad (91.4 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 42.150904 ms *************
+using mapped frame, time 44.735305 ms *************
+using mapped frame, time 42.669959 ms *************
+using mapped frame, time 39.849934 ms *************
+using mapped frame, time 43.010337 ms *************
+using mapped frame, time 42.303093 ms *************
+using mapped frame, time 40.942076 ms *************
+using mapped frame, time 45.375795 ms *************
+using mapped frame, time 41.312822 ms *************
+using mapped frame, time 42.817165 ms *************
+[0m[ INFO] [1784882325.827844896]: Lidar pose sync: heading=1.594 rad (91.3 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 45.062556 ms *************
+using mapped frame, time 42.011674 ms *************
+using mapped frame, time 42.046620 ms *************
+using mapped frame, time 43.009331 ms *************
+using mapped frame, time 43.857996 ms *************
+using mapped frame, time 45.494890 ms *************
+using mapped frame, time 41.480374 ms *************
+using mapped frame, time 42.484298 ms *************
+using mapped frame, time 41.746635 ms *************
+using mapped frame, time 45.554656 ms *************
+using mapped frame, time 44.879079 ms *************
+[0m[ INFO] [1784882326.927721722]: Lidar pose sync: heading=1.594 rad (91.3 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 43.465060 ms *************
+using mapped frame, time 45.721484 ms *************
+using mapped frame, time 41.420391 ms *************
+using mapped frame, time 42.480086 ms *************
+using mapped frame, time 45.021495 ms *************
+using mapped frame, time 40.617455 ms *************
+using mapped frame, time 43.810881 ms *************
+using mapped frame, time 40.535683 ms *************
+using mapped frame, time 40.011279 ms *************
+using mapped frame, time 42.410106 ms *************
+[0m[ INFO] [1784882327.927803048]: Lidar pose sync: heading=1.599 rad (91.6 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 45.754905 ms *************
+using mapped frame, time 41.844204 ms *************
+using mapped frame, time 41.059687 ms *************
+using mapped frame, time 41.205036 ms *************
+using mapped frame, time 43.621245 ms *************
+using mapped frame, time 42.174638 ms *************
+using mapped frame, time 45.062747 ms *************
+using mapped frame, time 43.632531 ms *************
+using mapped frame, time 38.953636 ms *************
+using mapped frame, time 41.911591 ms *************
+using mapped frame, time 41.626356 ms *************
+[0m[ INFO] [1784882329.027777729]: Lidar pose sync: heading=1.598 rad (91.6 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 43.715727 ms *************
+using mapped frame, time 42.928329 ms *************
+using mapped frame, time 43.798721 ms *************
+using mapped frame, time 41.188439 ms *************
+using mapped frame, time 42.737823 ms *************
+using mapped frame, time 43.650990 ms *************
+using mapped frame, time 44.907196 ms *************
+using mapped frame, time 41.068376 ms *************
+using mapped frame, time 39.942158 ms *************
+using mapped frame, time 41.707719 ms *************
+using mapped frame, time 43.332854 ms *************
+[0m[ INFO] [1784882330.127867373]: Lidar pose sync: heading=1.599 rad (91.6 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 41.714069 ms *************
+using mapped frame, time 41.296882 ms *************
+using mapped frame, time 42.871163 ms *************
+using mapped frame, time 41.619793 ms *************
+using mapped frame, time 41.785267 ms *************
+using mapped frame, time 52.426473 ms *************
+using mapped frame, time 44.886508 ms *************
+using mapped frame, time 43.275384 ms *************
+using mapped frame, time 42.383283 ms *************
+using mapped frame, time 41.501653 ms *************
+using mapped frame, time 44.953342 ms *************
+[0m[ INFO] [1784882331.227707746]: Lidar pose sync: heading=1.598 rad (91.6 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 42.087953 ms *************
+using mapped frame, time 40.914110 ms *************
+using mapped frame, time 42.077823 ms *************
+using mapped frame, time 40.638347 ms *************
+using mapped frame, time 40.789067 ms *************
+using mapped frame, time 41.551533 ms *************
+using mapped frame, time 43.991308 ms *************
+using mapped frame, time 50.341544 ms *************
+using mapped frame, time 45.439945 ms *************
+using mapped frame, time 43.897688 ms *************
+[0m[ INFO] [1784882332.227799013]: Lidar pose sync: heading=1.598 rad (91.5 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 44.111970 ms *************
+using mapped frame, time 40.997695 ms *************
+using mapped frame, time 39.043184 ms *************
+using mapped frame, time 42.790014 ms *************
+using mapped frame, time 40.343276 ms *************
+using mapped frame, time 40.340977 ms *************
+using mapped frame, time 41.669341 ms *************
+using mapped frame, time 45.020592 ms *************
+using mapped frame, time 39.674055 ms *************
+using mapped frame, time 40.126996 ms *************
+using mapped frame, time 41.368147 ms *************
+[0m[ INFO] [1784882333.327725677]: Lidar pose sync: heading=1.598 rad (91.6 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 44.501664 ms *************
+using mapped frame, time 40.299544 ms *************
+using mapped frame, time 40.760684 ms *************
+using mapped frame, time 45.523156 ms *************
+using mapped frame, time 41.420267 ms *************
+using mapped frame, time 42.043551 ms *************
+using mapped frame, time 44.455162 ms *************
+using mapped frame, time 42.488400 ms *************
+using mapped frame, time 41.255413 ms *************
+using mapped frame, time 40.583322 ms *************
+[0m[ INFO] [1784882334.327771764]: Lidar pose sync: heading=1.599 rad (91.6 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 46.100972 ms *************
+using mapped frame, time 41.268659 ms *************
+using mapped frame, time 41.687448 ms *************
+using mapped frame, time 40.878100 ms *************
+using mapped frame, time 44.763601 ms *************
+using mapped frame, time 39.410925 ms *************
+using mapped frame, time 42.286968 ms *************
+using mapped frame, time 44.211230 ms *************
+using mapped frame, time 39.653655 ms *************
+using mapped frame, time 41.230601 ms *************
+using mapped frame, time 44.466138 ms *************
+[0m[ INFO] [1784882335.428021073]: Lidar pose sync: heading=1.598 rad (91.6 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 41.588555 ms *************
+using mapped frame, time 39.839554 ms *************
+using mapped frame, time 44.329961 ms *************
+using mapped frame, time 43.460813 ms *************
+using mapped frame, time 41.275799 ms *************
+using mapped frame, time 40.725092 ms *************
+using mapped frame, time 45.388001 ms *************
+using mapped frame, time 40.321824 ms *************
+using mapped frame, time 40.875952 ms *************
+using mapped frame, time 42.393198 ms *************
+using mapped frame, time 44.799252 ms *************
+[0m[ INFO] [1784882336.527648012]: Lidar pose sync: heading=1.598 rad (91.5 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 40.784006 ms *************
+using mapped frame, time 43.893531 ms *************
+using mapped frame, time 44.833417 ms *************
+using mapped frame, time 42.509999 ms *************
+using mapped frame, time 42.342225 ms *************
+using mapped frame, time 44.492690 ms *************
+using mapped frame, time 40.788339 ms *************
+using mapped frame, time 40.683229 ms *************
+using mapped frame, time 42.412780 ms *************
+using mapped frame, time 50.245753 ms *************
+[0m[ INFO] [1784882337.527745076]: Lidar pose sync: heading=1.598 rad (91.5 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 44.653696 ms *************
+using mapped frame, time 42.599956 ms *************
+using mapped frame, time 41.873868 ms *************
+using mapped frame, time 42.496266 ms *************
+using mapped frame, time 43.722210 ms *************
+using mapped frame, time 42.703240 ms *************
+using mapped frame, time 45.107378 ms *************
+using mapped frame, time 40.302414 ms *************
+using mapped frame, time 43.204709 ms *************
+using mapped frame, time 43.664623 ms *************
+[0m[ INFO] [1784882338.527788557]: Lidar pose sync: heading=1.592 rad (91.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 41.789842 ms *************
+using mapped frame, time 41.144744 ms *************
+using mapped frame, time 41.467334 ms *************
+using mapped frame, time 48.513115 ms *************
+using mapped frame, time 45.003066 ms *************
+using mapped frame, time 40.701745 ms *************
+using mapped frame, time 41.063417 ms *************
+using mapped frame, time 48.109438 ms *************
+using mapped frame, time 43.090456 ms *************
+using mapped frame, time 40.220755 ms *************
+[0m[ INFO] [1784882339.528175853]: Lidar pose sync: heading=1.359 rad (77.9 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 44.756779 ms *************
+using mapped frame, time 45.371011 ms *************
+using mapped frame, time 45.127297 ms *************
+using mapped frame, time 42.462506 ms *************
+using mapped frame, time 44.187956 ms *************
+using mapped frame, time 55.445306 ms *************
+using mapped frame, time 46.233764 ms *************
+using mapped frame, time 42.582171 ms *************
+using mapped frame, time 46.351101 ms *************
+using mapped frame, time 43.220210 ms *************
+using mapped frame, time 43.341317 ms *************
+[0m[ INFO] [1784882340.627695988]: Lidar pose sync: heading=0.971 rad (55.6 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 41.710619 ms *************
+using mapped frame, time 41.512600 ms *************
+using mapped frame, time 45.262111 ms *************
+using mapped frame, time 46.654880 ms *************
+using mapped frame, time 43.366602 ms *************
+using mapped frame, time 41.501778 ms *************
+using mapped frame, time 42.812624 ms *************
+using mapped frame, time 41.293770 ms *************
+using mapped frame, time 39.849515 ms *************
+using mapped frame, time 43.168879 ms *************
+[0m[ INFO] [1784882341.627749661]: Lidar pose sync: heading=0.982 rad (56.3 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 39.444199 ms *************
+using mapped frame, time 41.913608 ms *************
+using mapped frame, time 45.343358 ms *************
+using mapped frame, time 39.953010 ms *************
+using mapped frame, time 41.637825 ms *************
+using mapped frame, time 39.809383 ms *************
+using mapped frame, time 46.372577 ms *************
+using mapped frame, time 49.025074 ms *************
+using mapped frame, time 42.446774 ms *************
+using mapped frame, time 43.056367 ms *************
+[0m[ INFO] [1784882342.627764020]: Lidar pose sync: heading=1.236 rad (70.8 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 44.027260 ms *************
+using mapped frame, time 42.167981 ms *************
+using mapped frame, time 41.998700 ms *************
+using mapped frame, time 41.133130 ms *************
+using mapped frame, time 44.961376 ms *************
+using mapped frame, time 42.062018 ms *************
+using mapped frame, time 41.551490 ms *************
+using mapped frame, time 41.463179 ms *************
+using mapped frame, time 46.888596 ms *************
+using mapped frame, time 43.200869 ms *************
+using mapped frame, time 40.579203 ms *************
+[0m[ INFO] [1784882343.727792719]: Lidar pose sync: heading=1.320 rad (75.6 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 43.644406 ms *************
+using mapped frame, time 41.247147 ms *************
+using mapped frame, time 44.386774 ms *************
+using mapped frame, time 41.031589 ms *************
+using mapped frame, time 43.922042 ms *************
+using mapped frame, time 43.819195 ms *************
+using mapped frame, time 39.671602 ms *************
+using mapped frame, time 40.531253 ms *************
+using mapped frame, time 50.133343 ms *************
+using mapped frame, time 41.838891 ms *************
+[0m[ INFO] [1784882344.727821056]: Lidar pose sync: heading=1.177 rad (67.4 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 45.803252 ms *************
+using mapped frame, time 40.844860 ms *************
+using mapped frame, time 48.261070 ms *************
+using mapped frame, time 49.162362 ms *************
+using mapped frame, time 42.471700 ms *************
+using mapped frame, time 43.115521 ms *************
+using mapped frame, time 42.724250 ms *************
+using mapped frame, time 41.117477 ms *************
+using mapped frame, time 46.056746 ms *************
+using mapped frame, time 41.838874 ms *************
+using mapped frame, time 41.287535 ms *************
+[0m[ INFO] [1784882345.827729705]: Lidar pose sync: heading=1.117 rad (64.0 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 42.527419 ms *************
+using mapped frame, time 41.303205 ms *************
+using mapped frame, time 39.943101 ms *************
+using mapped frame, time 41.574751 ms *************
+using mapped frame, time 42.779689 ms *************
+using mapped frame, time 43.512151 ms *************
+using mapped frame, time 43.002179 ms *************
+using mapped frame, time 43.397735 ms *************
+using mapped frame, time 43.597554 ms *************
+using mapped frame, time 47.763397 ms *************
+[0m[ INFO] [1784882346.827752406]: Lidar pose sync: heading=1.117 rad (64.0 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 41.736913 ms *************
+using mapped frame, time 43.030689 ms *************
+using mapped frame, time 44.845330 ms *************
+using mapped frame, time 45.320935 ms *************
+using mapped frame, time 43.899925 ms *************
+using mapped frame, time 44.461392 ms *************
+using mapped frame, time 45.241781 ms *************
+using mapped frame, time 43.589112 ms *************
+using mapped frame, time 44.078772 ms *************
+using mapped frame, time 41.801166 ms *************
+using mapped frame, time 42.692870 ms *************
+[0m[ INFO] [1784882347.927672061]: Lidar pose sync: heading=1.247 rad (71.5 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 43.822111 ms *************
+using mapped frame, time 46.181046 ms *************
+using mapped frame, time 42.394005 ms *************
+using mapped frame, time 44.288881 ms *************
+using mapped frame, time 48.046474 ms *************
+using mapped frame, time 45.746970 ms *************
+using mapped frame, time 42.375407 ms *************
+using mapped frame, time 41.860058 ms *************
+using mapped frame, time 46.071947 ms *************
+using mapped frame, time 41.442596 ms *************
+[0m[ INFO] [1784882348.927696837]: Lidar pose sync: heading=1.256 rad (72.0 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 43.817234 ms *************
+using mapped frame, time 40.853136 ms *************
+using mapped frame, time 41.978529 ms *************
+using mapped frame, time 44.276849 ms *************
+using mapped frame, time 41.151003 ms *************
+using mapped frame, time 40.139369 ms *************
+using mapped frame, time 45.619513 ms *************
+using mapped frame, time 41.764770 ms *************
+using mapped frame, time 42.379171 ms *************
+using mapped frame, time 41.716178 ms *************
+[0m[ INFO] [1784882349.927940878]: Lidar pose sync: heading=1.365 rad (78.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 45.887785 ms *************
+using mapped frame, time 42.921160 ms *************
+using mapped frame, time 42.668686 ms *************
+using mapped frame, time 47.504272 ms *************
+using mapped frame, time 55.921003 ms *************
+using mapped frame, time 44.429363 ms *************
+using mapped frame, time 41.797540 ms *************
+using mapped frame, time 44.911955 ms *************
+using mapped frame, time 42.635254 ms *************
+using mapped frame, time 44.712674 ms *************
+using mapped frame, time 43.108730 ms *************
+[0m[ INFO] [1784882351.027854005]: Lidar pose sync: heading=1.400 rad (80.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 42.072587 ms *************
+using mapped frame, time 41.612308 ms *************
+using mapped frame, time 43.539504 ms *************
+using mapped frame, time 45.169883 ms *************
+using mapped frame, time 40.901363 ms *************
+using mapped frame, time 46.105451 ms *************
+using mapped frame, time 46.178704 ms *************
+using mapped frame, time 46.706019 ms *************
+using mapped frame, time 45.149645 ms *************
+using mapped frame, time 42.260817 ms *************
+using mapped frame, time 43.069042 ms *************
+[0m[ INFO] [1784882352.127887217]: Lidar pose sync: heading=1.400 rad (80.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 44.202687 ms *************
+using mapped frame, time 40.878459 ms *************
+using mapped frame, time 41.276975 ms *************
+using mapped frame, time 44.319901 ms *************
+using mapped frame, time 44.282366 ms *************
+using mapped frame, time 40.482829 ms *************
+using mapped frame, time 43.763505 ms *************
+using mapped frame, time 40.932662 ms *************
+using mapped frame, time 41.449936 ms *************
+using mapped frame, time 40.506505 ms *************
+using mapped frame, time 44.176422 ms *************
+[0m[ INFO] [1784882353.227720474]: Lidar pose sync: heading=1.400 rad (80.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 42.452327 ms *************
+using mapped frame, time 43.972582 ms *************
+using mapped frame, time 40.986100 ms *************
+using mapped frame, time 48.789674 ms *************
+using mapped frame, time 44.026083 ms *************
+using mapped frame, time 41.386470 ms *************
+using mapped frame, time 45.119711 ms *************
+using mapped frame, time 42.912320 ms *************
+using mapped frame, time 43.178235 ms *************
+using mapped frame, time 43.291663 ms *************
+[0m[ INFO] [1784882354.227962721]: Lidar pose sync: heading=1.399 rad (80.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 45.558597 ms *************
+using mapped frame, time 39.960289 ms *************
+using mapped frame, time 42.628359 ms *************
+using mapped frame, time 49.196364 ms *************
+using mapped frame, time 40.813913 ms *************
+using mapped frame, time 40.184180 ms *************
+using mapped frame, time 41.710912 ms *************
+using mapped frame, time 42.122357 ms *************
+using mapped frame, time 42.261678 ms *************
+using mapped frame, time 53.221009 ms *************
+using mapped frame, time 43.981404 ms *************
+[0m[ INFO] [1784882355.327681207]: Lidar pose sync: heading=1.399 rad (80.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 42.453936 ms *************
+using mapped frame, time 44.386463 ms *************
+using mapped frame, time 44.256006 ms *************
+using mapped frame, time 40.585711 ms *************
+using mapped frame, time 41.670715 ms *************
+using mapped frame, time 44.054745 ms *************
+using mapped frame, time 40.099415 ms *************
+using mapped frame, time 41.915095 ms *************
+using mapped frame, time 42.288806 ms *************
+using mapped frame, time 41.041652 ms *************
+[0m[ INFO] [1784882356.327741421]: Lidar pose sync: heading=1.399 rad (80.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 39.929426 ms *************
+using mapped frame, time 41.068786 ms *************
+using mapped frame, time 44.165784 ms *************
+using mapped frame, time 41.221254 ms *************
+using mapped frame, time 41.382844 ms *************
+using mapped frame, time 43.916894 ms *************
+using mapped frame, time 46.664614 ms *************
+using mapped frame, time 42.411088 ms *************
+using mapped frame, time 44.281858 ms *************
+using mapped frame, time 44.094678 ms *************
+using mapped frame, time 41.152840 ms *************
+[0m[ INFO] [1784882357.427737682]: Lidar pose sync: heading=1.399 rad (80.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 40.388887 ms *************
+using mapped frame, time 44.818961 ms *************
+using mapped frame, time 41.316641 ms *************
+using mapped frame, time 41.316699 ms *************
+using mapped frame, time 45.303891 ms *************
+using mapped frame, time 45.774084 ms *************
+using mapped frame, time 43.036576 ms *************
+using mapped frame, time 40.246909 ms *************
+using mapped frame, time 41.572552 ms *************
+using mapped frame, time 42.669503 ms *************
+[0m[ INFO] [1784882358.427832851]: Lidar pose sync: heading=1.400 rad (80.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 41.780943 ms *************
+using mapped frame, time 44.188314 ms *************
+using mapped frame, time 40.631903 ms *************
+using mapped frame, time 44.077679 ms *************
+using mapped frame, time 39.596553 ms *************
+using mapped frame, time 43.424255 ms *************
+using mapped frame, time 43.956694 ms *************
+using mapped frame, time 40.147042 ms *************
+using mapped frame, time 41.370927 ms *************
+using mapped frame, time 40.909480 ms *************
+using mapped frame, time 42.257755 ms *************
+[0m[ INFO] [1784882359.527728256]: Lidar pose sync: heading=1.400 rad (80.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 43.930773 ms *************
+using mapped frame, time 40.771008 ms *************
+using mapped frame, time 40.303265 ms *************
+using mapped frame, time 42.815026 ms *************
+using mapped frame, time 41.116185 ms *************
+using mapped frame, time 41.119228 ms *************
+using mapped frame, time 40.958191 ms *************
+using mapped frame, time 44.588500 ms *************
+using mapped frame, time 43.549966 ms *************
+using mapped frame, time 40.690865 ms *************
+[0m[ INFO] [1784882360.527740931]: Lidar pose sync: heading=1.400 rad (80.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 40.455896 ms *************
+using mapped frame, time 46.010633 ms *************
+using mapped frame, time 42.018468 ms *************
+using mapped frame, time 42.239106 ms *************
+using mapped frame, time 43.652308 ms *************
+using mapped frame, time 45.201008 ms *************
+using mapped frame, time 41.075600 ms *************
+using mapped frame, time 40.959594 ms *************
+using mapped frame, time 45.024131 ms *************
+using mapped frame, time 43.583152 ms *************
+[0m[ INFO] [1784882361.527845892]: Lidar pose sync: heading=1.400 rad (80.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 41.401526 ms *************
+using mapped frame, time 45.928582 ms *************
+using mapped frame, time 42.662657 ms *************
+using mapped frame, time 44.444655 ms *************
+using mapped frame, time 42.033587 ms *************
+using mapped frame, time 44.329700 ms *************
+using mapped frame, time 41.231640 ms *************
+using mapped frame, time 40.854196 ms *************
+using mapped frame, time 43.244807 ms *************
+using mapped frame, time 41.623250 ms *************
+using mapped frame, time 42.322470 ms *************
+[0m[ INFO] [1784882362.627878917]: Lidar pose sync: heading=1.399 rad (80.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 44.614881 ms *************
+using mapped frame, time 40.867280 ms *************
+using mapped frame, time 44.045344 ms *************
+using mapped frame, time 42.497717 ms *************
+using mapped frame, time 40.499783 ms *************
+using mapped frame, time 40.330454 ms *************
+using mapped frame, time 44.572116 ms *************
+using mapped frame, time 40.868512 ms *************
+using mapped frame, time 39.979580 ms *************
+using mapped frame, time 41.963049 ms *************
+using mapped frame, time 40.662853 ms *************
+[0m[ INFO] [1784882363.727686619]: Lidar pose sync: heading=1.399 rad (80.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 40.327228 ms *************
+using mapped frame, time 40.792458 ms *************
+using mapped frame, time 40.213131 ms *************
+using mapped frame, time 42.055985 ms *************
+using mapped frame, time 40.963046 ms *************
+using mapped frame, time 41.110193 ms *************
+using mapped frame, time 44.334409 ms *************
+using mapped frame, time 39.121389 ms *************
+using mapped frame, time 39.500891 ms *************
+using mapped frame, time 44.197247 ms *************
+[0m[ INFO] [1784882364.727803312]: Lidar pose sync: heading=1.399 rad (80.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 41.898568 ms *************
+using mapped frame, time 40.511196 ms *************
+using mapped frame, time 41.691305 ms *************
+using mapped frame, time 43.850093 ms *************
+using mapped frame, time 43.324866 ms *************
+using mapped frame, time 40.222746 ms *************
+using mapped frame, time 43.093407 ms *************
+using mapped frame, time 42.145263 ms *************
+using mapped frame, time 40.076216 ms *************
+using mapped frame, time 42.910331 ms *************
+using mapped frame, time 39.895452 ms *************
+[0m[ INFO] [1784882365.827768487]: Lidar pose sync: heading=1.399 rad (80.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 40.394140 ms *************
+using mapped frame, time 39.787945 ms *************
+using mapped frame, time 43.096604 ms *************
+using mapped frame, time 39.734588 ms *************
+using mapped frame, time 41.036008 ms *************
+using mapped frame, time 42.688236 ms *************
+using mapped frame, time 41.745146 ms *************
+using mapped frame, time 41.670944 ms *************
+using mapped frame, time 39.902360 ms *************
+using mapped frame, time 39.127816 ms *************
+using mapped frame, time 42.170809 ms *************
+[0m[ INFO] [1784882366.927639987]: Lidar pose sync: heading=1.397 rad (80.0 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 38.201639 ms *************
+using mapped frame, time 39.081951 ms *************
+using mapped frame, time 36.813885 ms *************
+using mapped frame, time 39.792123 ms *************
+using mapped frame, time 40.430250 ms *************
+using mapped frame, time 45.023008 ms *************
+using mapped frame, time 39.821927 ms *************
+using mapped frame, time 41.195863 ms *************
+using mapped frame, time 42.938154 ms *************
+using mapped frame, time 39.243976 ms *************
+[0m[ INFO] [1784882367.930807051]: Lidar pose sync: heading=1.399 rad (80.1 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 45.654264 ms *************
+using mapped frame, time 39.216004 ms *************
+using mapped frame, time 43.384540 ms *************
+using mapped frame, time 41.142473 ms *************
+using mapped frame, time 39.429591 ms *************
+using mapped frame, time 38.380304 ms *************
+using mapped frame, time 43.709984 ms *************
+using mapped frame, time 40.179062 ms *************
+using mapped frame, time 40.286032 ms *************
+using mapped frame, time 40.486431 ms *************
+using mapped frame, time 44.232458 ms *************
+[0m[ INFO] [1784882369.027703495]: Lidar pose sync: heading=1.396 rad (80.0 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 39.829664 ms *************
+using mapped frame, time 40.460200 ms *************
+using mapped frame, time 43.551738 ms *************
+using mapped frame, time 41.405117 ms *************
+using mapped frame, time 40.243477 ms *************
+using mapped frame, time 44.364816 ms *************
+using mapped frame, time 42.125933 ms *************
+using mapped frame, time 39.887924 ms *************
+using mapped frame, time 41.847815 ms *************
+using mapped frame, time 40.412932 ms *************
+[0m[ INFO] [1784882370.027822181]: Lidar pose sync: heading=1.399 rad (80.1 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 39.835784 ms *************
+using mapped frame, time 38.554387 ms *************
+using mapped frame, time 42.790510 ms *************
+using mapped frame, time 40.048287 ms *************
+using mapped frame, time 40.534182 ms *************
+using mapped frame, time 41.929039 ms *************
+using mapped frame, time 39.949650 ms *************
+using mapped frame, time 45.437854 ms *************
+using mapped frame, time 41.781308 ms *************
+using mapped frame, time 45.905461 ms *************
+[0m[ INFO] [1784882371.028169740]: Lidar pose sync: heading=1.399 rad (80.1 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 52.720719 ms *************
+using mapped frame, time 44.038290 ms *************
+using mapped frame, time 41.576535 ms *************
+using mapped frame, time 39.062418 ms *************
+using mapped frame, time 44.537088 ms *************
+using mapped frame, time 43.070966 ms *************
+using mapped frame, time 42.228418 ms *************
+using mapped frame, time 42.786780 ms *************
+using mapped frame, time 41.181284 ms *************
+using mapped frame, time 43.361327 ms *************
+using mapped frame, time 42.096669 ms *************
+[0m[ INFO] [1784882372.127911966]: Lidar pose sync: heading=1.399 rad (80.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 43.408358 ms *************
+using mapped frame, time 40.252734 ms *************
+using mapped frame, time 38.987745 ms *************
+using mapped frame, time 41.328533 ms *************
+using mapped frame, time 42.107480 ms *************
+using mapped frame, time 39.683441 ms *************
+using mapped frame, time 38.644288 ms *************
+using mapped frame, time 42.658450 ms *************
+using mapped frame, time 41.407436 ms *************
+using mapped frame, time 41.149136 ms *************
+using mapped frame, time 38.539205 ms *************
+[0m[ INFO] [1784882373.227813508]: Lidar pose sync: heading=1.399 rad (80.1 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 43.144327 ms *************
+using mapped frame, time 39.864225 ms *************
+using mapped frame, time 39.882526 ms *************
+using mapped frame, time 44.715090 ms *************
+using mapped frame, time 42.581528 ms *************
+using mapped frame, time 40.111782 ms *************
+using mapped frame, time 42.817350 ms *************
+using mapped frame, time 40.000584 ms *************
+using mapped frame, time 40.628916 ms *************
+using mapped frame, time 40.370568 ms *************
+[0m[ INFO] [1784882374.227909661]: Lidar pose sync: heading=1.399 rad (80.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 44.403296 ms *************
+using mapped frame, time 42.071713 ms *************
+using mapped frame, time 40.085927 ms *************
+using mapped frame, time 41.860520 ms *************
+using mapped frame, time 44.434294 ms *************
+using mapped frame, time 40.305416 ms *************
+using mapped frame, time 38.751594 ms *************
+using mapped frame, time 44.412146 ms *************
+using mapped frame, time 41.089475 ms *************
+using mapped frame, time 39.527634 ms *************
+using mapped frame, time 38.572150 ms *************
+[0m[ INFO] [1784882375.327826809]: Lidar pose sync: heading=1.399 rad (80.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 42.357794 ms *************
+using mapped frame, time 39.558075 ms *************
+using mapped frame, time 43.919705 ms *************
+using mapped frame, time 39.372404 ms *************
+using mapped frame, time 40.676049 ms *************
+using mapped frame, time 40.839965 ms *************
+using mapped frame, time 44.575396 ms *************
+using mapped frame, time 41.295458 ms *************
+using mapped frame, time 42.951471 ms *************
+using mapped frame, time 52.448198 ms *************
+[0m[ INFO] [1784882376.327844560]: Lidar pose sync: heading=1.399 rad (80.1 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 42.186416 ms *************
+using mapped frame, time 47.168811 ms *************
+using mapped frame, time 42.597205 ms *************
+using mapped frame, time 45.102299 ms *************
+using mapped frame, time 41.340111 ms *************
+using mapped frame, time 41.746276 ms *************
+using mapped frame, time 42.263003 ms *************
+using mapped frame, time 40.349197 ms *************
+using mapped frame, time 39.943334 ms *************
+using mapped frame, time 38.941346 ms *************
+[0m[ INFO] [1784882377.327995754]: Lidar pose sync: heading=1.399 rad (80.1 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 40.549910 ms *************
+using mapped frame, time 38.176712 ms *************
+using mapped frame, time 42.896540 ms *************
+using mapped frame, time 39.067856 ms *************
+using mapped frame, time 39.130089 ms *************
+using mapped frame, time 38.928495 ms *************
+using mapped frame, time 38.146578 ms *************
+using mapped frame, time 40.309043 ms *************
+using mapped frame, time 39.432446 ms *************
+using mapped frame, time 42.922706 ms *************
+using mapped frame, time 41.827313 ms *************
+[0m[ INFO] [1784882378.427614406]: Lidar pose sync: heading=1.401 rad (80.3 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 39.875867 ms *************
+using mapped frame, time 41.729282 ms *************
+using mapped frame, time 37.173446 ms *************
+using mapped frame, time 41.104323 ms *************
+using mapped frame, time 39.800355 ms *************
+using mapped frame, time 44.394174 ms *************
+using mapped frame, time 38.738173 ms *************
+using mapped frame, time 39.290746 ms *************
+using mapped frame, time 41.536978 ms *************
+using mapped frame, time 38.879415 ms *************
+[0m[ INFO] [1784882379.427900662]: Lidar pose sync: heading=1.402 rad (80.3 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 43.721164 ms *************
+using mapped frame, time 42.017228 ms *************
+using mapped frame, time 37.509703 ms *************
+using mapped frame, time 38.837715 ms *************
+using mapped frame, time 38.141393 ms *************
+using mapped frame, time 38.643196 ms *************
+using mapped frame, time 38.126145 ms *************
+using mapped frame, time 40.717160 ms *************
+using mapped frame, time 43.527782 ms *************
+using mapped frame, time 37.260043 ms *************
+using mapped frame, time 38.481444 ms *************
+[0m[ INFO] [1784882380.527581020]: Lidar pose sync: heading=1.402 rad (80.3 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 37.013663 ms *************
+using mapped frame, time 39.865423 ms *************
+using mapped frame, time 36.554578 ms *************
+using mapped frame, time 40.908452 ms *************
+using mapped frame, time 43.286019 ms *************
+using mapped frame, time 41.830491 ms *************
+using mapped frame, time 39.815197 ms *************
+using mapped frame, time 39.995941 ms *************
+using mapped frame, time 38.666672 ms *************
+using mapped frame, time 38.689150 ms *************
+[0m[ INFO] [1784882381.527724284]: Lidar pose sync: heading=1.400 rad (80.2 deg), yaw_rate=0.000, frame=body->ENU[0m
+using mapped frame, time 42.312156 ms *************
+using mapped frame, time 38.654999 ms *************
+using mapped frame, time 38.179927 ms *************
+... logging to /home/yhs/.ros/log/d0c5a7d8-86fb-11f1-999d-658c4c73839b/roslaunch-yhs-ros-44894.log
+Checking log directory for disk usage. This may take a while.
+Press Ctrl-C to interrupt
+]2;/home/yhs/user_shaobing/YHS_cuda_drivable/src/drivable_ros_ws/src/drivable/launch/clean_drivable.launch
+[1mstarted roslaunch server http://192.168.1.102:37003/[0m
+
+SUMMARY
+========
+
+PARAMETERS
+ * /RANGE: 40.0
+ * /X_HIGH: 0.8
+ * /X_LOW: 1.5
+ * /Y_HIGH: 0.6
+ * /Y_LOW: 0.6
+ * /Z_THD: 0.2
+ * /down_sample: 0.1
+ * /grid_size: 0.1
+ * /lidar_in_body_frame: True
+ * /lidar_offset_x: -0.6
+ * /lidar_offset_y: 0.0
+ * /map_size: 307
+ * /mapping_frame_num: 1
+ * /mapping_skip_frame: 1
+ * /rosdistro: noetic
+ * /rosversion: 1.16.0
+ * /scan_line: 32
+
+NODES
+  /
+    ground_point_cloud (drivable_area_detection/clear_test)
+    rviz (rviz/rviz)
+
+[1mROS_MASTER_URI=http://192.168.1.102:11311[0m
+]2;/home/yhs/user_shaobing/YHS_cuda_drivable/src/drivable_ros_ws/src/drivable/launch/clean_drivable.launch http://192.168.1.102:11311
+[1mprocess[ground_point_cloud-1]: started with pid [44915][0m
+[1mprocess[rviz-2]: started with pid [44916][0m
+[rviz-2] killing on exit
+[ground_point_cloud-1] killing on exit
+shutting down processing monitor...
+... shutting down processing monitor complete
+[1mdone[0m

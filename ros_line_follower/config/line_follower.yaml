@@ -1,0 +1,53 @@
+# 必填项留空字符串：本项目没有相机驱动和 Goal 消费者，不能猜测其接口。
+# 这里要求 sensor_msgs/Image 已去畸变/校正；例如实际的 image_rect_color 话题。
+image_topic: ""
+camera_info_topic: ""
+vehicle_state_topic: /vehicle/vehicle_state
+# 实车现有消息包的真实类型，例如 some_vehicle_msgs/Goal；不可改成示例名直接运行。
+goal_type: ""
+goal_topic: ""
+# TF 车体参考点必须与 VehicleState.x/y/heading 的参考点相同。
+vehicle_frame: ""
+# world=VehicleState的米制ENU/UTM世界系，vehicle=本次图像时刻x前y左车体系。
+output_frame: ""
+world_frame: utm
+# RefPoint.t: relative=距图像时刻的秒数，absolute=图像ROS时间+秒数。
+point_time_mode: ""
+# 地面在vehicle_frame内的z坐标，单位m；填写实测数值，不能当成相机高度。
+ground_z_m: ""
+mode: 3
+# 初次联调先查看 ~reference_path；明确消息语义并接好下游超时保护后开启。
+enable_motion: false
+runtime:
+  process_hz: 10.0
+  publish_hz: 2.0
+  max_image_age_s: 0.75
+  max_pose_age_s: 0.35
+  max_pose_gap_s: 0.2
+  max_frame_gap_s: 0.6
+  max_speed_mps: 2.0
+  max_yaw_rate_rad_s: 1.2
+  max_tilt_rad: 0.2
+  stop_estop_level: 1
+vision:
+  bev_forward_m: 15.0
+  bev_half_width_m: 4.0
+  resolution_m: 0.04
+  line_polarity: dark
+  association_gate_m: 0.25
+  association_range_m: 6.0
+  initial_anchor_m: 1.0
+  memory_s: 0.35
+planner:
+  target_length_m: 10.0
+  min_length_m: 5.0
+  spacing_m: 0.15
+  max_speed_mps: 0.6
+  max_lateral_accel_mps2: 0.4
+  braking_mps2: 0.6
+  minimum_radius_m: 2.0
+  stop_margin_m: 0.4
+  # 仅为配置的参考走廊宽度，不是视觉检测出的道路边界；按控制器定义填写。
+  left_width_m: 0.25
+  right_width_m: 0.25
+  turning_threshold_per_m: 0.08

@@ -1,0 +1,190 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900">
+  <defs>
+    <style>
+      .bg { fill: #f8fafc; }
+      .container { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+      .section-header { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 700; fill: #ffffff; }
+      .title { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 700; fill: #1e293b; }
+      .text { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; fill: #475569; }
+      .code { font-family: 'Consolas', 'Monaco', monospace; font-size: 12px; fill: #0f172a; font-weight: bold; }
+      .arrow { stroke: #94a3b8; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead); }
+      .highlight-orange { fill: #fff7ed; stroke: #fb923c; stroke-width: 1.5; }
+      .header-blue { fill: #2563eb; }
+      .header-indigo { fill: #4f46e5; }
+      .header-orange { fill: #ea580c; }
+      .header-green { fill: #16a34a; }
+      .header-slate { fill: #334155; }
+      .divider { stroke:#e2e8f0; stroke-width:1; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#94a3b8" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1400" height="900" class="bg" />
+
+  <!-- Global Header -->
+  <rect x="20" y="20" width="1360" height="40" rx="8" class="header-slate" />
+  <text x="40" y="47" class="section-header">ROS Node: drivableArea (Main Controller: dr_detect.cpp)</text>
+
+  <!-- 1. Sensor & State Inputs -->
+  <g transform="translate(40, 80)">
+    <rect width="280" height="330" rx="10" class="container" />
+    <path d="M 0 10 q 0 -10 10 -10 h 260 q 10 0 10 10 v 30 h -280 z" class="header-indigo" />
+    <text x="15" y="27" class="section-header">1. Sensor &amp; State Inputs</text>
+
+    <g transform="translate(15, 60)">
+      <text y="0" class="title">Vehicle State Hub</text>
+      <text y="20" class="code">/vehicle/vehicle_state</text>
+      <text y="35" class="text">→ read_stateCB()</text>
+      <text y="50" class="text" xml:space="preserve">  • Buffer: vh_stack</text>
+      <text y="65" class="text" xml:space="preserve">  • Updates: UTM XYZ, Roll/Pitch/Yaw</text>
+
+      <line x1="0" y1="85" x2="250" y2="85" class="divider" />
+
+      <text y="110" class="title">Raw PointCloud</text>
+      <text y="130" class="code">/rslidar_points</text>
+      <text y="145" class="text">→ lidar_sub()</text>
+      <text y="160" class="text" xml:space="preserve">  • Stores last lidar_msg</text>
+
+      <line x1="0" y1="180" x2="250" y2="180" class="divider" />
+
+      <text y="205" class="title">Dynamic Objects</text>
+      <text y="225" class="code">/cav_vehicle_list</text>
+      <text y="240" class="text">→ veh_sub()</text>
+      <text y="255" class="text" xml:space="preserve">  • Sets veh_state = true</text>
+    </g>
+  </g>
+
+  <!-- 2. Main Control Loop -->
+  <g transform="translate(360, 80)">
+    <rect width="360" height="200" rx="10" class="container" />
+    <path d="M 0 10 q 0 -10 10 -10 h 340 q 10 0 10 10 v 30 h -360 z" class="header-blue" />
+    <text x="15" y="27" class="section-header">2. Main Control Loop</text>
+
+    <g transform="translate(15, 60)">
+      <text y="0" class="code">while (ros::ok())</text>
+      <text y="25" class="text" xml:space="preserve">  1. ros::spinOnce()  // handle callbacks</text>
+      <text y="45" class="text" xml:space="preserve">  2. if (lidar_state) → lidarmappedCB(lidar_msg)</text>
+      <text y="65" class="text" xml:space="preserve">  3. if (veh_state)   → read_vehCB(veh_msg)</text>
+      <text y="85" class="text" xml:space="preserve">  4. Loc_mapPB(sub_map), Occ_mapPB(sub_map)</text>
+      <text y="105" class="text" xml:space="preserve">  5. Reset veh_state, lidar_state flags</text>
+    </g>
+  </g>
+
+  <!-- 3. Obstacle Mask Builder -->
+  <g transform="translate(360, 300)">
+    <rect width="360" height="250" rx="10" class="container" />
+    <path d="M 0 10 q 0 -10 10 -10 h 340 q 10 0 10 10 v 30 h -360 z" class="header-indigo" />
+    <text x="15" y="27" class="section-header">3. Obstacle Mask Builder (OpenCV)</text>
+
+    <g transform="translate(15, 60)">
+      <text y="0" class="code">read_vehCB(ObjListCombined)</text>
+      <text y="20" class="text" xml:space="preserve">  • Time-align with vh_stack (VehicleState)</text>
+      <text y="35" class="text" xml:space="preserve">  • Project oriented bboxes into grid (cv::Mat)</text>
+      <text y="50" class="text" xml:space="preserve">  • cv::fillPoly() → obstacle mask</text>
+      <text y="65" class="text" xml:space="preserve">  • sub_map[i] = 100 for occupied cells</text>
+
+      <rect y="90" width="330" height="90" rx="6" class="highlight-orange" />
+      <text x="10" y="110" class="title">Shared Data Structure: sub_map</text>
+      <text x="10" y="130" class="text">Type: float[MAP_SIZE * MAP_SIZE]</text>
+      <text x="10" y="145" class="text">Contains: external object / vehicle occupancy</text>
+      <text x="10" y="160" class="text">Used by: Loc_mapPB, Occ_mapPB</text>
+      <text x="60" y="175" class="text"> DRIVABLE_DETECT_MAPPED</text>
+    </g>
+  </g>
+
+  <!-- 4. LiDAR Drivability Engine -->
+  <g transform="translate(760, 80)">
+    <rect width="600" height="740" rx="10" class="container" />
+    <path d="M 0 10 q 0 -10 10 -10 h 580 q 10 0 10 10 v 30 h -600 z" class="header-blue" />
+    <text x="15" y="27" class="section-header">4. LiDAR Drivability Engine (DRIVABLE_DETECT_MAPPED)</text>
+
+    <g transform="translate(20, 60)">
+      <!-- S1 -->
+      <rect width="260" height="170" rx="8" stroke="#e2e8f0" fill="#f8fafc" />
+      <text x="10" y="25" class="title">S1. Input &amp; Pre-Processing</text>
+      <text x="15" y="45" class="code">data_read()</text>
+      <text x="15" y="60" class="text" xml:space="preserve">  • Bind cloud_in, cloud_out, utm_loc, heading</text>
+      <text x="15" y="80" class="code">filterPC()</text>
+      <text x="15" y="95" class="text" xml:space="preserve">  • ROI crop, distance gate, voxel filter</text>
+      <text x="15" y="115" class="code">ini()</text>
+      <text x="15" y="130" class="text" xml:space="preserve">  • Rolling grid map shift (UTM-based)</text>
+      <text x="15" y="150" class="code">mapping()</text>
+      <text x="15" y="165" class="text" xml:space="preserve">  • Multi-frame fusion into cloud_prcs</text>
+
+      <!-- S2 -->
+      <rect x="290" width="260" height="170" rx="8" stroke="#e2e8f0" fill="#f8fafc" />
+      <text x="300" y="25" class="title">S2. Grid Voxelization</text>
+      <text x="305" y="50" class="code">movePC2Grid()</text>
+      <text x="305" y="70" class="text" xml:space="preserve">  • For each pt in cloud_prcs:</text>
+      <text x="315" y="85" class="text" xml:space="preserve">    xy2IJ(x,y) → grid_I, grid_J</text>
+      <text x="315" y="100" class="text" xml:space="preserve">    push_back into grid_array[index]-&gt;pc_ptr</text>
+      <text x="305" y="120" class="text" xml:space="preserve">  • Filter high-z points (z ≥ 4)</text>
+      <text x="305" y="140" class="text" xml:space="preserve">  • intensity = INTENSITY_DRIVABLE</text>
+
+      <!-- S3 -->
+      <rect y="190" width="550" height="220" rx="8" stroke="#2563eb" fill="#eff6ff" />
+      <text x="10" y="215" class="title">S3. Geometry &amp; Flatness Analysis (PCA Core)</text>
+      <text x="15" y="240" class="code">checkFlatness()</text>
+      <text x="25" y="260" class="text" xml:space="preserve">  • For each grid with sufficient points:</text>
+      <text x="35" y="275" class="text" xml:space="preserve">    – Mean &amp; covariance of local patch</text>
+      <text x="35" y="290" class="text" xml:space="preserve">    – Eigen decomposition → normal &amp; eigenvalues</text>
+      <text x="35" y="305" class="text" xml:space="preserve">    – Slope: acos(|normal.z|)</text>
+      <text x="35" y="320" class="text" xml:space="preserve">    – Roughness: RMS plane residual (d_avg)</text>
+      <text x="35" y="335" class="text" xml:space="preserve">    – hei_grid / hei_diff_grid update</text>
+      <text x="35" y="350" class="text" xml:space="preserve">    – Log-odds update of occ_grid, mark flat/non_flat</text>
+
+      <rect x="320" y="235" width="220" height="115" rx="6" fill="#ffffff" stroke="#93c5fd" />
+      <text x="330" y="260" class="title">Grid Layers Updated</text>
+      <text x="330" y="280" class="text">hei_grid, hei_diff_grid</text>
+      <text x="330" y="300" class="text">slope_map, rough_map, step_map</text>
+      <text x="330" y="320" class="text">occ_grid (used as collision)</text>
+
+      <!-- S4 -->
+      <rect y="430" width="550" height="230" rx="8" stroke="#ea580c" fill="#fffaf5" />
+      <text x="10" y="455" class="title">S4. Risk Aggregation &amp; CVaR</text>
+
+      <text x="15" y="480" class="code">checkHeight()</text>
+      <text x="25" y="495" class="text" xml:space="preserve">  • Mark non_ground_grid as high occupancy</text>
+
+      <text x="15" y="520" class="code">make_final_decision()</text>
+      <text x="25" y="535" class="text" xml:space="preserve">  • Populate multi_map layers:</text>
+      <text x="35" y="550" class="text" xml:space="preserve">    elevation, unocc, mean_x/mean_y, mse_cover</text>
+      <text x="35" y="565" class="text" xml:space="preserve">    hei_diff, slope, step, collision = 1 - occ/100</text>
+      <text x="25" y="580" class="text" xml:space="preserve">  • Copy current grids to pre_* for next frame</text>
+
+      <rect x="20" y="595" width="510" height="55" rx="6" class="highlight-orange" />
+      <path d="M 20 605 q 0 -10 10 -10 h 490 q 10 0 10 10 v 20 h -510 z" class="header-orange" />
+      <text x="35" y="618" class="section-header">CUDA: computeCVaRCUDAWrapper()</text>
+      <text x="35" y="640" class="text">Inputs {"slope","step","collision"}, weights {0.5,0.4,1}, alpha=0.05 → multi_map["CVaR"]</text>
+    </g>
+  </g>
+
+  <!-- 5. Map & PointCloud Publishers -->
+  <g transform="translate(40, 620)">
+    <rect width="680" height="200" rx="10" class="container" />
+    <path d="M 0 10 q 0 -10 10 -10 h 660 q 10 0 10 10 v 30 h -680 z" class="header-green" />
+    <text x="15" y="27" class="section-header">5. Map &amp; PointCloud Publishers</text>
+
+    <g transform="translate(15, 60)">
+      <text y="0" class="title">Point Clouds</text>
+      <text y="20" class="text">/drivable/filtered_point_cloud  (Filter_pcPB from cloud_prcs)</text>
+
+      <text x="340" y="0" class="title">Decision &amp; Grid Maps</text>
+      <text x="340" y="20" class="text">/grid_map          (GridMapRosConverter from multi_map)</text>
+      <text x="340" y="35" class="text">/drivable/occ_map  (Occ_mapPB from sub_map)</text>
+      <text x="340" y="50" class="text">/cav_local_map     (Loc_mapPB: driveable_index, 1 - CVaR)</text>
+      <text x="340" y="65" class="text">/drivable/Hei_map  (Hei_mapPB from hei_grid)</text>
+    </g>
+  </g>
+
+  <!-- Arrows -->
+  <path d="M 320 180 L 360 180" class="arrow" />
+  <path d="M 720 180 L 760 180" class="arrow" />
+  <text x="695" y="170" class="text">lidarmappedCB()</text>
+  <path d="M 540 280 L 540 300" class="arrow" />
+  <path d="M 720 380 L 760 380" class="arrow" />
+  <path d="M 1060 800 L 1060 850 L 360 850 L 360 820" class="arrow" />
+</svg>
